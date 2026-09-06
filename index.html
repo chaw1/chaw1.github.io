@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>张嘉玮 Jiawei Zhang — 技术负责人 / 全栈架构师</title>
+<meta name="description" content="张嘉玮 (Jiawei Zhang) — 技术负责人 / 全栈架构师。9 年 Java/Python 全栈与分布式系统经验，AI 数据平台从零到一，多智能体协作开发实践者。">
+<meta property="og:title" content="Jiawei Zhang — Tech Lead / Full-stack Architect">
+<meta property="og:description" content="9 years building distributed systems and AI data platforms. Java · Python · Vue · K8s.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b0f14'/%3E%3Ctext x='50%25' y='56%25' font-family='monospace' font-size='34' font-weight='700' fill='%233ddc97' text-anchor='middle' dominant-baseline='middle'%3E%3E_%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0b0f14; --bg-2:#10161d; --bg-3:#151d26;
+  --line:#1f2a36; --line-2:#2a3a4a;
+  --fg:#e6edf3; --fg-2:#9fb0c0; --fg-3:#6b7c8c;
+  --acc:#3ddc97; --acc-2:#5cc8ff; --acc-3:#ffb454;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono","JetBrains Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",Roboto,Helvetica,Arial,sans-serif;
+  --max:1080px; --r:12px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.65;font-size:16px;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;background-position:-1px -1px}
+a{color:var(--acc-2);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+code,.mono{font-family:var(--mono)}
+[data-lang="zh"] .en{display:none!important}
+[data-lang="en"] .zh{display:none!important}
+[data-lang="en"] body{font-family:var(--sans)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(11,15,20,.75);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:var(--mono);font-weight:700;color:var(--fg);letter-spacing:.02em}
+.brand b{color:var(--acc)}
+.links{display:flex;gap:22px;align-items:center;font-size:14px}
+.links a{color:var(--fg-2)}
+.links a:hover{color:var(--fg);text-decoration:none}
+.lang{font-family:var(--mono);font-size:12px;border:1px solid var(--line-2);border-radius:999px;padding:4px 4px;display:flex;background:var(--bg-2);cursor:pointer;user-select:none}
+.lang span{padding:3px 10px;border-radius:999px;color:var(--fg-3)}
+[data-lang="zh"] .lang .l-zh,[data-lang="en"] .lang .l-en{background:var(--acc);color:#04120b;font-weight:700}
+@media (max-width:640px){.links a.nl{display:none}}
+
+/* hero */
+.hero{padding:88px 0 56px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:auto auto -200px -120px;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(61,220,151,.14),transparent);pointer-events:none}
+.hero::after{content:"";position:absolute;top:-160px;right:-140px;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(92,200,255,.12),transparent);pointer-events:none}
+.kicker{font-family:var(--mono);color:var(--acc);font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:28px;height:1px;background:var(--acc)}
+h1{font-size:clamp(38px,6vw,64px);line-height:1.05;margin:0 0 8px;letter-spacing:-.02em;font-weight:800}
+h1 .alt{display:block;font-family:var(--mono);font-weight:500;font-size:clamp(16px,2.4vw,22px);color:var(--fg-3);letter-spacing:0;margin-top:10px}
+.role{font-size:clamp(18px,2.6vw,24px);color:var(--fg-2);margin:18px 0 10px;font-weight:500}
+.role em{font-style:normal;color:var(--fg)}
+.lede{max-width:720px;color:var(--fg-2);font-size:17px;margin:0 0 30px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--fg);padding:10px 16px;border-radius:10px;font-family:var(--mono);font-size:14px;transition:.15s}
+.btn:hover{border-color:var(--acc);text-decoration:none;transform:translateY(-1px)}
+.btn.primary{background:var(--acc);color:#04120b;border-color:var(--acc);font-weight:700}
+.btn svg{width:16px;height:16px;fill:currentColor}
+.meta{display:flex;flex-wrap:wrap;gap:18px;margin-top:28px;font-family:var(--mono);font-size:13px;color:var(--fg-3)}
+.meta > span::before{content:"◆";color:var(--acc);margin-right:8px;font-size:9px;vertical-align:2px}
+
+/* terminal card */
+.term{margin-top:44px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--bg-2);font-family:var(--mono);font-size:13.5px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.term .bar{display:flex;gap:7px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg-3)}
+.term .bar i{width:11px;height:11px;border-radius:50%;background:#2c3a48;display:block}
+.term .bar i:nth-child(1){background:#ff5f57}.term .bar i:nth-child(2){background:#febc2e}.term .bar i:nth-child(3){background:#28c840}
+.term pre{margin:0;padding:18px 20px;overflow-x:auto;line-height:1.7;color:var(--fg-2)}
+.term .p{color:var(--acc)}.term .k{color:var(--acc-2)}.term .s{color:var(--acc-3)}.term .c{color:var(--fg-3)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:60px 0 0}
+.stat{background:var(--bg-2);padding:22px 18px}
+.stat b{display:block;font-family:var(--mono);font-size:30px;color:var(--fg);letter-spacing:-.02em;line-height:1.1}
+.stat b small{font-size:14px;color:var(--acc);margin-left:3px}
+.stat span{display:block;color:var(--fg-3);font-size:13px;margin-top:6px}
+@media (max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:1/-1}}
+
+/* sections */
+section{padding:80px 0 0}
+.sec-h{display:flex;align-items:baseline;gap:16px;margin-bottom:34px}
+.sec-h .n{font-family:var(--mono);color:var(--acc);font-size:14px}
+.sec-h h2{margin:0;font-size:clamp(24px,3.2vw,32px);letter-spacing:-.01em}
+.sec-h .line{flex:1;height:1px;background:var(--line);margin-left:8px}
+
+/* highlight */
+.hl{border:1px solid var(--line-2);border-radius:var(--r);background:linear-gradient(180deg,var(--bg-2),var(--bg));padding:32px;display:grid;grid-template-columns:1.3fr 1fr;gap:36px;position:relative;overflow:hidden}
+.hl::after{content:"SolarSense";position:absolute;right:-10px;bottom:-30px;font-family:var(--mono);font-size:120px;font-weight:800;color:rgba(255,255,255,.025);pointer-events:none;letter-spacing:-.05em}
+.hl h3{margin:0 0 6px;font-size:24px}
+.hl .sub{color:var(--fg-3);font-family:var(--mono);font-size:13px;margin-bottom:16px}
+.hl p{color:var(--fg-2);margin:0 0 14px}
+.hl ul{margin:0;padding-left:18px;color:var(--fg-2)}
+.hl li{margin:6px 0}
+.hl li b{color:var(--fg)}
+.kv{display:grid;gap:10px;align-content:start}
+.kv div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line-2);padding:8px 0;font-size:14px}
+.kv div span:first-child{color:var(--fg-3)}
+.kv div span:last-child{font-family:var(--mono);color:var(--fg);text-align:right}
+.kv div span:last-child.g{color:var(--acc)}
+@media (max-width:820px){.hl{grid-template-columns:1fr}}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{border:1px solid var(--line);border-radius:var(--r);background:var(--bg-2);padding:22px;transition:.15s}
+.card:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.card h3{margin:0 0 14px;font-size:15px;font-family:var(--mono);color:var(--acc-2);font-weight:600}
+.sk{display:flex;flex-direction:column;gap:9px}
+.sk div{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;font-size:14px}
+.sk .bar{grid-column:1/-1;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.sk .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc-2));border-radius:2px}
+.sk small{font-family:var(--mono);color:var(--fg-3);font-size:12px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-family:var(--mono);font-size:12.5px;border:1px solid var(--line-2);border-radius:6px;padding:4px 9px;color:var(--fg-2);background:var(--bg-3)}
+@media (max-width:820px){.skills{grid-template-columns:1fr}}
+
+/* timeline */
+.tl{position:relative;padding-left:28px}
+.tl::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:var(--line-2)}
+.job{position:relative;margin-bottom:40px}
+.job::before{content:"";position:absolute;left:-26px;top:8px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:2px solid var(--acc)}
+.job.cur::before{background:var(--acc);box-shadow:0 0 0 5px rgba(61,220,151,.15)}
+.job .head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;align-items:baseline}
+.job h3{margin:0;font-size:19px}
+.job h3 span{color:var(--fg-3);font-weight:400}
+.job .when{font-family:var(--mono);font-size:13px;color:var(--fg-3)}
+.job .where{color:var(--fg-3);font-size:14px;margin:2px 0 12px}
+.proj{margin:14px 0 0;padding:16px 18px;border:1px solid var(--line);border-left:3px solid var(--acc-3);border-radius:8px;background:var(--bg-2)}
+.proj h4{margin:0 0 8px;font-size:15px}
+.proj ul{margin:0;padding-left:18px;color:var(--fg-2);font-size:14.5px}
+.proj li{margin:5px 0}
+.stack{margin-top:14px;font-family:var(--mono);font-size:12.5px;color:var(--fg-3)}
+.stack b{color:var(--acc-2);font-weight:500}
+
+/* projects */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pcard{border:1px solid var(--line);border-radius:var(--r);background:var(--bg-2);padding:22px;display:flex;flex-direction:column;gap:10px;transition:.15s}
+.pcard:hover{border-color:var(--acc);transform:translateY(-2px)}
+.pcard .ic{font-family:var(--mono);color:var(--acc);font-size:13px}
+.pcard h3{margin:0;font-size:17px}
+.pcard p{margin:0;color:var(--fg-2);font-size:14.5px;flex:1}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+
+/* edu + contact */
+.edu{border:1px solid var(--line);border-radius:var(--r);background:var(--bg-2);padding:24px;display:grid;grid-template-columns:1fr auto;gap:16px}
+.edu h3{margin:0 0 4px;font-size:18px}
+.edu .d{color:var(--fg-2);font-size:14.5px}
+.edu .when{font-family:var(--mono);color:var(--fg-3);font-size:13px;white-space:nowrap}
+@media (max-width:640px){.edu{grid-template-columns:1fr}}
+.contact{padding:80px 0 60px}
+.contact .box{border:1px solid var(--line-2);border-radius:16px;padding:44px 32px;text-align:center;background:radial-gradient(600px 200px at 50% 0%,rgba(61,220,151,.10),transparent),var(--bg-2)}
+.contact h2{margin:0 0 10px;font-size:clamp(26px,4vw,36px)}
+.contact p{color:var(--fg-2);max-width:560px;margin:0 auto 26px}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--fg-3);font-size:13px;font-family:var(--mono)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><b>&gt;_</b> jiawis<span style="color:var(--fg-3)">.com</span></a>
+  <div class="links">
+    <a class="nl" href="#work"><span class="zh">经历</span><span class="en">Work</span></a>
+    <a class="nl" href="#skills"><span class="zh">技能</span><span class="en">Skills</span></a>
+    <a class="nl" href="#projects"><span class="zh">项目</span><span class="en">Projects</span></a>
+    <a class="nl" href="#contact"><span class="zh">联系</span><span class="en">Contact</span></a>
+    <div class="lang" id="lang" title="切换语言 / Switch language"><span class="l-zh">中</span><span class="l-en">EN</span></div>
+  </div>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <div class="kicker"><span class="zh">你好，我是</span><span class="en">Hi, I'm</span></div>
+  <h1>张嘉玮<span class="alt">Jiawei Zhang · @chaw1</span></h1>
+  <div class="role">
+    <span class="zh"><em>技术负责人</em> / 全栈架构师 / AI 工程化实践者</span>
+    <span class="en"><em>Tech Lead</em> / Full-stack Architect / AI Engineering Practitioner</span>
+  </div>
+  <p class="lede">
+    <span class="zh">9 年软件开发与技术管理经验，精通 Java 与 Python 技术栈。擅长平台级架构设计、分布式高并发系统与 AI 工程化落地——最近一年从零到一主导了一个 AI 数据服务平台的建设，并把多智能体协作开发跑成了团队日常。</span>
+    <span class="en">Nine years of software engineering and technical leadership across Java and Python. I design platform-level architectures, build high-concurrency distributed systems, and ship AI into production — most recently leading an AI data platform from zero to one and turning multi-agent development into the team's daily workflow.</span>
+  </p>
+  <div class="cta">
+    <a class="btn primary" href="#work"><span class="zh">看看我做过什么</span><span class="en">See my work</span> →</a>
+    <a class="btn" href="https://github.com/chaw1" target="_blank" rel="noopener"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+    <a class="btn" href="mailto:zchaw127@gmail.com"><svg viewBox="0 0 16 16"><path d="M1.75 2h12.5c.97 0 1.75.78 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5C0 2.78.78 2 1.75 2zm0 1.5a.25.25 0 00-.25.25v.7l6.5 4.06 6.5-4.06v-.7a.25.25 0 00-.25-.25H1.75zM14.5 6.22L8.4 10.03a.75.75 0 01-.8 0L1.5 6.22v6.03c0 .14.11.25.25.25h12.5a.25.25 0 00.25-.25V6.22z"/></svg>Email</a>
+  </div>
+  <div class="meta">
+    <span><span class="zh">杭州 · 达拉斯（中美两地）</span><span class="en">Hangzhou · Dallas (CN/US)</span></span>
+    <span>Java · Python · Vue/TS · K8s</span>
+    <span><span class="zh">M.S. 计算机科学，Marquette University</span><span class="en">M.S. Computer Science, Marquette University</span></span>
+  </div>
+
+  <div class="term reveal">
+    <div class="bar"><i></i><i></i><i></i></div>
+<pre><span class="p">jiawei@jiawis</span>:<span class="k">~</span>$ cat profile.yaml
+<span class="k">role</span>:      <span class="s">"Tech Lead / Full-stack Architect"</span>
+<span class="k">years</span>:     9
+<span class="k">languages</span>: [<span class="s">Java</span>, <span class="s">Python</span>, <span class="s">TypeScript</span>, <span class="s">Node.js</span>]
+<span class="k">focus</span>:     [<span class="s">distributed-systems</span>, <span class="s">AI-platforms</span>, <span class="s">multi-agent-dev</span>, <span class="s">CI/CD & GitOps</span>]
+<span class="k">now</span>:       <span class="s">"SolarSense — AI data platform, 0 → 1, 21 repos, 20-person team"</span>
+<span class="k">status</span>:    <span class="s">"open to interesting problems"</span>   <span class="c"># 欢迎交流</span></pre>
+  </div>
+
+  <div class="stats reveal">
+    <div class="stat"><b>9<small>+</small></b><span><span class="zh">年研发与技术管理</span><span class="en">years engineering &amp; leadership</span></span></div>
+    <div class="stat"><b>5,839</b><span><span class="zh">近 12 个月代码提交</span><span class="en">commits in the last 12 months</span></span></div>
+    <div class="stat"><b>21</b><span><span class="zh">个代码仓库，横跨全栈</span><span class="en">repositories across the stack</span></span></div>
+    <div class="stat"><b>400<small>+</small></b><span><span class="zh">次评审通过的 MR（20 人团队）</span><span class="en">MRs reviewed for a 20-person team</span></span></div>
+    <div class="stat"><b>0.89<small>s</small></b><span><span class="zh">万级任务提交耗时（原 &gt;2 min）</span><span class="en">for 10k-task submits (was &gt;2 min)</span></span></div>
+  </div>
+</div></header>
+
+<!-- highlight -->
+<section id="now"><div class="wrap">
+  <div class="sec-h"><span class="n">01</span><h2><span class="zh">现在在做</span><span class="en">What I'm building now</span></h2><span class="line"></span></div>
+  <div class="hl reveal">
+    <div>
+      <h3>SolarSense <span class="zh">AI 数据服务平台</span><span class="en">AI Data Platform</span></h3>
+      <div class="sub"><span class="zh">研发负责人 · 杭州景联文科技 · 2025.9 – 至今</span><span class="en">Head of Engineering · Hangzhou Jinglianwen Tech · Sep 2025 – present</span></div>
+      <p class="zh">从零主导整个平台的架构规划与技术选型：Java 多模块后端（数据集 / 治理 / 项目 / AI 能力 / 权限）+ Python 预处理服务，覆盖数据标注工具矩阵、能力平台与多租户治理域，支撑采集 → 标注 → 质检 → 审核 → 导出的全链路。</p>
+      <p class="en">Led architecture and technology choices from a blank repo: a multi-module Java backend (datasets / governance / projects / AI capabilities / IAM) plus Python preprocessing services, covering an annotation tool matrix, a capability platform and multi-tenant governance — the full collect → annotate → QA → review → export pipeline.</p>
+      <ul class="zh">
+        <li><b>性能：</b>批量任务处理优化，万级任务提交从 2 分钟以上降到 0.89 秒；故障注入验证容错（280 次重试场景验收）</li>
+        <li><b>交付：</b>ARM64 / 信创国产化环境私有化部署，客户现场实机验收；建立生产 / 预发 / 测试多环境发布与 CI/CD 门禁</li>
+        <li><b>工程文化：</b>制定 20 人团队的代码评审规范与合并纪律；落地基于 Claude Code / Codex 的多智能体协作开发（任务拆解 → 并行实现 → 独立验收）</li>
+        <li><b>复杂场景：</b>点云标注等高复杂度标注工具落地</li>
+      </ul>
+      <ul class="en">
+        <li><b>Performance:</b> batch task pipeline rebuilt — 10k-task submission from &gt;2 min to 0.89 s; fault-injection tests covering 280 retry scenarios</li>
+        <li><b>Delivery:</b> on-prem deployments on ARM64 / domestic (信创) stacks with on-site acceptance; prod / staging / test environments with CI/CD quality gates</li>
+        <li><b>Engineering culture:</b> code-review and merge discipline for a 20-person team; multi-agent development with Claude Code / Codex (decompose → parallel implement → independent verification)</li>
+        <li><b>Hard problems:</b> shipped high-complexity tools such as point-cloud annotation</li>
+      </ul>
+      <div class="stack"><b>stack</b> Java · Spring Cloud · MySQL · Redis · Python · Vue3/TypeScript · Docker · K8s · GitLab CI/CD · LakeFS / Object Storage</div>
+    </div>
+    <div class="kv">
+      <div><span><span class="zh">提交（12 个月）</span><span class="en">commits (12 mo)</span></span><span class="g">5,839</span></div>
+      <div><span><span class="zh">非合并提交</span><span class="en">non-merge commits</span></span><span>5,259</span></div>
+      <div><span><span class="zh">活跃天数</span><span class="en">active days</span></span><span>243 / 365</span></div>
+      <div><span><span class="zh">代码仓库</span><span class="en">repositories</span></span><span>21</span></div>
+      <div><span><span class="zh">发起 MR / 合并率</span><span class="en">MRs opened / merge rate</span></span><span>163 / 80%</span></div>
+      <div><span><span class="zh">评审通过他人 MR</span><span class="en">MRs reviewed &amp; approved</span></span><span>400+</span></div>
+      <div><span><span class="zh">团队规模</span><span class="en">team size</span></span><span>20</span></div>
+      <div><span><span class="zh">批量提交耗时</span><span class="en">bulk submit latency</span></span><span class="g">2 min → 0.89 s</span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- skills -->
+<section id="skills"><div class="wrap">
+  <div class="sec-h"><span class="n">02</span><h2><span class="zh">技术栈</span><span class="en">Skills</span></h2><span class="line"></span></div>
+  <div class="skills">
+    <div class="card reveal">
+      <h3>// <span class="zh">语言与框架</span><span class="en">Languages &amp; Frameworks</span></h3>
+      <div class="sk">
+        <div><span>Java</span><small>10y</small><div class="bar"><i style="width:100%"></i></div></div>
+        <div><span>Python</span><small>8y</small><div class="bar"><i style="width:80%"></i></div></div>
+        <div><span>Spring Cloud / Boot</span><small>7y</small><div class="bar"><i style="width:70%"></i></div></div>
+        <div><span>MyBatis</span><small>8y</small><div class="bar"><i style="width:80%"></i></div></div>
+        <div><span>Vue.js / TypeScript</span><small>5y</small><div class="bar"><i style="width:50%"></i></div></div>
+        <div><span>Netty</span><small>5y</small><div class="bar"><i style="width:50%"></i></div></div>
+        <div><span>Node.js / Express</span><small>3y</small><div class="bar"><i style="width:30%"></i></div></div>
+        <div><span><span class="zh">微信小程序</span><span class="en">WeChat Mini Programs</span></span><small>4y</small><div class="bar"><i style="width:40%"></i></div></div>
+      </div>
+    </div>
+    <div class="card reveal">
+      <h3>// <span class="zh">中间件与数据</span><span class="en">Middleware &amp; Data</span></h3>
+      <div class="sk">
+        <div><span>Redis</span><small>7y</small><div class="bar"><i style="width:70%"></i></div></div>
+        <div><span>Kafka / RabbitMQ</span><small>5y</small><div class="bar"><i style="width:50%"></i></div></div>
+        <div><span>MySQL / Oracle</span><small>9y</small><div class="bar"><i style="width:90%"></i></div></div>
+        <div><span>MongoDB</span><small>4y</small><div class="bar"><i style="width:40%"></i></div></div>
+        <div><span>Elastic Stack</span><small>3y</small><div class="bar"><i style="width:30%"></i></div></div>
+      </div>
+      <div class="tags" style="margin-top:16px">
+        <span class="tag"><span class="zh">分布式事务</span><span class="en">distributed tx</span></span>
+        <span class="tag"><span class="zh">分布式锁</span><span class="en">distributed locks</span></span>
+        <span class="tag">LakeFS</span><span class="tag">pgvector</span><span class="tag">OSS / S3</span>
+      </div>
+    </div>
+    <div class="card reveal">
+      <h3>// <span class="zh">架构与 AI</span><span class="en">Architecture &amp; AI</span></h3>
+      <div class="sk">
+        <div><span><span class="zh">分布式系统设计</span><span class="en">Distributed systems</span></span><small>7y</small><div class="bar"><i style="width:70%"></i></div></div>
+        <div><span><span class="zh">高并发优化</span><span class="en">High-concurrency tuning</span></span><small>6y</small><div class="bar"><i style="width:60%"></i></div></div>
+        <div><span>Docker / K8s</span><small>5y</small><div class="bar"><i style="width:50%"></i></div></div>
+        <div><span><span class="zh">AI 模型集成与调优</span><span class="en">AI model integration</span></span><small>3y</small><div class="bar"><i style="width:30%"></i></div></div>
+        <div><span><span class="zh">多智能体协作开发</span><span class="en">Multi-agent development</span></span><small>1y</small><div class="bar"><i style="width:15%"></i></div></div>
+      </div>
+      <div class="tags" style="margin-top:16px">
+        <span class="tag"><span class="zh">微服务治理</span><span class="en">microservices</span></span>
+        <span class="tag">CI/CD · GitOps</span>
+        <span class="tag">LangChain</span><span class="tag">Claude Code · Codex</span>
+        <span class="tag"><span class="zh">信创 / ARM64</span><span class="en">ARM64 / domestic stacks</span></span>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- work -->
+<section id="work"><div class="wrap">
+  <div class="sec-h"><span class="n">03</span><h2><span class="zh">工作经历</span><span class="en">Experience</span></h2><span class="line"></span></div>
+  <div class="tl">
+
+    <div class="job cur reveal">
+      <div class="head"><h3><span class="zh">研发负责人</span><span class="en">Head of Engineering</span> <span>· <span class="zh">杭州景联文科技有限公司</span><span class="en">Hangzhou Jinglianwen Technology</span></span></h3><span class="when">2025.09 – <span class="zh">至今</span><span class="en">present</span></span></div>
+      <div class="where"><span class="zh">杭州</span><span class="en">Hangzhou, China</span></div>
+      <div class="proj">
+        <h4>SolarSense <span class="zh">AI 数据服务平台 — 从零主导多模块架构落地</span><span class="en">AI Data Platform — multi-module architecture from zero</span></h4>
+        <ul class="zh">
+          <li>独立主导平台整体架构规划与技术选型，建设 Java 多模块后端与 Python 预处理服务，覆盖数据标注工具矩阵、能力平台与多租户治理域</li>
+          <li>一年内主导代码提交 5,839 次，活跃 243/365 天，覆盖 21 个代码仓库；创建 MR 163 个（合并率 80%），审核团队 MR 逾 400 个</li>
+          <li>批量任务处理性能优化：万级任务提交从 2 分钟以上降至 0.89 秒，并通过故障注入测试验证容错（280 次重试场景）</li>
+          <li>数据全链路能力（采集 – 标注 – 质检 – 审核 – 导出）与点云标注等复杂场景落地</li>
+          <li>ARM64 / 信创国产化私有化部署与客户现场交付；建立 CI/CD 门禁与多环境发布流程；落地多智能体协作开发模式</li>
+        </ul>
+        <ul class="en">
+          <li>Owned overall architecture and technology selection; built the multi-module Java backend and Python preprocessing services covering the annotation tool matrix, capability platform and multi-tenant governance</li>
+          <li>5,839 commits in a year across 21 repositories, active 243/365 days; 163 MRs opened (80% merged), 400+ team MRs reviewed and approved</li>
+          <li>Batch task performance: 10k-task submission from &gt;2 min to 0.89 s, validated with fault injection (280 retry scenarios)</li>
+          <li>End-to-end data pipeline (collect – annotate – QA – review – export) and complex tooling such as point-cloud annotation</li>
+          <li>ARM64 / domestic-stack on-prem deployments with on-site acceptance; CI/CD gates and multi-environment releases; multi-agent development workflow</li>
+        </ul>
+        <div class="stack"><b>stack</b> Java · Spring Cloud · MySQL · Redis · Python · Vue3/TS · Docker · K8s · GitLab CI/CD · LakeFS</div>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="head"><h3><span class="zh">首席工程师</span><span class="en">Principal Engineer</span> <span>· JiawisTech Solutions LLC</span></h3><span class="when">2024.03 – 2025.05</span></div>
+      <div class="where"><span class="zh">美国德州 · 达拉斯</span><span class="en">Dallas, Texas, USA</span></div>
+      <div class="proj">
+        <h4><span class="zh">AI 交互平台 — 多模型 AI 对话服务与企业级解决方案</span><span class="en">AI Interaction Platform — multi-model conversational AI for enterprises</span></h4>
+        <ul class="zh">
+          <li>主导系统架构设计：微服务划分、Redis 缓存策略与 MongoDB 结构优化，输出并评审技术方案</li>
+          <li>组织 Kafka 消息系统实现与 Docker 容器化部署，推动上线并提升服务可用性</li>
+          <li>负责 AI 模型调优与场景集成，带队完成 LangChain 与 OpenAI 接口整合；推动"行为驱动提示"模块上线</li>
+        </ul>
+        <ul class="en">
+          <li>Designed the system architecture — service boundaries, Redis caching strategy, MongoDB schema optimisation — and reviewed technical proposals</li>
+          <li>Drove the Kafka messaging layer and Docker-based deployment to production, improving availability</li>
+          <li>Owned model tuning and integration; led LangChain + OpenAI integration and shipped a behaviour-driven prompting module</li>
+        </ul>
+      </div>
+      <div class="proj">
+        <h4><span class="zh">电商优化 — Shopify 商店技术改进</span><span class="en">E-commerce — Shopify store engineering</span></h4>
+        <ul class="zh">
+          <li>主导前端性能优化方案评审与多端加载提速策略</li>
+          <li>带领 2 人小组完成 AI 客服系统部署与 NLP 问答流程梳理，显著提升客服响应率</li>
+          <li>基于用户行为数据构建推荐引擎原型，负责核心算法逻辑与业务对接</li>
+        </ul>
+        <ul class="en">
+          <li>Led front-end performance reviews and cross-device load-time improvements</li>
+          <li>Led a 2-person team deploying an AI customer-service system with an NLP Q&amp;A flow, markedly improving response rates</li>
+          <li>Built a recommendation-engine prototype on user behaviour data, owning the core algorithm and business integration</li>
+        </ul>
+        <div class="stack"><b>stack</b> Java · Python · Spring Boot/Cloud · Redis · MongoDB · Kafka · Docker · Nginx · OpenAI API · LangChain</div>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="head"><h3><span class="zh">软件工程师</span><span class="en">Software Engineer</span> <span>· <span class="zh">东方证券</span><span class="en">Orient Securities</span></span></h3><span class="when">2019.07 – 2021.01</span></div>
+      <div class="where"><span class="zh">上海</span><span class="en">Shanghai, China</span></div>
+      <div class="proj">
+        <h4><span class="zh">证券交易系统重构 — C++ 系统的 Java 微服务化</span><span class="en">Trading system re-architecture — from C++ monolith to Java microservices</span></h4>
+        <ul class="zh">
+          <li>参与核心交易模块 Java 重构，基于 Kafka 构建高性能消息系统，处理多系统海量交易数据</li>
+          <li>基于 Netty 实现低延迟网络通信框架，毫秒级消息传输</li>
+          <li>设计 Redis 分布式缓存与分布式锁，解决并发一致性，支撑每日百万级交易</li>
+        </ul>
+        <ul class="en">
+          <li>Rebuilt core trading modules in Java with a Kafka-based high-throughput messaging layer across multiple upstream systems</li>
+          <li>Implemented a low-latency networking framework on Netty with millisecond-level delivery</li>
+          <li>Designed Redis-based distributed caching and locking for concurrency consistency at millions of trades per day</li>
+        </ul>
+      </div>
+      <div class="proj">
+        <h4><span class="zh">交易延迟监控 — 实时性能分析系统</span><span class="en">Trade-latency monitoring — real-time performance analytics</span></h4>
+        <ul class="zh">
+          <li>Python + Vue.js 开发毫秒级精度的延迟监控与瓶颈分析工具</li>
+          <li>基于 ELK Stack 构建实时日志收集、延迟可视化与自动报警；开发性能异常检测算法</li>
+        </ul>
+        <ul class="en">
+          <li>Built a millisecond-precision latency monitor and bottleneck analyser in Python + Vue.js</li>
+          <li>Real-time log pipeline, latency dashboards and alerting on the ELK Stack, plus an anomaly-detection algorithm for early risk signals</li>
+        </ul>
+        <div class="stack"><b>stack</b> Java · Spring Cloud · Netty · Kafka · Oracle · Redis · Python · Vue.js · ELK</div>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="head"><h3><span class="zh">软件工程师</span><span class="en">Software Engineer</span> <span>· <span class="zh">联创集团</span><span class="en">Linkage Group</span></span></h3><span class="when">2017.09 – 2019.03</span></div>
+      <div class="where"><span class="zh">江苏南京</span><span class="en">Nanjing, China</span></div>
+      <div class="proj">
+        <h4><span class="zh">徐州房地产交易平台 — 政府房产交易线上化</span><span class="en">Xuzhou real-estate transaction platform — digitising government property transactions</span></h4>
+        <ul class="zh">
+          <li>带领 5 人团队，主导微服务架构设计、MySQL 索引优化与高并发事务处理方案</li>
+          <li>输出 RabbitMQ 异步事务模型与 Redis 缓存策略；对接政府单位需求变更，组织阶段评审</li>
+        </ul>
+        <ul class="en">
+          <li>Led a 5-person team on microservice design, MySQL index tuning and high-concurrency transaction handling</li>
+          <li>Delivered the RabbitMQ async-transaction model and Redis caching strategy; managed requirement changes with government stakeholders</li>
+        </ul>
+      </div>
+      <div class="proj">
+        <h4><span class="zh">"慧驾"汽车服务小程序</span><span class="en">"Huijia" automotive-services mini program</span></h4>
+        <ul class="zh">
+          <li>独立负责小程序整体开发与迭代，设计 Node.js 中间层对接 Java 后端；建立 Code Review 与单元测试流程</li>
+        </ul>
+        <ul class="en">
+          <li>Sole owner of the mini program end to end, with a Node.js middle layer in front of the Java backend; introduced code review and unit-testing practice</li>
+        </ul>
+        <div class="stack"><b>stack</b> Java · Spring Boot · MyBatis · MySQL · RabbitMQ · Redis · Nginx · Activiti · Node.js · WeChat Mini Program</div>
+      </div>
+    </div>
+
+  </div>
+</div></section>
+
+<!-- projects -->
+<section id="projects"><div class="wrap">
+  <div class="sec-h"><span class="n">04</span><h2><span class="zh">业余项目 &amp; 实验</span><span class="en">Side projects &amp; experiments</span></h2><span class="line"></span></div>
+  <div class="grid">
+    <div class="pcard reveal">
+      <div class="ic">~/quanbot</div>
+      <h3>QuanBot</h3>
+      <p class="zh">自研量化交易系统：数据 → 上下文 → 判断 → 评分 → 预测 → 评估 → 报告的完整流水线，FastAPI 后端 + Web 前端，自托管运行。</p>
+      <p class="en">A home-grown quantitative trading system: a full data → context → judge → score → forecast → evaluate → report pipeline, FastAPI backend with a web front end, self-hosted.</p>
+      <div class="tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Next.js</span></div>
+    </div>
+    <div class="pcard reveal">
+      <div class="ic">~/ai-infra</div>
+      <h3><span class="zh">自托管 AI 基础设施</span><span class="en">Self-hosted AI infrastructure</span></h3>
+      <p class="zh">在自己的云主机上跑一整套 AI 工作台：LobeChat（PostgreSQL / Redis / SearXNG / 对象存储）、向量数据库、Nginx + 自动证书，多智能体开发的日常试验田。</p>
+      <p class="en">A full AI workbench on my own cloud host: LobeChat (PostgreSQL / Redis / SearXNG / object storage), a vector database, Nginx with automated TLS — my daily playground for multi-agent development.</p>
+      <div class="tags"><span class="tag">Docker</span><span class="tag">pgvector</span><span class="tag">Nginx</span></div>
+    </div>
+    <div class="pcard reveal">
+      <div class="ic">~/netsec-lab</div>
+      <h3><span class="zh">智能网络安全分析框架</span><span class="en">Intelligent network-security analytics</span></h3>
+      <p class="zh">研究生课题：基于 Snort 3 + ELK 构建安全分析平台，集成 TensorFlow 做流量异常检测，在校园网边界部署传感器做实时监控。</p>
+      <p class="en">Graduate research: a security analytics platform on Snort 3 + ELK with TensorFlow-based traffic anomaly detection, deployed as sensors at the campus network edge.</p>
+      <div class="tags"><span class="tag">Snort 3</span><span class="tag">ELK</span><span class="tag">TensorFlow</span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- education -->
+<section id="edu"><div class="wrap">
+  <div class="sec-h"><span class="n">05</span><h2><span class="zh">教育背景</span><span class="en">Education</span></h2><span class="line"></span></div>
+  <div class="edu reveal">
+    <div>
+      <h3>Marquette University <span style="color:var(--fg-3);font-weight:400">· <span class="zh">美国马凯特大学</span><span class="en">Milwaukee, USA</span></span></h3>
+      <div class="d"><span class="zh">计算机科学硕士 · GPA 3.7 / 4.0</span><span class="en">M.S. in Computer Science · GPA 3.7 / 4.0</span></div>
+    </div>
+    <div class="when">2022 – 2023</div>
+  </div>
+</div></section>
+
+<!-- contact -->
+<section class="contact" id="contact"><div class="wrap">
+  <div class="box reveal">
+    <div class="kicker" style="justify-content:center"><span class="zh">联系我</span><span class="en">Get in touch</span></div>
+    <h2><span class="zh">有意思的问题，随时聊</span><span class="en">Got an interesting problem? Let's talk.</span></h2>
+    <p><span class="zh">架构咨询、AI 工程化落地、多智能体开发实践，或者只是想交流技术——邮件或 GitHub 都能找到我。</span><span class="en">Architecture, shipping AI to production, multi-agent development practice — or just talking shop. Email or GitHub both work.</span></p>
+    <div class="cta" style="justify-content:center">
+      <a class="btn primary" href="mailto:zchaw127@gmail.com">zchaw127@gmail.com</a>
+      <a class="btn" href="https://github.com/chaw1" target="_blank" rel="noopener">github.com/chaw1</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>© <span id="y"></span> Jiawei Zhang · jiawis.com</span>
+  <span><span class="zh">静态页面 · Nginx · 阿里云 ECS 杭州</span><span class="en">static HTML · Nginx · Aliyun ECS Hangzhou</span></span>
+</div></footer>
+
+<script>
+(function(){
+  var root=document.documentElement, KEY='jiawis-lang';
+  function set(l){root.setAttribute('data-lang',l);root.lang=l==='zh'?'zh-CN':'en';try{localStorage.setItem(KEY,l)}catch(e){}}
+  var saved=null;try{saved=localStorage.getItem(KEY)}catch(e){}
+  if(saved){set(saved)}else if(!/^zh/i.test(navigator.language||'')){set('en')}
+  document.getElementById('lang').addEventListener('click',function(){set(root.getAttribute('data-lang')==='zh'?'en':'zh')});
+  document.getElementById('y').textContent=new Date().getFullYear();
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+  }else{document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')})}
+})();
+</script>
+</body>
+</html>
