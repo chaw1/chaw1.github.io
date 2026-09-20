@@ -167,6 +167,7 @@
     updateMenuLabel();
     renderFlow();
     renderCopyStatus();
+    scheduleNavigationUpdate();
   }
 
   languageButtons.forEach(button => {
@@ -175,13 +176,30 @@
 
   if (menuButton && navigation) {
     menuButton.addEventListener('click', () => {
-      setMenu(menuButton.getAttribute('aria-expanded') !== 'true');
+      const open = menuButton.getAttribute('aria-expanded') !== 'true';
+      setMenu(open);
+      if (open) navigation.querySelector('a[href]')?.focus({ preventScroll: true });
     });
     navigation.addEventListener('click', event => {
-      if (event.target.closest('a[href^="#"]')) setMenu(false);
+      const link = event.target.closest('a[href^="#"]');
+      if (!link || menuButton.getAttribute('aria-expanded') !== 'true') return;
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = document.getElementById(link.getAttribute('href').slice(1));
+      setMenu(false);
+      if (target) {
+        window.requestAnimationFrame(() => {
+          const heading = target.querySelector('h1, h2, h3') || target;
+          if (!heading.hasAttribute('tabindex')) {
+            heading.setAttribute('tabindex', '-1');
+            heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), { once: true });
+          }
+          heading.focus({ preventScroll: true });
+        });
+      }
     });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+        event.preventDefault();
         setMenu(false);
         menuButton.focus();
       }
@@ -309,34 +327,43 @@
     });
   }
 
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      const target = link.getAttribute('href');
-      if (target && target.startsWith('#')) setCurrentSection(target.slice(1));
-    });
-  });
-  window.addEventListener('hashchange', () => setCurrentSection(window.location.hash.slice(1)));
-  setCurrentSection(window.location.hash.slice(1));
+  const sectionNavigation = [
+    ['intro', ''],
+    ['selected-work', 'selected-work'],
+    ['projects', 'selected-work'],
+    ['skills', 'skills'],
+    ['work', 'work'],
+    ['contact', 'contact']
+  ].map(([id, navigationId]) => ({ element: document.getElementById(id), navigationId }))
+    .filter(section => section.element);
+  const header = document.querySelector('.site-header');
+  let navigationFrame = null;
 
-  if ('IntersectionObserver' in window) {
-    const visibleSections = new Map();
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) visibleSections.set(entry.target.id, entry.target);
-        else visibleSections.delete(entry.target.id);
-      });
-      const closest = [...visibleSections.values()].sort((first, second) => (
-        Math.abs(first.getBoundingClientRect().top - 100) - Math.abs(second.getBoundingClientRect().top - 100)
-      ))[0];
-      if (closest) setCurrentSection(closest.id);
-    }, { rootMargin: '-80px 0px -35% 0px', threshold: 0 });
-    navLinks.forEach(link => {
-      const target = link.getAttribute('href');
-      if (!target || !target.startsWith('#')) return;
-      const section = document.getElementById(target.slice(1));
-      if (section) observer.observe(section);
+  function updateCurrentSection() {
+    navigationFrame = null;
+    if (header) header.classList.toggle('is-scrolled', window.scrollY > 12);
+    const readingLine = (header ? header.getBoundingClientRect().bottom : 72) + 64;
+    let current = '';
+    sectionNavigation.forEach(section => {
+      if (section.element.getBoundingClientRect().top <= readingLine) current = section.navigationId;
     });
+    const atPageEnd = window.scrollY > 0
+      && Math.ceil(window.scrollY + window.innerHeight) >= root.scrollHeight - 2;
+    if (atPageEnd && document.getElementById('contact')) current = 'contact';
+    setCurrentSection(current);
   }
+
+  function scheduleNavigationUpdate() {
+    if (navigationFrame === null) navigationFrame = window.requestAnimationFrame(updateCurrentSection);
+  }
+
+  window.addEventListener('scroll', scheduleNavigationUpdate, { passive: true });
+  window.addEventListener('resize', scheduleNavigationUpdate);
+  window.addEventListener('hashchange', scheduleNavigationUpdate);
+  window.addEventListener('pageshow', scheduleNavigationUpdate);
+  window.addEventListener('load', scheduleNavigationUpdate);
+  document.addEventListener('toggle', scheduleNavigationUpdate, true);
+  scheduleNavigationUpdate();
 
   setText('#year', String(new Date().getFullYear()));
   setLanguage(language);

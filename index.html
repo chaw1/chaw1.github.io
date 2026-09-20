@@ -12,8 +12,8 @@
 <meta property="og:url" content="https://hire.jiawis.com/">
 <link rel="canonical" href="https://hire.jiawis.com/">
 <link rel="icon" href="assets/icons/stack.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css">
-<script src="assets/site.js" defer></script>
+<link rel="stylesheet" href="assets/site.css?v=20260920-ui3">
+<script src="assets/site.js?v=20260920-ui3" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到主要内容</span><span class="en">Skip to content</span></a>
@@ -31,13 +31,14 @@
         <button type="button" data-set-lang="zh" aria-pressed="true" aria-label="中文">中</button>
         <button type="button" data-set-lang="en" aria-pressed="false" aria-label="English">EN</button>
       </div>
-      <a class="nav-contact" href="#contact"><span class="zh">联系</span><span class="en">Contact</span><i class="icon i-up" aria-hidden="true"></i></a>
+      <a class="nav-contact" href="#contact" data-nav><span class="zh">联系</span><span class="en">Contact</span><i class="icon i-up" aria-hidden="true"></i></a>
       <button type="button" id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="菜单 / Menu"><i class="icon i-menu" aria-hidden="true"></i></button>
     </div>
   </div>
 </header>
 <main id="main" class="wrap">
-  <section class="hero" aria-labelledby="hero-heading">
+  <section class="hero" id="intro" aria-labelledby="hero-heading">
+    <div class="hero-body">
     <div>
       <p class="eyebrow"><span class="zh">软件工程 / 架构设计 / AI 工程化</span><span class="en">SOFTWARE / SYSTEMS / APPLIED AI</span></p>
       <h1 id="hero-heading"><span class="zh">用工程判断，<br>解决复杂问题<span class="period">。</span></span><span class="en">Engineering judgment.<br>Real-world impact<span class="period">.</span></span></h1>
@@ -52,6 +53,8 @@
       <div><p class="zh">9 年工程实践。<br>关注分布式系统、<br>AI 平台与可靠交付。</p><p class="en">9 years of building.<br>Distributed systems,<br>AI platforms, reliable delivery.</p><div class="aside-note">THINK IN SYSTEMS.<br>BUILD WITH INTENT.</div></div>
       <div class="availability"><span class="zh">杭州 · 上海</span><span class="en">HANGZHOU · SHANGHAI</span><strong>OPEN TO NEW OPPORTUNITIES</strong></div>
     </aside>
+    </div>
+    <a class="hero-scroll" href="#selected-work"><span><i class="icon i-down" aria-hidden="true"></i><span class="zh">向下浏览作品</span><span class="en">Scroll to explore</span></span><span class="mono">01 / SELECTED ENGINEERING</span></a>
   </section>
 
   <section class="section feature" id="selected-work" aria-labelledby="case-heading">
@@ -61,6 +64,7 @@
       <p class="case-copy"><span class="zh">在 AI 数据平台的批量任务场景中，将提交耗时从 2 分钟以上降至 0.89 秒，并通过故障注入验证容错。</span><span class="en">Reduced batch submission time for an AI data platform from over two minutes to 0.89 seconds, with fault-injection validation.</span></p>
       <div class="result" aria-label="Over two minutes to 0.89 seconds"><span class="before">&gt;2 min</span><i class="icon i-right" aria-hidden="true"></i><span class="after">0.89 s</span></div>
       <p class="result-note"><span class="zh">历史项目结果 · 指任务提交耗时</span><span class="en">Historical project result · submission latency</span></p>
+      <p class="case-proof"><strong>280<span class="zh"> 次</span></strong><span class="zh">故障注入重试验证</span><span class="en">fault-injection retry scenarios</span></p>
       <details class="case-details" id="performance-case">
         <summary><span class="zh">阅读工程案例</span><span class="en">Read the case</span><i class="icon i-plus" aria-hidden="true"></i></summary>
         <div class="detail-body">
@@ -106,8 +110,9 @@
   <section class="section" id="projects" aria-labelledby="projects-heading">
     <div class="section-label"><span class="number">02</span><span>/ SELECTED SIDE PROJECTS</span></div>
     <div class="section-intro"><h2 id="projects-heading"><span class="zh">持续构建，也持续验证。</span><span class="en">Always building.<br>Always learning.</span></h2><p><span class="zh">把想法做成能运行的系统。<br>这些是工作之外，我持续投入的方向。</span><span class="en">Ideas become working systems. A selection of projects I explore beyond my day job.</span></p></div>
+    <p class="project-hint"><span class="zh">展开项目，查看系统目标与工程实践</span><span class="en">Expand a project to explore the system and engineering work</span></p>
     <div class="project-list">
-      <details class="project" data-project id="quanbot">
+      <details class="project" data-project id="quanbot" open>
         <summary><span class="project-index">01</span><span class="project-name">QuanBot</span><span class="project-teaser"><span class="zh">数据到研究报告的完整流水线</span><span class="en">From data to a research report</span></span><span class="project-stack">Python · FastAPI<br>Next.js</span><i class="icon i-plus" aria-hidden="true"></i></summary>
         <div class="project-body">
           <div><h4><span class="zh">项目概览</span><span class="en">OVERVIEW</span></h4><p><span class="zh">自研、自托管的量化交易系统，用 FastAPI 后端与 Web 前端串联研究流程。从数据组织到判断、预测与评估，形成一条完整流水线。</span><span class="en">A self-built, self-hosted quantitative trading system with a FastAPI backend and web frontend, connecting data organization, judgment, forecasting and evaluation.</span></p></div>
