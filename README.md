@@ -12,12 +12,12 @@ Open `http://127.0.0.1:4186`. Publish `index.html`, `assets/`, `CNAME` and `.noj
 
 ## Structure
 
-- `index.html`: bilingual portfolio, case study, projects and experience.
-- `assets/site.css`: responsive layout, focus states and reduced-motion styles.
-- `assets/site.js`: language preference, mobile navigation, illustrative task flow and email copy.
-- `assets/flow-scene*.webp`: responsive artwork for the task-flow illustration.
+- `index.html`: bilingual portfolio: the year in numbers, platform architecture, case files, working method, side projects, experience.
+- `assets/site.css`: responsive layout, dark exhibits, focus states and reduced-motion styles.
+- `assets/site.js`: language preference, navigation, reveal and count-up, commit heatmap, architecture explorer, case tabs, delivery-state illustration, email copy.
+- `assets/pointcloud.js`: dependency-free WebGL scene. A seeded street is ray-cast by a virtual 64-beam LiDAR; points render with a sweep and a 3D annotation cuboid. Pauses off-screen; static under reduced motion.
 - `assets/icons/`: locally hosted [Phosphor](https://github.com/phosphor-icons/core) icons, with their MIT license.
 
-The task-flow interaction is a generic illustration. It is not live telemetry, a benchmark, or a reconstruction of a former employer's system. The historical performance result refers to task submission time.
+Heatmap data is daily commit counts recomputed from local git (author date, deduplicated by hash, Sep 2025 – Aug 2026). Every metric is tagged as production (PROD) or staging/lab (LAB). The delivery-state animation is a generic illustration, not live telemetry.
 
-Content remains readable without JavaScript. Interactive behavior uses no external API, analytics, CDN or third-party font requests.
+Content remains readable without JavaScript. No external API, analytics, CDN or third-party font requests.

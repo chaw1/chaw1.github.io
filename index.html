@@ -4,16 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f7f2">
-<title>张嘉玮 Jiawei Zhang — 技术负责人 / 全栈架构师</title>
-<meta name="description" content="张嘉玮 Jiawei Zhang，9 年软件工程与技术管理经验。分布式系统、AI 平台与全栈交付，用工程判断解决复杂问题。">
+<title>张嘉玮 Jiawei Zhang — 技术负责人 / 平台架构师</title>
+<meta name="description" content="张嘉玮 Jiawei Zhang，9 年软件工程经验。过去一年从零搭建 SolarSense 数据工程与 AI 平台并送上生产：分布式任务、1TB 级数据链路、GitOps 发布、模型服务与 Agent。">
 <meta property="og:title" content="Jiawei Zhang — Engineering with judgment">
-<meta property="og:description" content="9 years building distributed systems and AI platforms. Explore selected work, engineering practice and experience.">
+<meta property="og:description" content="Built an AI data platform from the first commit to production in one year. Case studies, architecture, and the way I work.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://hire.jiawis.com/">
 <link rel="canonical" href="https://hire.jiawis.com/">
 <link rel="icon" href="assets/icons/stack.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260920-ui3">
-<script src="assets/site.js?v=20260920-ui3" defer></script>
+<link rel="stylesheet" href="assets/site.css?v=20260922-v6">
+<script>document.documentElement.classList.add('js')</script>
+<script src="assets/site.js?v=20260922-v6" defer></script>
+<script src="assets/pointcloud.js?v=20260922-v6" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到主要内容</span><span class="en">Skip to content</span></a>
@@ -21,8 +23,11 @@
   <div class="wrap nav-wrap">
     <a class="brand" href="#top" aria-label="Jiawei Zhang home">jiawei zhang<span>.</span></a>
     <nav id="site-nav" class="site-nav" aria-label="Main navigation">
-      <a href="#selected-work" data-nav><span class="zh">作品</span><span class="en">Work</span></a>
-      <a href="#skills" data-nav><span class="zh">能力</span><span class="en">Practice</span></a>
+      <a href="#year" data-nav><span class="zh">这一年</span><span class="en">The year</span></a>
+      <a href="#platform" data-nav><span class="zh">平台</span><span class="en">Platform</span></a>
+      <a href="#cases" data-nav><span class="zh">案例</span><span class="en">Cases</span></a>
+      <a href="#method" data-nav><span class="zh">方法</span><span class="en">Method</span></a>
+      <a href="#projects" data-nav><span class="zh">项目</span><span class="en">Projects</span></a>
       <a href="#work" data-nav><span class="zh">经历</span><span class="en">Experience</span></a>
       <a class="nav-mobile-only" href="#contact" data-nav><span class="zh">联系</span><span class="en">Contact</span></a>
     </nav>
@@ -36,112 +41,370 @@
     </div>
   </div>
 </header>
-<main id="main" class="wrap">
-  <section class="hero" id="intro" aria-labelledby="hero-heading">
-    <div class="hero-body">
-    <div>
-      <p class="eyebrow"><span class="zh">软件工程 / 架构设计 / AI 工程化</span><span class="en">SOFTWARE / SYSTEMS / APPLIED AI</span></p>
-      <h1 id="hero-heading"><span class="zh">用工程判断，<br>解决复杂问题<span class="period">。</span></span><span class="en">Engineering judgment.<br>Real-world impact<span class="period">.</span></span></h1>
-      <p class="identity"><span class="zh">张嘉玮 · 技术负责人 / 全栈架构师</span><span class="en">Jiawei Zhang · Tech Lead / Full-stack Architect</span></p>
-      <p class="identity-en">Jiawei Zhang · @chaw1</p>
-      <div class="hero-actions">
-        <a class="button" href="#selected-work"><span class="zh">探索工程作品</span><span class="en">Explore my work</span><i class="icon i-up" aria-hidden="true"></i></a>
-        <a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a>
+
+<main id="main">
+  <!-- ============ HERO ============ -->
+  <section class="hero wrap" id="intro" aria-labelledby="hero-heading">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="zh">平台架构 / 数据与 AI 工程 / 研发负责人</span><span class="en">PLATFORM ARCHITECTURE / DATA &amp; AI / ENGINEERING LEAD</span></p>
+        <h1 id="hero-heading"><span class="zh">用工程判断，<br>解决复杂问题<span class="period">。</span></span><span class="en">Engineering judgment.<br>Systems that ship<span class="period">.</span></span></h1>
+        <p class="identity"><span class="zh">张嘉玮 · 技术负责人 / 平台架构师</span><span class="en">Jiawei Zhang · Tech Lead / Platform Architect</span></p>
+        <p class="hero-lede"><span class="zh">过去一年，我从第一个 commit 开始搭起 SolarSense 数据工程与 AI 平台，带 20+ 人的平台组把它送上生产：万级任务、TB 级数据链路、GitOps 发布、模型服务与 Agent。</span><span class="en">Over the past year I built the SolarSense data-engineering and AI platform from its first commit and, leading a 20+ person platform team, took it to production: 10k-task pipelines, terabyte-scale data paths, GitOps releases, model serving and agents.</span></p>
+        <div class="hero-actions">
+          <a class="button" href="#cases"><span class="zh">看工程案例</span><span class="en">Read the cases</span><i class="icon i-right" aria-hidden="true"></i></a>
+          <a class="text-link" href="#year"><span class="zh">这一年做了什么</span><span class="en">The year in numbers</span><i class="icon i-right" aria-hidden="true"></i></a>
+          <a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a>
+        </div>
       </div>
+      <figure class="scan" id="scan" aria-labelledby="scan-caption">
+        <canvas id="scan-canvas" aria-hidden="true"></canvas>
+        <div class="scan-label" id="scan-label" aria-hidden="true"><span>car · 4.5 × 1.9 × 1.5 m</span></div>
+        <div class="scan-hud" aria-hidden="true">
+          <span class="hud-dot"></span><span id="scan-points">—</span><span class="zh">点</span><span class="en">pts</span><span class="hud-sep">/</span><span id="scan-fps">—</span> fps
+        </div>
+        <div class="scan-fallback"><p><span class="zh">此处是一段实时渲染的激光雷达点云。<br>当前浏览器未启用 WebGL。</span><span class="en">A live-rendered LiDAR point cloud.<br>WebGL is unavailable in this browser.</span></p></div>
+        <figcaption id="scan-caption" class="scan-caption">
+          <span class="mono">FIG.0 · WEBGL · NO LIBRARIES</span>
+          <span><span class="zh">程序生成的街景，虚拟 64 线激光雷达逐束光线投射得到的点云，框为 3D 标注。可拖动旋转。</span><span class="en">A procedurally generated street, ray-cast by a 64-beam virtual LiDAR, with a 3D annotation box. Drag to orbit.</span></span>
+        </figcaption>
+      </figure>
     </div>
-    <aside class="hero-aside">
-      <div><p class="zh">9 年工程实践。<br>关注分布式系统、<br>AI 平台与可靠交付。</p><p class="en">9 years of building.<br>Distributed systems,<br>AI platforms, reliable delivery.</p><div class="aside-note">THINK IN SYSTEMS.<br>BUILD WITH INTENT.</div></div>
-      <div class="availability"><span class="zh">杭州 · 上海</span><span class="en">HANGZHOU · SHANGHAI</span><strong>OPEN TO NEW OPPORTUNITIES</strong></div>
-    </aside>
-    </div>
-    <a class="hero-scroll" href="#selected-work"><span><i class="icon i-down" aria-hidden="true"></i><span class="zh">向下浏览作品</span><span class="en">Scroll to explore</span></span><span class="mono">01 / SELECTED ENGINEERING</span></a>
+    <dl class="hero-ticker" aria-label="生产指标 / Production metrics">
+      <div><dt><span class="zh">15 天探针可用性</span><span class="en">Availability, 15-day probe</span></dt><dd>99.9975%</dd></div>
+      <div><dt><span class="zh">生产整体 p95</span><span class="en">Production p95</span></dt><dd>50 ms</dd></div>
+      <div><dt><span class="zh">生产 7 天请求</span><span class="en">Requests in 7 days</span></dt><dd><span class="zh">331 万</span><span class="en">3.31 M</span></dd></div>
+      <div><dt><span class="zh">一年提交对象</span><span class="en">Commits in the year</span></dt><dd>5,839</dd></div>
+      <p class="ticker-note mono"><span class="zh">以上为 SolarSense 生产环境实测与 git 取证，2026-08</span><span class="en">Measured in SolarSense production and from git history, Aug 2026</span></p>
+    </dl>
   </section>
 
-  <section class="section feature" id="selected-work" aria-labelledby="case-heading">
-    <div class="feature-story">
-      <div class="section-label"><span class="number">01</span><span>/ SELECTED ENGINEERING</span></div>
-      <h2 id="case-heading"><span class="zh">万级任务提交，<br>从分钟到亚秒。</span><span class="en">10k tasks.<br>Sub-second submission.</span></h2>
-      <p class="case-copy"><span class="zh">在 AI 数据平台的批量任务场景中，将提交耗时从 2 分钟以上降至 0.89 秒，并通过故障注入验证容错。</span><span class="en">Reduced batch submission time for an AI data platform from over two minutes to 0.89 seconds, with fault-injection validation.</span></p>
-      <div class="result" aria-label="Over two minutes to 0.89 seconds"><span class="before">&gt;2 min</span><i class="icon i-right" aria-hidden="true"></i><span class="after">0.89 s</span></div>
-      <p class="result-note"><span class="zh">历史项目结果 · 指任务提交耗时</span><span class="en">Historical project result · submission latency</span></p>
-      <p class="case-proof"><strong>280<span class="zh"> 次</span></strong><span class="zh">故障注入重试验证</span><span class="en">fault-injection retry scenarios</span></p>
-      <details class="case-details" id="performance-case">
-        <summary><span class="zh">阅读工程案例</span><span class="en">Read the case</span><i class="icon i-plus" aria-hidden="true"></i></summary>
-        <div class="detail-body">
-          <h3><span class="zh">问题</span><span class="en">The problem</span></h3>
-          <p><span class="zh">万级任务的批量提交耗时超过 2 分钟，影响平台操作体验。</span><span class="en">Submitting a batch of 10k tasks took over two minutes, slowing down the platform workflow.</span></p>
-          <h3><span class="zh">我的工作</span><span class="en">My contribution</span></h3>
-          <p><span class="zh">作为研发负责人，主导平台架构与批量任务性能优化，并把容错验证纳入验收。</span><span class="en">As Head of Engineering, led platform architecture and batch-task performance work, including fault-tolerance validation.</span></p>
-          <h3><span class="zh">结果与验证</span><span class="en">Outcome & validation</span></h3>
-          <p><span class="zh">提交耗时降至 0.89 秒；故障注入验证覆盖 280 次重试场景。该指标衡量提交阶段，不代表所有任务的处理完成时间。</span><span class="en">Submission time fell to 0.89 seconds, with fault-injection validation covering 280 retry scenarios. This measures submission, not completion of all tasks.</span></p>
-        </div>
-      </details>
+  <!-- ============ 01 THE YEAR ============ -->
+  <section class="section wrap" id="year" aria-labelledby="year-heading">
+    <div class="section-label"><span class="number">01</span><span>/ THE YEAR · 2025.09 — 2026.08</span></div>
+    <div class="section-intro">
+      <h2 id="year-heading"><span class="zh">从 initial commit，<br>到生产环境。</span><span class="en">From the initial commit<br>to production.</span></h2>
+      <p><span class="zh">2025-09-19，我在同一天提交了前后端两个仓的第一个 commit。十二个月后，它是 11 个 Java 服务、Python Worker、模型服务、标注工具矩阵、桌面端和多套环境组成的产品体系。</span><span class="en">On 2025-09-19 I made the first commit to both the backend and frontend repositories. Twelve months later it was a product: 11 Java services, Python workers, model serving, an annotation-tool suite, a desktop client and several environments.</span></p>
     </div>
-    <div class="demo has-scene" id="flow-demo" data-active-step="0" data-playing="false" aria-labelledby="demo-heading">
-      <div class="demo-head">
-        <div><p class="demo-kicker">A SMALL REQUEST. A LARGER SYSTEM.</p><h3 id="demo-heading"><span class="zh">任务流转 · 交互演示</span><span class="en">Anatomy of a task · interactive</span></h3></div>
-        <span class="demo-badge"><span class="zh">示意模型</span><span class="en">ILLUSTRATION</span></span>
+
+    <div class="stats" role="list">
+      <div class="stat" role="listitem"><strong data-count="5839">5,839</strong><span class="zh">署名提交对象 · 21 个仓</span><span class="en">authored commits · 21 repos</span></div>
+      <div class="stat" role="listitem"><strong data-count="243">243</strong><span class="zh">活跃提交日 / 365</span><span class="en">active days / 365</span></div>
+      <div class="stat" role="listitem"><strong data-count="400" data-suffix="+">400+</strong><span class="zh">批准他人 MR</span><span class="en">teammates' MRs approved</span></div>
+      <div class="stat" role="listitem"><strong data-count="20" data-suffix="+">20+</strong><span class="zh">人的平台组</span><span class="en">people on the platform team</span></div>
+      <div class="stat" role="listitem"><strong data-count="28" data-suffix="+">28+</strong><span class="zh">生产 Deployment 纳入 GitOps</span><span class="en">production Deployments under GitOps</span></div>
+      <div class="stat" role="listitem"><strong data-count="8">8</strong><span class="zh">个连续 baseline 版本，约 2–3 周一个</span><span class="en">consecutive baselines, one every 2–3 weeks</span></div>
+    </div>
+
+    <figure class="heatmap-card">
+      <div class="heatmap-head">
+        <figcaption><strong><span class="zh">每一格是一天</span><span class="en">Each cell is a day</span></strong><span class="mono" id="heat-readout" aria-live="polite"><span class="zh">悬停查看当天提交数</span><span class="en">Hover a day for its commit count</span></span></figcaption>
+        <div class="heat-legend mono" aria-hidden="true"><span class="zh">少</span><span class="en">less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i><span class="zh">多</span><span class="en">more</span></div>
       </div>
-      <div class="flow-viewport">
-        <img class="flow-scene" src="assets/flow-scene.webp" srcset="assets/flow-scene-small.webp 960w, assets/flow-scene.webp 1695w" sizes="(max-width: 700px) calc(100vw - 40px), (max-width: 1440px) 62vw, 860px" width="1695" height="928" alt="" fetchpriority="high">
-        <div class="flow-nodes" role="group" aria-label="流程节点 / Flow stages">
-          <button class="flow-node" type="button" data-step="0" aria-pressed="true"><span class="node-icon" aria-hidden="true"></span><strong><span class="zh">提交</span><span class="en">Submit</span></strong><small>01 / REQUEST</small></button>
-          <button class="flow-node" type="button" data-step="1" aria-pressed="false"><span class="node-icon" aria-hidden="true"></span><strong><span class="zh">排队</span><span class="en">Queue</span></strong><small>02 / QUEUE</small></button>
-          <button class="flow-node" type="button" data-step="2" aria-pressed="false"><span class="node-icon" aria-hidden="true"></span><strong><span class="zh">执行</span><span class="en">Execute</span></strong><small>03 / WORKER</small></button>
-          <button class="flow-node" type="button" data-step="3" aria-pressed="false"><span class="node-icon" aria-hidden="true"></span><strong><span class="zh">完成</span><span class="en">Complete</span></strong><small>04 / RESULT</small></button>
+      <div class="heatmap-scroll"><div id="heatmap" class="heatmap" data-start="2025-09-01" data-days="0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1,0,0,5,0,0,0,2,0,1,7,0,0,0,4,0,0,1,0,0,0,0,0,0,0,1,0,2,0,13,17,9,0,0,0,0,7,10,2,0,0,0,2,0,2,6,0,0,12,19,4,5,6,0,0,5,2,20,6,10,0,0,0,3,4,11,0,0,0,3,19,18,14,17,0,9,11,13,7,9,0,0,0,30,7,7,14,6,0,0,5,10,0,12,6,0,0,10,18,5,11,9,0,0,3,13,6,0,0,0,2,14,32,15,34,8,0,0,31,29,11,18,13,0,0,0,24,8,7,5,0,18,7,5,8,21,26,8,1,7,32,59,23,15,3,2,20,20,10,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,2,23,10,7,27,19,0,0,60,74,70,28,38,0,22,72,57,70,35,22,0,0,21,32,72,21,22,6,5,37,18,18,48,8,12,0,0,28,40,0,36,11,0,1,1,25,24,15,0,0,23,13,22,5,9,0,0,29,0,0,2,0,0,0,0,0,34,5,0,0,5,0,2,3,0,0,0,0,0,1,7,13,42,30,66,72,67,70,43,53,0,0,12,23,3,25,31,0,0,0,3,12,14,52,9,7,28,16,11,20,24,4,0,25,28,25,69,32,5,10,17,15,10,33,5,24,42,24,5,71,66,45,49,70,56,110,75,26,28,7,33,113,45,61,81,56,28,41,22,25,55,42,6,19,21,12,25,21,26,27,6,0,6,10,1,5,16,7,19,23,92,84,88,186,54,36,38,70,87,54,25,25,60,15" role="img" aria-label="2025-09 至 2026-08 每日提交热力图，峰值月 2026-07 / Daily commit heatmap, Sep 2025 to Aug 2026, peaking in July 2026"></div></div>
+      <p class="heat-note"><span class="zh">由本地 git 按作者日期重算、跨分支按 hash 去重。春节那两周是空的；3 月、7 月、8 月三个峰值对应 QApex 拆分独立部署、上云与可观测、具身数据线与信创交付。</span><span class="en">Recomputed from local git by author date, deduplicated by hash across branches. The empty fortnight is Chinese New Year; the March, July and August peaks line up with splitting out QApex, the move to cloud with observability, and the embodied-data line plus on-prem ARM64 delivery.</span></p>
+    </figure>
+
+    <ol class="milestones" aria-label="里程碑 / Milestones">
+      <li><time>2025.09</time><strong><span class="zh">两仓同日 initial commit</span><span class="en">Day one, both repos</span></strong><p><span class="zh">选型并落地多模块后端与前端骨架；两周后 AI 与数据集模块同一次提交建起。</span><span class="en">Chose and laid down the modular backend and the frontend skeleton; AI and dataset modules followed two weeks later.</span></p></li>
+      <li><time>2025.11</time><strong><span class="zh">存储、计算、部署三条底座</span><span class="en">Storage, compute, deploy</span></strong><p><span class="zh">接入 LakeFS 数据版本；高可用 Worker 与批量预处理；K3s 部署配置。</span><span class="en">LakeFS data versioning, highly available workers and batch preprocessing, K3s deployment.</span></p></li>
+      <li><time>2026.03</time><strong><span class="zh">双平台边界</span><span class="en">Two platforms, one boundary</span></strong><p><span class="zh">把 QApex 业务平台从主仓拆出独立部署；统一能力注册，模型与脚本共用一套契约。</span><span class="en">Split the QApex business platform out for independent deployment; unified capability registration for models and scripts.</span></p></li>
+      <li><time>2026.06</time><strong><span class="zh">上云与 GitOps</span><span class="en">Cloud and GitOps</span></strong><p><span class="zh">腾讯云正式环境、CI/CD 与 Argo CD；引入 Flyway 管理迁移；多租户系统性审计。</span><span class="en">Production on Tencent Cloud with CI/CD and Argo CD; Flyway migrations; a systematic multi-tenant audit.</span></p></li>
+      <li><time>2026.07</time><strong><span class="zh">可观测与能力平台</span><span class="en">Observability, capability platform</span></strong><p><span class="zh">日志、告警、自愈三线上线；能力平台路线定稿。全年提交峰值月：1,357。</span><span class="en">Logging, alerting and self-healing went live; the capability-platform route was finalised. Peak month: 1,357 commits.</span></p></li>
+      <li><time>2026.08</time><strong><span class="zh">合流与交付</span><span class="en">Merges and delivery</span></strong><p><span class="zh">两条 400+ 文件的长期分支合入主干；具身数据线预发全链路跑通；国产 ARM64 离线现场交付。</span><span class="en">Two long-lived 400+ file branches merged to mainline; the embodied-data line ran end to end in pre-production; on-site ARM64 offline delivery.</span></p></li>
+    </ol>
+  </section>
+
+  <!-- ============ 02 PLATFORM ============ -->
+  <section class="section wrap" id="platform" aria-labelledby="platform-heading">
+    <div class="section-label"><span class="number">02</span><span>/ PLATFORM ARCHITECTURE</span></div>
+    <div class="section-intro">
+      <h2 id="platform-heading"><span class="zh">一张图看我负责的系统。</span><span class="en">The system I was<br>responsible for.</span></h2>
+      <p><span class="zh">点选任一组件，查看它解决什么问题、我做了什么，以及对应的实测数字。</span><span class="en">Select any component to see what it solves, what I did, and the numbers behind it.</span></p>
+    </div>
+    <div class="arch" id="arch">
+      <div class="arch-map" role="group" aria-label="SolarSense 架构组件 / SolarSense components">
+        <div class="arch-layer" data-layer="CLIENTS">
+          <span class="layer-name mono"><span class="zh">入口</span><span class="en">CLIENTS</span></span>
+          <button type="button" class="arch-node" data-node="web"><b><span class="zh">Web 主前端</span><span class="en">Web app</span></b><small>Vue 3 · TS</small></button>
+          <button type="button" class="arch-node" data-node="tools"><b><span class="zh">标注工具矩阵</span><span class="en">Annotation tools</span></b><small>21 tools · 10 modes</small></button>
+          <button type="button" class="arch-node" data-node="desktop"><b><span class="zh">桌面端</span><span class="en">Desktop</span></b><small>Electron · Rust</small></button>
+        </div>
+        <div class="arch-layer" data-layer="EDGE">
+          <span class="layer-name mono"><span class="zh">接入</span><span class="en">EDGE</span></span>
+          <button type="button" class="arch-node wide" data-node="gateway"><b><span class="zh">网关 · 认证 · 多租户</span><span class="en">Gateway · auth · tenancy</span></b><small>Spring Cloud Gateway · OAuth2 · HMAC</small></button>
+        </div>
+        <div class="arch-layer" data-layer="SERVICES">
+          <span class="layer-name mono"><span class="zh">服务</span><span class="en">SERVICES</span></span>
+          <button type="button" class="arch-node" data-node="modules"><b><span class="zh">10 个业务模块</span><span class="en">10 domain modules</span></b><small>Java 17 · Spring</small></button>
+          <button type="button" class="arch-node" data-node="agent"><b>SolarClaw Agent</b><small>MCP · 150+ tools</small></button>
+        </div>
+        <div class="arch-layer" data-layer="EXECUTION">
+          <span class="layer-name mono"><span class="zh">执行</span><span class="en">EXECUTION</span></span>
+          <button type="button" class="arch-node" data-node="queue"><b><span class="zh">四级任务队列</span><span class="en">Four-lane queue</span></b><small>MySQL · outbox</small></button>
+          <button type="button" class="arch-node" data-node="worker"><b><span class="zh">DAG Worker</span><span class="en">DAG workers</span></b><small>Python · 53 ops</small></button>
+          <button type="button" class="arch-node" data-node="models"><b><span class="zh">模型服务</span><span class="en">Model serving</span></b><small>BYOM · 0 → N</small></button>
+        </div>
+        <div class="arch-layer" data-layer="DATA">
+          <span class="layer-name mono"><span class="zh">数据</span><span class="en">DATA</span></span>
+          <button type="button" class="arch-node wide" data-node="storage"><b><span class="zh">元数据 · 标注 · 版本 · 对象</span><span class="en">Metadata · labels · versions · objects</span></b><small>MySQL · MongoDB · LakeFS · S3</small></button>
+        </div>
+        <div class="arch-rail" data-layer="RUNTIME">
+          <span class="layer-name mono"><span class="zh">运行</span><span class="en">RUNTIME</span></span>
+          <button type="button" class="arch-node" data-node="delivery"><b><span class="zh">发布与交付</span><span class="en">Release &amp; delivery</span></b><small>k3s · Argo CD</small></button>
+          <button type="button" class="arch-node" data-node="observe"><b><span class="zh">可观测</span><span class="en">Observability</span></b><small>Loki · Grafana</small></button>
         </div>
       </div>
-      <div class="flow-detail">
-        <h4><span id="flow-title-zh" class="zh">提交</span><span id="flow-title-en" class="en">Submit</span></h4>
-        <p><span id="flow-description-zh" class="zh">校验输入，明确请求边界。</span><span id="flow-description-en" class="en">Validate input and establish the request boundary.</span></p>
-      </div>
-      <div class="demo-controls">
-        <p class="demo-note"><span class="zh">可点选节点 · 通用流程示意<br>非历史项目架构或实时数据</span><span class="en">Explore a generic workflow.<br>Not the project architecture or live data.</span></p>
-        <div class="demo-buttons">
-          <button id="flow-play" class="flow-play" type="button"><i class="icon i-play" aria-hidden="true"></i><span class="zh">播放流程</span><span class="en">Play flow</span></button>
-          <button id="flow-reset" class="flow-reset" type="button" aria-label="重置流程 / Reset flow"><i class="icon i-reset" aria-hidden="true"></i></button>
-        </div>
-      </div>
-      <div id="flow-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
-      <noscript><p class="demo-note" style="padding:0 24px 20px">此处为任务流程示意。启用 JavaScript 可体验节点切换与播放。 / Enable JavaScript to explore this illustrated workflow.</p></noscript>
+      <aside class="arch-detail" id="arch-detail" aria-live="polite">
+        <p class="mono arch-kicker" id="arch-kicker">GATEWAY</p>
+        <h3 id="arch-title"><span class="zh">网关 · 认证 · 多租户</span><span class="en">Gateway · auth · tenancy</span></h3>
+        <p id="arch-body"><span class="zh">所有请求的统一入口。多租户做成三层纵深：数据访问层自动加租户条件、入口处 fail-closed 校验资源归属、网络层用 HMAC 签名保护内部调用。</span><span class="en">The single entry point. Multi-tenancy in three layers: tenant filters in data access, fail-closed ownership checks at the entry, and HMAC-signed internal calls at the network layer.</span></p>
+        <ul id="arch-facts" class="arch-facts"></ul>
+        <p class="arch-hint mono"><span class="zh">点选左侧组件切换</span><span class="en">Select a component on the left</span></p>
+      </aside>
     </div>
   </section>
 
-  <section class="section" id="projects" aria-labelledby="projects-heading">
-    <div class="section-label"><span class="number">02</span><span>/ SELECTED SIDE PROJECTS</span></div>
-    <div class="section-intro"><h2 id="projects-heading"><span class="zh">持续构建，也持续验证。</span><span class="en">Always building.<br>Always learning.</span></h2><p><span class="zh">把想法做成能运行的系统。<br>这些是工作之外，我持续投入的方向。</span><span class="en">Ideas become working systems. A selection of projects I explore beyond my day job.</span></p></div>
-    <p class="project-hint"><span class="zh">展开项目，查看系统目标与工程实践</span><span class="en">Expand a project to explore the system and engineering work</span></p>
-    <div class="project-list">
-      <details class="project" data-project id="quanbot" open>
-        <summary><span class="project-index">01</span><span class="project-name">QuanBot</span><span class="project-teaser"><span class="zh">数据到研究报告的完整流水线</span><span class="en">From data to a research report</span></span><span class="project-stack">Python · FastAPI<br>Next.js</span><i class="icon i-plus" aria-hidden="true"></i></summary>
-        <div class="project-body">
-          <div><h4><span class="zh">项目概览</span><span class="en">OVERVIEW</span></h4><p><span class="zh">自研、自托管的量化交易系统，用 FastAPI 后端与 Web 前端串联研究流程。从数据组织到判断、预测与评估，形成一条完整流水线。</span><span class="en">A self-built, self-hosted quantitative trading system with a FastAPI backend and web frontend, connecting data organization, judgment, forecasting and evaluation.</span></p></div>
-          <div><h4><span class="zh">研究流程</span><span class="en">RESEARCH PIPELINE</span></h4><p><span class="zh">把判断放回上下文，并让评估与报告成为流程的一部分。</span><span class="en">Place judgments in context, with evaluation and reporting as part of the workflow.</span></p><div class="pipeline"><span><b class="zh">数据</b><b class="en">Data</b></span><i class="icon i-right" aria-hidden="true"></i><span><b class="zh">上下文</b><b class="en">Context</b></span><i class="icon i-right" aria-hidden="true"></i><span><b class="zh">判断 / 评分 / 预测</b><b class="en">Judge / score / forecast</b></span><i class="icon i-right" aria-hidden="true"></i><span><b class="zh">评估 / 报告</b><b class="en">Evaluate / report</b></span></div></div>
+  <!-- ============ 03 CASES ============ -->
+  <section class="section wrap" id="cases" aria-labelledby="cases-heading">
+    <div class="section-label"><span class="number">03</span><span>/ CASE FILES</span></div>
+    <div class="section-intro">
+      <h2 id="cases-heading"><span class="zh">约束、取舍、验证。</span><span class="en">Constraints. Trade-offs.<br>Proof.</span></h2>
+      <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。数字标注出处：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Every number is tagged: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
+    </div>
+
+    <div class="casebook" id="casebook">
+      <div class="case-tabs" role="tablist" aria-label="工程案例 / Case files">
+        <button type="button" role="tab" id="tab-queue" aria-controls="case-queue" aria-selected="true"><span class="mono">A</span><span class="zh">万级任务 · 幂等</span><span class="en">10k tasks · idempotency</span></button>
+        <button type="button" role="tab" id="tab-upload" aria-controls="case-upload" aria-selected="false"><span class="mono">B</span><span class="zh">10 GB 大包直传</span><span class="en">10 GB direct upload</span></button>
+        <button type="button" role="tab" id="tab-release" aria-controls="case-release" aria-selected="false"><span class="mono">C</span><span class="zh">发布与可观测</span><span class="en">Release &amp; observability</span></button>
+        <button type="button" role="tab" id="tab-seg" aria-controls="case-seg" aria-selected="false"><span class="mono">D</span><span class="zh">CPU 分割选型</span><span class="en">CPU segmentation</span></button>
+        <button type="button" role="tab" id="tab-arm" aria-controls="case-arm" aria-selected="false"><span class="mono">E</span><span class="zh">ARM64 离线交付</span><span class="en">ARM64 offline delivery</span></button>
+        <button type="button" role="tab" id="tab-agent" aria-controls="case-agent" aria-selected="false"><span class="mono">F</span><span class="zh">Agent 调优</span><span class="en">Agent harness</span></button>
+      </div>
+
+      <!-- A -->
+      <article class="case" id="case-queue" role="tabpanel" aria-labelledby="tab-queue" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE A · BATCH PIPELINE</p>
+            <h3><span class="zh">万级任务提交，从超时到 0.89 秒；<br>重试 280 次，只产出 1 个版本。</span><span class="en">10k-task submission from time-out to 0.89 s;<br>280 retries, exactly one version.</span></h3>
+          </div>
+          <div class="case-metric"><span class="before">&gt;2 min</span><i class="icon i-right" aria-hidden="true"></i><span class="after">0.89 s</span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
+        </header>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次提交上万文件，前端提交超过 2 分钟超时。更隐蔽的是“跑完了”和“能用了”之间有五个静默失败点：产物没保存、没登记、没建版本、没导入、前端看不见，都不报错。</span><span class="en">Customers submit 10k+ files at once and submission timed out after two minutes. Worse, between "finished" and "usable" there were five silent failure points: not saved, not registered, not versioned, not imported, not visible, none of which raised an error.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">引入独立 MQ（Kafka / RabbitMQ），或把队列放进 MySQL，与任务状态同一个事务。</span><span class="en">Add a dedicated broker (Kafka / RabbitMQ), or keep the queue in MySQL in the same transaction as task state.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 MySQL 队列：<code>FOR UPDATE SKIP LOCKED</code> 并发领取，Redis 做心跳与 GPU 限流，outbox 发事件。队列可查、可修，不会出现“消息发了、状态没写”的双写不一致。再把“执行完成 ≠ 交付完成”写成状态机：产物可读、版本落账、血缘闭合才算 READY。</span><span class="en">MySQL it was: concurrent claiming with <code>FOR UPDATE SKIP LOCKED</code>, Redis for heartbeats and GPU throttling, an outbox for events. The queue stays queryable and repairable, with no dual-write gap between message and state. Then I made "executed ≠ delivered" a state machine: READY only when the artifact is readable, the version recorded and the lineage closed.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">验收坚持故障注入，不只看吞吐：以“任务 + 文件”为幂等键，280 次重试只产出 1 个数据集版本。GPU 限流 3 Worker 并跑，Redis 采样 1,383 次仅 1 次瞬时越限。</span><span class="en">Acceptance required fault injection, not just throughput: with task + file as the idempotency key, 280 retries produced exactly one dataset version. Under GPU throttling with three workers, 1,383 Redis samples showed a single momentary overshoot.</span></p></li>
+        </ol>
+        <div class="machine" id="machine" data-state="0">
+          <div class="machine-head">
+            <p class="mono"><span class="zh">五态交付机 · 示意</span><span class="en">FIVE-STAGE DELIVERY · ILLUSTRATION</span></p>
+            <button type="button" class="machine-play" id="machine-play"><i class="icon i-play" aria-hidden="true"></i><span class="zh">播放一次交付</span><span class="en">Run a delivery</span></button>
+          </div>
+          <ol class="machine-rail" aria-label="状态 / States">
+            <li data-i="0">QUEUED</li><li data-i="1">RUNNING</li><li data-i="2">MATERIALIZING</li><li data-i="3">COMMITTING</li><li data-i="4">VERSIONING</li><li data-i="5">READY</li>
+          </ol>
+          <pre class="machine-log" id="machine-log" aria-live="polite"><span class="zh">按“播放”看一次包含 Worker 中断与恢复的交付过程。</span><span class="en">Press "Run" to watch a delivery that survives a worker restart.</span></pre>
+          <p class="machine-note"><span class="zh">通用流程示意，不是实时数据；状态名与恢复逻辑取自真实设计。</span><span class="en">A generic illustration, not live data; state names and recovery logic come from the real design.</span></p>
         </div>
-      </details>
-      <details class="project" data-project id="ai-infra">
-        <summary><span class="project-index">02</span><span class="project-name"><span class="zh">自托管 AI 工作台</span><span class="en">Self-hosted AI workbench</span></span><span class="project-teaser"><span class="zh">个人工作流与基础设施实践</span><span class="en">Personal workflows, on my own infrastructure</span></span><span class="project-stack">Docker · pgvector<br>Nginx</span><i class="icon i-plus" aria-hidden="true"></i></summary>
-        <div class="project-body"><div><h4><span class="zh">项目概览</span><span class="en">OVERVIEW</span></h4><p><span class="zh">在个人云主机上运行一套 AI 工作台，整合 LobeChat、PostgreSQL、Redis、SearXNG、对象存储与向量数据库，作为日常多智能体开发的试验田。</span><span class="en">An AI workbench on my personal cloud host, combining LobeChat, PostgreSQL, Redis, SearXNG, object storage and a vector database for daily multi-agent development experiments.</span></p></div><div><h4><span class="zh">工程范围</span><span class="en">ENGINEERING SCOPE</span></h4><p><span class="zh">容器化服务组合、Nginx 入口、自动证书，以及检索、存储与模型工作流的集成。</span><span class="en">Containerized services, an Nginx entry point, automated TLS certificates, and the integration of search, storage and model workflows.</span></p></div></div>
-      </details>
-      <details class="project" data-project id="security-lab">
-        <summary><span class="project-index">03</span><span class="project-name"><span class="zh">网络安全分析</span><span class="en">Network-security analytics</span></span><span class="project-teaser"><span class="zh">从网络流量到异常检测</span><span class="en">From network traffic to anomaly detection</span></span><span class="project-stack">Snort 3 · ELK<br>TensorFlow</span><i class="icon i-plus" aria-hidden="true"></i></summary>
-        <div class="project-body"><div><h4><span class="zh">研究课题</span><span class="en">GRADUATE RESEARCH</span></h4><p><span class="zh">基于 Snort 3 与 ELK 构建安全分析平台，集成 TensorFlow 进行流量异常检测，并在校园网边界部署监测传感器。</span><span class="en">Graduate research combining Snort 3 and ELK for security analytics, TensorFlow for traffic-anomaly detection, and monitoring sensors at the campus network edge.</span></p></div><div><h4><span class="zh">技术链路</span><span class="en">TECHNICAL FLOW</span></h4><p><span class="zh">网络流量采集、日志聚合与分析、异常检测、实时监控。</span><span class="en">Network-traffic collection, log aggregation and analysis, anomaly detection, and real-time monitoring.</span></p></div></div>
-      </details>
+      </article>
+
+      <!-- B -->
+      <article class="case" id="case-upload" role="tabpanel" aria-labelledby="tab-upload" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE B · DATA INGEST</p>
+            <h3><span class="zh">客户的 9.9 GB 压缩包被网关砍断。<br>三次架构迭代后，生产零中断直传。</span><span class="en">A customer's 9.9 GB archive was cut off at the gateway.<br>Three iterations later: uninterrupted direct upload in production.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">41.8</span><span class="unit">MiB/s</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
+        </header>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次导入几 GB 到几百 GB 的图像、视频、点云压缩包，要求能进、失败能恢复、能追溯版本，且新版本不能破坏历史数据。经后端代理上传时，网关 60 秒超时直接掐断慢客户端。</span><span class="en">Customers import archives of several to hundreds of GB and need them to land, resume after failure, be traceable to a version and never damage history. Proxied through the backend, the gateway's 60-second timeout killed slow clients.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">① 网关代理上传：被超时掐断。② LakeFS 原生预签名：签名与地域绑定，跨环境不可用。③ 后端用对象存储原生 SDK 重签，浏览器直传。</span><span class="en">(1) Proxy through the gateway: cut off by timeouts. (2) LakeFS native presigning: signatures bound to a region, unusable across environments. (3) Re-sign with the object store's native SDK and upload straight from the browser.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 ③。每个分片签一个 URL，直传到固定编号的 staging key；直传失败可按片回退到后端代理，两条路写同一个 key。complete 不信会话记录，直接列目录核对片数与总字节，缺片就拒。解压侧给每次 staging 写入包上应用层退避重试，把瞬断当成可重试。</span><span class="en">Option 3. One presigned URL per part, written to a fixed, numbered staging key; a failed part can fall back to the proxy and both paths write the same key. Completion ignores session records and lists the prefix to check part count and total bytes, rejecting any gap. On extraction, every staging write gets application-level retry with backoff, so transient drops are retryable.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 9.9 GiB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~9.9 GiB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
+        </ol>
+        <div class="figure-row">
+          <div class="mini-stat"><strong>310</strong><span><span class="zh">分片 · 每片 32 MiB</span><span class="en">parts · 32 MiB each</span></span></div>
+          <div class="mini-stat"><strong>237 s</strong><span><span class="zh">9.9 GiB 端到端</span><span class="en">9.9 GiB end to end</span></span></div>
+          <div class="mini-stat"><strong>18,370</strong><span><span class="zh">生产血缘事件回填，六类对账全等</span><span class="en">lineage events backfilled in production, six reconciliations exact</span></span></div>
+        </div>
+      </article>
+
+      <!-- C -->
+      <article class="case" id="case-release" role="tabpanel" aria-labelledby="tab-release" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE C · RELEASE &amp; OBSERVABILITY</p>
+            <h3><span class="zh">让发布可重复、可回滚，<br>让运维从查日志变成看告警。</span><span class="en">Releases that repeat and roll back.<br>Operations that read alerts, not logs.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">−84.9%</span><span class="unit"><span class="zh">日志量</span><span class="en">log volume</span></span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
+        </header>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">2026-05 之前只有内网与客户线。要在云上建正式环境，同时维持离线交付、内网研发、云上生产三条线不漂移。</span><span class="en">Before May 2026 there were only internal and customer environments. I had to stand up production in the cloud while keeping offline delivery, internal development and cloud production from drifting apart.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">托管 Kubernetes（TKE），或单机 k3s 复用内网经验；Argo CD 全自动同步，或只 apply 不 prune 分批纳管。</span><span class="en">Managed Kubernetes (TKE), or single-node k3s reusing our internal experience; Argo CD with full auto-sync, or apply-only onboarding in batches.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选单机 k3s，把单点风险写进方案而不是回避；Argo CD 先 apply-only 分批纳管，设五条硬停止条件。定下“CI 是唯一出图口”，回滚就是改一行镜像 tag。事故后固化：共享凭证一次性注入全量并重启全量，验证用 11 × 7 = 77 格全矩阵而不抽样。</span><span class="en">Single-node k3s, with the single point of failure written into the plan rather than hidden; Argo CD apply-only in batches behind five hard stop conditions. CI became the only source of images, so a rollback is a one-line tag change. After an incident I made two rules: rotate shared credentials everywhere and restart everything at once, and verify the full 11 × 7 = 77-cell matrix instead of sampling.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">access log 从 1,313 万行降到 71.2 万行，告警有效覆盖 64/64。15 天探针可用性 99.9975%，7 天 331 万请求、整体 p95 50 ms。压测定位 project 服务 CPU 打满，2 核扩到 6 核后 84 → 205 req/s，p95 2.6 s → 0.85 s。</span><span class="en">Access logs fell from 13.13 M to 0.712 M lines, with 64/64 effective alert coverage. 99.9975% availability over a 15-day probe; 3.31 M requests in 7 days at 50 ms p95. Load testing found the project service CPU-bound; going from 2 to 6 cores took it from 84 to 205 req/s and p95 from 2.6 s to 0.85 s.</span></p></li>
+        </ol>
+        <div class="bars" aria-label="优化前后 / Before and after">
+          <div class="bar-row"><span class="bar-label"><span class="zh">日志行数</span><span class="en">Log lines</span></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">13.13 M</span></div>
+          <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:5.4%"></i></span><span class="mono">0.71 M</span></div>
+          <div class="bar-row"><span class="bar-label"><span class="zh">吞吐</span><span class="en">Throughput</span></span><span class="bar"><i style="--w:41%"></i></span><span class="mono">84 req/s</span></div>
+          <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">205 req/s</span></div>
+        </div>
+      </article>
+
+      <!-- D -->
+      <article class="case" id="case-seg" role="tabpanel" aria-labelledby="tab-seg" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE D · MODEL SELECTION</p>
+            <h3><span class="zh">云上没有 GPU 的分割服务：<br>快 9.4 倍，还避开了一个许可证陷阱。</span><span class="en">Segmentation without a GPU in the cloud:<br>9.4× faster, and a licence trap avoided.</span></h3>
+          </div>
+          <div class="case-metric"><span class="before">6,000 ms</span><i class="icon i-right" aria-hidden="true"></i><span class="after">640 ms</span><span class="tag lab"><span class="zh">云上 4 核</span><span class="en">4-CORE VM</span></span></div>
+        </header>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">云上环境只有 CPU，交互式标注需要亚秒级分割。现有 FastSAM 的“文字提示分割”自上线起就没生效过：输入 <code>person,rider,car</code> 和 <code>banana</code> 返回的框完全一样，根因是异常被静默吞掉。</span><span class="en">The cloud environment is CPU-only, and interactive labelling needs sub-second segmentation. The existing FastSAM text-prompt mode had never worked: <code>person,rider,car</code> and <code>banana</code> returned identical boxes, because an exception was silently swallowed.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">修 FastSAM + CLIP；做 INT8 量化；换 EfficientViT-SAM-L0。</span><span class="en">Fix FastSAM + CLIP; quantise to INT8; switch to EfficientViT-SAM-L0.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">换 EfficientViT-SAM。三条理由：质量上 FastSAM 不是检测器，CLIP 只能重排；速度上 9.4 倍；许可证上 README 写 Apache、LICENSE 文件实为 AGPL，私有化分发会触发 copyleft。INT8 被否决：只快 1.7 倍，mask IoU 掉到 0.42，而模型自估 IoU 不变，坏了也察觉不到。命名也守纪律：CPU 版不借用 SAM 3 的名字，不做虚假能力声明。</span><span class="en">EfficientViT-SAM, for three reasons: quality, since FastSAM is not a detector and CLIP can only re-rank; speed, at 9.4×; and licensing, since the README says Apache but the LICENSE file is AGPL, which on-prem distribution would trigger. INT8 was rejected: only 1.7× faster, mask IoU fell to 0.42 while the model's self-estimated IoU stayed the same, so failure would be invisible. Naming stays honest too: the CPU service does not borrow the SAM 3 name.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">云上 4 核真机：6,000 ms → 640 ms；ORT 换 OpenVINO 后编码器 470 → 93 ms；线程数 2 → 4 为最优。另修一次 OOM：4K 图峰值内存 4,078 MB → 1,907 MB。</span><span class="en">On a real 4-core cloud VM: 6,000 ms → 640 ms; ORT to OpenVINO took the encoder from 470 to 93 ms; four threads was the sweet spot. A related OOM fix cut 4K-image peak memory from 4,078 MB to 1,907 MB.</span></p></li>
+        </ol>
+        <div class="bars" aria-label="延迟对比 / Latency">
+          <div class="bar-row"><span class="bar-label">FastSAM + CLIP</span><span class="bar"><i style="--w:100%"></i></span><span class="mono">6,000 ms</span></div>
+          <div class="bar-row"><span class="bar-label">INT8</span><span class="bar warn"><i style="--w:59%"></i></span><span class="mono">IoU 0.42</span></div>
+          <div class="bar-row after"><span class="bar-label">EfficientViT-SAM</span><span class="bar"><i style="--w:10.7%"></i></span><span class="mono">640 ms</span></div>
+        </div>
+      </article>
+
+      <!-- E -->
+      <article class="case" id="case-arm" role="tabpanel" aria-labelledby="tab-arm" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE E · ON-PREM DELIVERY</p>
+            <h3><span class="zh">无外网、国产 CPU、国产 OS，<br>一次装好 27 个镜像的整套平台。</span><span class="en">No internet, domestic CPU, domestic OS:<br>the whole 27-image platform, installed in one go.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">19</span><span class="unit"><span class="zh">个问题，5 个致命，都在出包前</span><span class="en">issues, 5 fatal, caught before shipping</span></span></div>
+        </header>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户机房是鲲鹏 aarch64 + 麒麟 V10，完全离线。语法校验、架构核对、<code>compose config</code> 全部通过，也不代表能装起来。</span><span class="en">The customer's machine room ran Kunpeng aarch64 with Kylin V10, fully offline. Passing syntax checks, architecture checks and <code>compose config</code> does not mean it will install.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">按清单打包直接发往现场，或先在与客户同规格的实机上真装一遍。</span><span class="en">Package against a checklist and ship, or first install for real on a machine matching the customer's spec.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">冻结六个仓的基线 SHA，在同规格鲲鹏实机上真装。16 核全绿，换到 32 核后三个 Python 服务重启 60+ 次：OpenBLAS / OMP 按核数起线程撞上 nproc 上限。于是给所有算力容器钉死线程数。我的判断规则是：同类组件里只有一个配了某参数，往往是过去事故的遗迹，应推广到全部。</span><span class="en">Froze the baseline SHA of six repositories and installed on a matching Kunpeng machine. All green at 16 cores; at 32 cores three Python services restarted 60+ times as OpenBLAS / OMP spawned a thread per core into the nproc limit. So every compute container got pinned thread counts. My rule of thumb: when only one of a family of components sets a parameter, it is usually the scar of an old incident, and should be applied to all of them.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">两轮真装累计发现 19 个问题、5 个致命，例如 Docker 自身二进制是 x86、Redis 在 ARM64 上拒启、端口避让脚本把 9 个端口分到同一个。补丁复查时搭仿真环境真跑 21 条异常路径断言；验证脚本本身也被验证过。现场 5 条反馈逐一定性：1 条真实缺陷修复，4 条是客户浏览器版本过低。</span><span class="en">Two real installs surfaced 19 issues, 5 of them fatal: the Docker binary itself was x86, Redis refused to start on ARM64, a port-avoidance script mapped nine ports to one. Patch review ran 21 failure-path assertions in a simulated environment, and the verification scripts were themselves verified. Five field reports were each classified: one genuine defect fixed, four caused by an outdated customer browser.</span></p></li>
+        </ol>
+      </article>
+
+      <!-- F -->
+      <article class="case" id="case-agent" role="tabpanel" aria-labelledby="tab-agent" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE F · AGENT ENGINEERING</p>
+            <h3><span class="zh">Agent 更便宜也更可靠：<br>输入 token 降 43.6%，任务通过 5 → 7。</span><span class="en">A cheaper and more reliable agent:<br>43.6% fewer input tokens, tasks passed 5 → 7.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">−43.6%</span><span class="unit">input tokens</span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
+        </header>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">平台 Agent 通过 MCP 网关接了 150+ 个工具，token 成本高，多轮对话容易失败。一次打转的运行消耗 26.5 万 token，比 9 次成功运行加起来还贵。</span><span class="en">The platform agent reached 150+ tools through an MCP gateway. Token cost was high and multi-turn runs failed often; one looping run burned 265k tokens, more than nine successful runs combined.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">接入开源 Agent 框架与技能市场，或保留主循环、只补缺口。</span><span class="en">Adopt an open-source agent framework and skill marketplace, or keep the main loop and fill the gaps.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">逐项对照开源标杆后只补三个 P0：确定性工作流、Agent 委派、MCP 标准。定位出多轮失败的头号原因是跨轮丢失工具可见性；缓存命中低的真凶是易变内容排在稳定段之前。工具目录 28 → 20，并加预算上限与打转检测。</span><span class="en">After a point-by-point comparison with open-source leaders, I added only three P0s: deterministic workflows, agent delegation and the MCP standard. The top cause of multi-turn failure was tool visibility lost between turns; low cache hit rates came from volatile content placed before stable sections. The tool catalogue went from 28 to 20, with budget caps and loop detection.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">输入 token 159 万 → 89.6 万，24 例回归失败 53 → 20，reflection 失败率 34.7% → 0。修复 MCP 服务注册指向过期 Pod IP 后，一个工具的平均耗时 72 s → 3.4 s。</span><span class="en">Input tokens 1.59 M → 0.896 M, regression failures across 24 cases 53 → 20, reflection failure rate 34.7% → 0. Fixing an MCP registration that pointed at a stale Pod IP took one tool's average latency from 72 s to 3.4 s.</span></p></li>
+        </ol>
+      </article>
     </div>
   </section>
 
-  <section class="section" id="skills" aria-labelledby="practice-heading">
-    <div class="section-label"><span class="number">03</span><span>/ ENGINEERING PRACTICE</span></div>
-    <div class="section-intro"><h2 id="practice-heading"><span class="zh">从系统设计，到可靠交付。</span><span class="en">From system design<br>to reliable delivery.</span></h2></div>
+  <!-- ============ 04 METHOD ============ -->
+  <section class="section section-dark" id="method" aria-labelledby="method-heading">
+    <div class="wrap">
+      <div class="section-label"><span class="number">04</span><span>/ HOW I WORK</span></div>
+      <div class="section-intro">
+        <h2 id="method-heading"><span class="zh">用 AI 放大产出，<br>但不采信任何自报结果。</span><span class="en">AI multiplies the output.<br>Nothing self-reported is trusted.</span></h2>
+        <p><span class="zh">我写规格与验收清单，让 Codex 实现，再独立复算、实测。这套方式支撑了能力平台、可观测、桌面端等多条线同时推进，而验收始终由我自己把关。</span><span class="en">I write the spec and the acceptance checklist, Codex implements, and I verify independently by recomputing and running it. This let several lines move at once, from the capability platform to observability and the desktop client, while acceptance stayed with me.</span></p>
+      </div>
+
+      <ol class="loop" aria-label="工作循环 / Working loop">
+        <li><span class="mono">01</span><strong><span class="zh">规格</span><span class="en">Spec</span></strong><p><span class="zh">写清目标、边界与可证伪的验收条件，包括前端接线状态。</span><span class="en">Goals, boundaries and falsifiable acceptance criteria, including frontend wiring status.</span></p></li>
+        <li><span class="mono">02</span><strong><span class="zh">实现</span><span class="en">Build</span></strong><p><span class="zh">Codex 按任务包实现，可断点续跑；多条线并行。</span><span class="en">Codex implements from a task package, resumable from checkpoints; several lines in parallel.</span></p></li>
+        <li><span class="mono">03</span><strong><span class="zh">复算</span><span class="en">Recompute</span></strong><p><span class="zh">不看自报数字，用另一个数据源或另一条路径独立重算。</span><span class="en">Ignore self-reported numbers; recompute from another source or another path.</span></p></li>
+        <li><span class="mono">04</span><strong><span class="zh">门禁</span><span class="en">Gate</span></strong><p><span class="zh">把教训写进门禁。存量失败用棘轮锁住，清单只准变短。</span><span class="en">Turn lessons into gates. Existing failures are locked by a ratchet; the list may only shrink.</span></p></li>
+      </ol>
+
+      <div class="method-grid">
+        <div class="ledger">
+          <div class="ledger-head">
+            <p class="mono">ACCEPTANCE LEDGER · SOLARSENSE</p>
+            <h3><span class="zh">独立验收抓到的，都是“看起来已经好了”的东西。</span><span class="en">What independent acceptance caught was always something that looked done.</span></h3>
+            <p><span class="zh">这些结论都在上线前或上线后被我用另一条路径复核过：真机点击、二进制对比、真实网关计时、逐条回读。</span><span class="en">Each claim below was re-checked by another path, before or after release: a real click, a byte-level comparison, a timed call through the real gateway, a read-back of every record.</span></p>
+          </div>
+          <table>
+            <thead><tr><th><span class="zh">自报 / 表象</span><span class="en">Claim</span></th><th><span class="zh">复核发现</span><span class="en">What verification found</span></th><th><span class="zh">处置</span><span class="en">Outcome</span></th></tr></thead>
+            <tbody>
+              <tr><td><span class="zh">具身数据线：CI 全绿、25 个 Pod Running、API 端到端全通</span><span class="en">Embodied-data line: CI green, 25 pods Running, APIs pass end to end</span></td><td><span class="zh">真机点“开始作业”页面不动：前端合流分支从未真正合入主干</span><span class="en">Clicking "Start" in a real browser did nothing: the frontend branch had never actually been merged</span></td><td><span class="verdict no"><span class="zh">驳回</span><span class="en">Rejected</span></span></td></tr>
+              <tr><td><span class="zh">FastSAM 文字提示分割已上线</span><span class="en">FastSAM text-prompt segmentation is live</span></td><td><span class="zh"><code>person,rider,car</code> 与 <code>banana</code> 返回的框 md5 完全一致，自上线起从未生效</span><span class="en"><code>person,rider,car</code> and <code>banana</code> returned boxes with identical md5: it had never worked</span></td><td><span class="verdict no"><span class="zh">证伪</span><span class="en">Falsified</span></span></td></tr>
+              <tr><td><span class="zh">AI 代码审查已接入 MR，历史运行 596 次</span><span class="en">AI code review wired into MRs, 596 runs</span></td><td><span class="zh">git 版本不兼容让代码检索 100% 失败，596 次全是“盲审”</span><span class="en">A git incompatibility made code search fail every time: all 596 were blind reviews</span></td><td><span class="verdict weak"><span class="zh">已修复</span><span class="en">Fixed</span></span></td></tr>
+              <tr><td><span class="zh">模型状态：31 个模型全部 ERROR</span><span class="en">Model status: all 31 models in ERROR</span></td><td><span class="zh">实际 12 个在跑；失败一次就永久 ERROR，状态位与真实脱节</span><span class="en">12 were actually running; one failure left a model in ERROR forever</span></td><td><span class="verdict weak"><span class="zh">改实时探活</span><span class="en">Live probes</span></span></td></tr>
+              <tr><td><span class="zh">AI 客服真环境测试全绿</span><span class="en">AI support passes in a real environment</span></td><td><span class="zh">写死的 15 s 超时低于网关真实 19 s，降级兜底把“完全不工作”伪装成“正常”</span><span class="en">Hard-coded 15 s timeouts were below the gateway's real 19 s; the fallback disguised total failure as normal</span></td><td><span class="verdict no"><span class="zh">阻断上线</span><span class="en">Blocked</span></span></td></tr>
+            </tbody>
+          </table>
+          <p class="ledger-foot mono"><span class="zh">规则：凡是调外部模型、带降级链的功能，验收必须含一次真实网关计时</span><span class="en">Rule: any feature that calls an external model through a fallback chain is accepted only after a timed call through the real gateway</span></p>
+        </div>
+
+        <div class="principles">
+          <div class="principle"><p class="mono">RULE 01</p><h4><span class="zh">“代码存在”“内部通过”“生产可用”分开说</span><span class="en">"Code exists", "passes internally", "works in production" are three different claims</span></h4><p><span class="zh">这页上的每个数字都带环境标签。</span><span class="en">Every number on this page carries its environment.</span></p></div>
+          <div class="principle"><p class="mono">RULE 02</p><h4><span class="zh">验达成效果，不验做了动作</span><span class="en">Verify outcomes, not actions</span></h4><p><span class="zh">单测断言消息发出 ≠ 有人收到；端点上线 ≠ 能力交付；镜像 tag 变了 ≠ 部署完成，要自己用一次。</span><span class="en">A test asserting a message was sent is not someone receiving it; an endpoint is not a delivered capability; a changed tag is not a deployment until someone uses it.</span></p></div>
+          <div class="principle"><p class="mono">RULE 03</p><h4><span class="zh">不用管理员账号验收</span><span class="en">Never accept as admin</span></h4><p><span class="zh">管理员会越过全部权限校验。新接口的自测必须用项目经理、标注员等真实角色各走一遍，并随交付带上权限码与授权 seed。</span><span class="en">Admins bypass every permission check. New endpoints are tested with real roles such as project manager and annotator, and ship with their permission codes and grant seeds.</span></p></div>
+          <div class="principle"><p class="mono">RULE 04</p><h4><span class="zh">主动写下对自己不利的结论</span><span class="en">Write down what goes against me</span></h4><p><span class="zh">未完成的 1 TiB 验证、没清零的安全红账、被推翻的判断，都写进交付文档。</span><span class="en">The unfinished 1 TiB validation, the security debt not yet cleared, the calls I got wrong: all in the delivery documents.</span></p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 PROJECTS ============ -->
+  <section class="section wrap" id="projects" aria-labelledby="projects-heading">
+    <div class="section-label"><span class="number">05</span><span>/ BUILT ON MY OWN TIME</span></div>
+    <div class="section-intro">
+      <h2 id="projects-heading"><span class="zh">工作之外，<br>也一直在做东西。</span><span class="en">Outside work,<br>still building.</span></h2>
+      <p><span class="zh">最近一年自己做、自己用的工具。它们都遵守同一套纪律：本地优先、写入可撤销、先测试再交付。</span><span class="en">Tools I built for myself over the past year, all under the same discipline: local first, undoable writes, tested before shipped.</span></p>
+    </div>
+    <div class="project-grid">
+      <article class="card">
+        <p class="card-meta mono">ELECTRON · REACT · MACOS / WINDOWS</p>
+        <h3>Jarvis Workspace</h3>
+        <p><span class="zh">跨平台个人工作台：Markdown 计划、原子写入与版本冲突保护、一步撤销、跨日整理归档，本机资源 24 小时趋势。</span><span class="en">A cross-platform workspace: Markdown plans, atomic writes with conflict protection, one-step undo, daily roll-over and archive, 24-hour resource trends.</span></p>
+      </article>
+      <article class="card">
+        <p class="card-meta mono">NODE · LOCAL-ONLY</p>
+        <h3><span class="zh">拾页 · 本地阅读器</span><span class="en">Shiye · local reader</span></h3>
+        <p><span class="zh">直接读取 Obsidian 阅读库，不导入不上云。原文按不可信内容清洗后显示，状态回写 Markdown 时遇到并发修改会拒绝覆盖。</span><span class="en">Reads an Obsidian library in place, no import, no cloud. Source HTML is sanitised as untrusted; status written back to Markdown refuses to overwrite concurrent edits.</span></p>
+      </article>
+      <article class="card">
+        <p class="card-meta mono">PYTHON · FASTAPI · NEXT.JS</p>
+        <h3>QuanBot</h3>
+        <p><span class="zh">自研、自托管的量化交易系统，用 FastAPI 后端与 Web 前端串联研究流程：从数据组织到判断、预测与评估，让评估与报告成为流程的一部分。</span><span class="en">A self-built, self-hosted quantitative trading system with a FastAPI backend and web frontend, from data organisation to judgment, forecasting and evaluation, with reporting built into the workflow.</span></p>
+      </article>
+      <article class="card">
+        <p class="card-meta mono">DOCKER · PGVECTOR · NGINX</p>
+        <h3><span class="zh">自托管 AI 工作台</span><span class="en">Self-hosted AI workbench</span></h3>
+        <p><span class="zh">个人云主机上的多服务组合：对话、检索、对象存储与向量库，Nginx 入口与自动证书，作为多智能体开发的试验田。</span><span class="en">A multi-service stack on my own cloud host: chat, search, object storage and a vector database behind Nginx with automated TLS, used as a proving ground for multi-agent development.</span></p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 06 PRACTICE ============ -->
+  <section class="section wrap" id="skills" aria-labelledby="practice-heading">
+    <div class="section-label"><span class="number">06</span><span>/ ENGINEERING PRACTICE</span></div>
+    <div class="section-intro"><h2 id="practice-heading"><span class="zh">能力，直接对应证据。</span><span class="en">Every capability,<br>linked to evidence.</span></h2></div>
     <div class="capabilities">
-      <article class="capability"><span class="mono">01 / ARCHITECTURE</span><h3><span class="zh">平台与分布式系统</span><span class="en">Platforms & distributed systems</span></h3><p><span class="zh">划分服务边界，组织数据与消息流，处理并发一致性和批量任务性能。</span><span class="en">Define service boundaries, organize data and messaging flows, and address concurrency consistency and batch-task performance.</span></p><p class="stack">Java · Spring Cloud · MySQL<br>Redis · Kafka · Netty</p><a href="#work"><span class="zh">从交易系统到数据平台</span><span class="en">Trading systems to data platforms</span><i class="icon i-right" aria-hidden="true"></i></a></article>
-      <article class="capability"><span class="mono">02 / APPLIED AI</span><h3><span class="zh">AI 与数据工程</span><span class="en">AI & data engineering</span></h3><p><span class="zh">把模型能力接入产品，构建数据处理流程、标注工具与自托管 AI 工作台。</span><span class="en">Bring model capabilities into products through data pipelines, annotation tools and self-hosted AI workbenches.</span></p><p class="stack">Python · FastAPI · LangChain<br>Vue / TypeScript · pgvector</p><a href="#projects"><span class="zh">探索个人项目</span><span class="en">Explore side projects</span><i class="icon i-right" aria-hidden="true"></i></a></article>
-      <article class="capability"><span class="mono">03 / DELIVERY</span><h3><span class="zh">工程交付与团队</span><span class="en">Engineering delivery & teams</span></h3><p><span class="zh">从技术选型推进到部署验收，建立 CI/CD、代码评审与多智能体协作流程。</span><span class="en">Carry technical decisions through deployment and acceptance, with CI/CD, code review and multi-agent development.</span></p><p class="stack">Docker · Kubernetes · ARM64<br>CI/CD · GitOps · Code Review</p><a href="#work"><span class="zh">查看团队与交付经历</span><span class="en">Team & delivery experience</span><i class="icon i-right" aria-hidden="true"></i></a></article>
+      <article class="capability"><span class="mono">01 / ARCHITECTURE</span><h3><span class="zh">平台与分布式系统</span><span class="en">Platforms &amp; distributed systems</span></h3><p><span class="zh">服务边界、任务队列与幂等、多租户、大文件与数据版本。</span><span class="en">Service boundaries, queues and idempotency, multi-tenancy, large files and data versioning.</span></p><p class="stack">Java · Spring Cloud · MySQL · Redis<br>Kafka · RabbitMQ · LakeFS · Go</p><div class="evidence"><a href="#case-queue" data-case="tab-queue"><span class="zh">万级任务与幂等</span><span class="en">10k tasks &amp; idempotency</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-upload" data-case="tab-upload"><span class="zh">10 GB 直传</span><span class="en">10 GB direct upload</span><i class="icon i-right" aria-hidden="true"></i></a></div></article>
+      <article class="capability"><span class="mono">02 / APPLIED AI</span><h3><span class="zh">AI 与数据工程</span><span class="en">AI &amp; data engineering</span></h3><p><span class="zh">模型服务治理、选型与许可证判断、Agent 工程与 token 成本。</span><span class="en">Model-serving governance, selection and licensing, agent engineering and token cost.</span></p><p class="stack">Python · FastAPI · PyTorch · OpenVINO<br>MCP · LangChain · pgvector</p><div class="evidence"><a href="#case-seg" data-case="tab-seg"><span class="zh">CPU 分割选型</span><span class="en">CPU segmentation</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-agent" data-case="tab-agent"><span class="zh">Agent 调优</span><span class="en">Agent harness</span><i class="icon i-right" aria-hidden="true"></i></a></div></article>
+      <article class="capability"><span class="mono">03 / DELIVERY</span><h3><span class="zh">工程交付与团队</span><span class="en">Delivery &amp; teams</span></h3><p><span class="zh">GitOps 发布与回滚、可观测、离线私有化、门禁与评审。</span><span class="en">GitOps release and rollback, observability, offline on-prem delivery, gates and review.</span></p><p class="stack">Kubernetes · k3s · Argo CD · ARM64<br>Loki · Prometheus · GitLab CI</p><div class="evidence"><a href="#case-release" data-case="tab-release"><span class="zh">发布与可观测</span><span class="en">Release &amp; observability</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-arm" data-case="tab-arm"><span class="zh">ARM64 离线交付</span><span class="en">ARM64 delivery</span><i class="icon i-right" aria-hidden="true"></i></a></div></article>
     </div>
   </section>
 
-  <section class="section" id="work" aria-labelledby="experience-heading">
-    <div class="section-label"><span class="number">04</span><span>/ EXPERIENCE & EDUCATION</span></div>
+  <!-- ============ 07 EXPERIENCE ============ -->
+  <section class="section wrap" id="work" aria-labelledby="experience-heading">
+    <div class="section-label"><span class="number">07</span><span>/ EXPERIENCE &amp; EDUCATION</span></div>
     <div class="experience">
       <div class="experience-aside"><h2 id="experience-heading"><span class="zh">在真实约束下，<br>把系统做成。</span><span class="en">Real constraints.<br>Working systems.</span></h2><p><span class="zh">从交易系统、企业服务到 AI 数据平台，承担设计、开发与交付责任。</span><span class="en">Designing, building and delivering across trading systems, enterprise services and AI data platforms.</span></p></div>
       <div class="timeline">
@@ -163,14 +426,15 @@
         </details>
       </div>
     </div>
-    <div class="education"><h3><span class="zh">教育背景</span><span class="en">Education</span></h3><div class="education-list"><div class="education-item"><div><h4>Marquette University</h4><p><span class="zh">计算机科学硕士 · GPA 3.7 / 4.0</span><span class="en">M.S. Computer Science · GPA 3.7 / 4.0</span></p></div><span class="education-date">2022.05 — 2024.01</span></div></div></div>
+    <div class="education"><h3><span class="zh">教育背景</span><span class="en">Education</span></h3><div class="education-list"><div class="education-item"><div><h4>Marquette University</h4><p><span class="zh">计算机科学硕士 · GPA 3.7 / 4.0 · 研究课题：基于 Snort 3、ELK 与 TensorFlow 的网络流量异常检测</span><span class="en">M.S. Computer Science · GPA 3.7 / 4.0 · Research: network-traffic anomaly detection with Snort 3, ELK and TensorFlow</span></p></div><span class="education-date">2022.05 — 2024.01</span></div></div></div>
   </section>
 
-  <section class="contact" id="contact" aria-labelledby="contact-heading">
-    <div><div class="section-label"><span class="number">05</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">正在关注杭州、上海的技术机会。<br>架构设计、AI 工程化、团队交付，或者只是聊聊技术。</span><span class="en">Open to opportunities in Hangzhou and Shanghai.<br>Architecture, applied AI, engineering teams — or just talking shop.</span></p></div>
+  <!-- ============ CONTACT ============ -->
+  <section class="contact wrap" id="contact" aria-labelledby="contact-heading">
+    <div><div class="section-label"><span class="number">08</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">正在关注杭州、上海的技术机会。<br>平台架构、数据与 AI 工程、研发负责人，或者只是聊聊技术。</span><span class="en">Open to opportunities in Hangzhou and Shanghai.<br>Platform architecture, data &amp; AI engineering, engineering leadership — or just talking shop.</span></p></div>
     <div class="contact-actions"><a class="email-link" href="mailto:zchaw127@gmail.com">zchaw127@gmail.com<i class="icon i-up" aria-hidden="true"></i></a><div class="contact-secondary"><button type="button" id="copy-email" class="copy-email" data-email="zchaw127@gmail.com"><i class="icon i-copy" aria-hidden="true"></i><span class="zh">复制邮箱</span><span class="en">Copy email</span></button><a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a></div><p class="copy-status" id="copy-status" role="status" aria-live="polite"></p></div>
   </section>
 </main>
-<footer class="site-footer"><div class="wrap footer-wrap"><span>© <span id="year">2026</span> Jiawei Zhang</span><span>THOUGHTFULLY BUILT. ALWAYS EVOLVING.</span><a href="#top"><span class="zh">回到顶部</span><span class="en">Back to top</span><i class="icon i-up" aria-hidden="true" style="width:13px;height:13px;margin-left:6px"></i></a></div></footer>
+<footer class="site-footer"><div class="wrap footer-wrap"><span>© <span id="year-now">2026</span> Jiawei Zhang</span><span class="mono"><span class="zh">手写 HTML / CSS / WebGL，无框架、无依赖、无追踪</span><span class="en">Hand-written HTML / CSS / WebGL. No framework, no dependencies, no tracking.</span></span><a href="#top"><span class="zh">回到顶部</span><span class="en">Back to top</span><i class="icon i-up" aria-hidden="true"></i></a></div></footer>
 </body>
 </html>
