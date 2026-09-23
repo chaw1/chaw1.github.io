@@ -467,6 +467,21 @@
     });
   }
 
+  /* ---------------- print ---------------- */
+  // Print every job in full, then restore whichever disclosures the reader had open.
+  let openBeforePrint = null;
+  window.addEventListener('beforeprint', () => {
+    if (openBeforePrint) return; // already prepared; keep the reader's original state
+    const jobs = $$('details.job');
+    openBeforePrint = jobs.map((d) => d.open);
+    jobs.forEach((d) => { d.open = true; });
+  });
+  window.addEventListener('afterprint', () => {
+    if (!openBeforePrint) return;
+    $$('details.job').forEach((d, i) => { d.open = openBeforePrint[i]; });
+    openBeforePrint = null;
+  });
+
   const year = $('#year-now');
   if (year) year.textContent = String(new Date().getFullYear());
 

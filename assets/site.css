@@ -454,10 +454,87 @@ html:not(.js) .scan-fallback{display:grid}
   .js .reveal{opacity:1;transform:none}
   .js .heat-cell{opacity:1}
 }
+/* ---------- print: a two-page, résumé-like summary ---------- */
 @media print{
-  .site-header,.scan,.machine,.menu-toggle{display:none}
-  .hero{min-height:0}
+  @page{size:A4;margin:12mm 14mm}
+  :root{--gutter:0px;--max:none}
+  html{scroll-padding-top:0}
+  body{font-size:9.5pt;line-height:1.5;background:#fff;color:#000}
+  *,*:before,*:after{animation:none!important;transition:none!important;box-shadow:none!important}
   .js .reveal{opacity:1;transform:none}
-  
+  .wrap{width:auto}
+  /* Interactive exhibits, and headlines the section labels already cover, do not print. */
+  .skip-link,.site-header,.scan,.hero-actions,.heatmap-card,.milestones,.section-intro h2,#year .section-intro,.contact,#platform,#method,#projects,.case-tabs,.case .notes,.case .figure-row,.case .bars,.machine,.capabilities .evidence,.contact-secondary,.copy-status,.site-footer,.job summary .icon,.section-label .number{display:none!important}
+  .section,.section-dark>.wrap{padding:0;border:0}
+  .section{margin-top:12pt}
+  .section-label{font-size:7.5pt;letter-spacing:.12em;color:#444;border-bottom:.5pt solid #999;padding-bottom:2pt;break-after:avoid}
+  #skills{break-inside:avoid}
+  .section-intro{display:block;margin:5pt 0 6pt}
+  .section-intro p{font-size:9pt;line-height:1.5;max-width:none;margin-top:2pt;color:#222}
+  /* Hero becomes the résumé header. */
+  .hero{min-height:0;padding:0;border:0;display:block}
+  .hero-grid{display:block;margin:0}
+  .eyebrow{font-size:7.5pt;margin:0 0 3pt}
+  h1{font-size:20pt;line-height:1.15;letter-spacing:-.03em}
+  h1 .zh,h1 .en{display:inline;white-space:normal}
+  .identity{font-size:11pt;margin-top:3pt}
+  .hero-lede{font-size:9.5pt;line-height:1.55;max-width:none;margin-top:3pt;color:#222}
+  .hero-ticker{margin-top:6pt;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .hero-ticker>div,.hero-ticker>div+div{padding:4pt 8pt 0 0;border-left:0}
+  .hero-ticker dt{font-size:7.5pt;color:#444}
+  .hero-ticker dd{font-size:12pt}
+  .ticker-note{font-size:7pt;margin-top:3pt;color:#444}
+  /* The year: numbers and milestones. */
+  .stats{grid-template-columns:repeat(6,minmax(0,1fr));border-top:.5pt solid #000}
+  .stat,.stat+.stat{padding:5pt 6pt 5pt 0;border:0;gap:2pt}
+  .stat strong{font-size:13pt}
+  .stat span{font-size:7.5pt;color:#333}
+  .milestones{grid-template-columns:repeat(3,minmax(0,1fr));gap:4pt 12pt;margin-top:8pt;padding:0}
+  .milestones:before,.milestones li:before{display:none}
+  .milestones li{padding:0}
+  .milestones time{font-size:7.5pt}
+  .milestones strong{font-size:9pt;margin-top:1pt}
+  .milestones p{font-size:8pt;line-height:1.45;margin-top:1pt;color:#333}
+  /* Cases: headline and metric only, as a compact list. */
+  .casebook{display:block;border-top:.5pt solid #000}
   .js .case[hidden]{display:block}
+  .case{padding:4pt 0;animation:none;break-inside:avoid;border-bottom:.5pt solid #ccc}
+  .case-head{grid-template-columns:minmax(0,1fr) auto;gap:10pt;padding:0;border:0;align-items:baseline}
+  .case-kicker{font-size:7pt}
+  .case-head h3{font-size:9.5pt;line-height:1.4;margin-top:1pt;letter-spacing:0}
+  .case-metric{font-size:11pt;gap:4pt;max-width:none}
+  .case-metric .unit{font-size:7.5pt;max-width:120pt}
+  .case-metric .icon{width:10pt;height:10pt}
+  .tag{font-size:6.5pt;padding:1pt 3pt;border:.5pt solid currentColor}
+  /* Capabilities: three columns of text. */
+  .capabilities{grid-template-columns:repeat(3,minmax(0,1fr));gap:14pt;padding-top:6pt;border-top:.5pt solid #000}
+  .capability h3{font-size:10pt;margin-top:2pt}
+  .capability>p{font-size:8.5pt;line-height:1.45;margin-top:2pt}
+  .capability .stack{font-size:7.5pt;line-height:1.5;margin-top:3pt}
+  /* Experience: every job open, compact. */
+  .case-head h3{break-inside:avoid}
+  .experience{display:block;margin-top:4pt}
+  .experience-aside{display:none}
+  .timeline{border-top:0}
+  .job{break-inside:avoid;border-bottom:.5pt solid #ccc}
+  .job summary{padding:5pt 0 2pt}
+  .job-summary-copy{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10pt}
+  .job-summary-copy .job-date{order:2;margin-left:auto}
+  .job-date{font-size:8pt;color:#333}
+  .job-title{font-size:10.5pt}
+  .company{font-size:9pt;color:#222}
+  .job-body{padding:0 0 5pt}
+  .job-body>p{font-size:9pt;line-height:1.45}
+  .job-body ul{margin-top:2pt}
+  .job-body li{font-size:8.5pt;line-height:1.42;margin-top:1pt;color:#111}
+  .job-body .stack{font-size:7.5pt;margin-top:3pt;color:#444}
+  .education{display:block;margin-top:8pt}
+  .education h3{font-size:7.5pt;margin-bottom:3pt}
+  .education-item{flex-direction:row;padding-top:4pt;border-top:.5pt solid #000;break-inside:avoid}
+  .education-item>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8pt}
+  .education-item h4{font-size:10pt}
+  .education-item p{font-size:8.5pt;line-height:1.45;margin-top:0;color:#222}
+  /* Contact details sit in the header, as on a résumé; the closing section does not print. */
+  .identity:after{content:"  ·  zchaw127@gmail.com  ·  hire.jiawis.com  ·  github.com/chaw1";font:400 8.5pt var(--mono);letter-spacing:0;color:#222}
+  a{color:#000}
 }
