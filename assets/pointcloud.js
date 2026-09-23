@@ -20,124 +20,155 @@
   if (!gl) { figure.classList.add('no-webgl'); return; }
 
   /* ---------------- scene ---------------- */
-  function mulberry32(seed) {
-    return () => {
-      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-      let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
-      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  const rand = mulberry32(20250919);
+  // Shared by the main thread and the worker: the target car sits at cars[0].
   const GROUND = -1.73;
-  const KIND = { ground: 0, building: 1, car: 2, tree: 3, pole: 4, target: 5 };
-  const boxes = [];
-  const spheres = [];
-  const box = (x0, y0, z0, x1, y1, z1, kind) => boxes.push({ min: [x0, y0, z0], max: [x1, y1, z1], kind });
-
-  // Building blocks on both sides of the street, with gaps for side streets.
-  for (const side of [-1, 1]) {
-    let x = -64;
-    while (x < 64) {
-      const len = 8 + rand() * 14;
-      if (Math.abs(x + len / 2) > 6 || side > 0) {
-        const depth = 8 + rand() * 6;
-        const near = 12.5 + rand() * 2.5;
-        const h = 6 + rand() * 16;
-        if (side < 0) box(x, -near - depth, GROUND, x + len, -near, GROUND + h, KIND.building);
-        else box(x, near, GROUND, x + len, near + depth, GROUND + h, KIND.building);
-      }
-      x += len + (rand() < 0.25 ? 6 + rand() * 4 : 0.6);
-    }
-  }
-  // Cars: [x, y, yaw-free]. The first one is the annotated target.
-  const cars = [[9.5, -2.7], [-10, 2.9], [19, 3.1], [-21, -3.0], [31, -2.6], [-34, 5.6], [-27, 5.6], [24, -5.6], [42, 5.5], [-46, -5.5]];
   const car = { l: 4.5, w: 1.9, h: 1.5 };
-  cars.forEach(([cx, cy], i) => {
-    const kind = i === 0 ? KIND.target : KIND.car;
-    box(cx - car.l / 2, cy - car.w / 2, GROUND + 0.22, cx + car.l / 2, cy + car.w / 2, GROUND + 0.9, kind);
-    box(cx - car.l / 2 + 0.9, cy - car.w / 2 + 0.08, GROUND + 0.9, cx + car.l / 2 - 1.1, cy + car.w / 2 - 0.08, GROUND + car.h, kind);
-  });
-  // Poles, trees and pedestrians along the sidewalks.
-  for (let x = -60; x <= 60; x += 15) {
+  const cars = [[9.5, -2.7], [-10, 2.9], [19, 3.1], [-21, -3.0], [31, -2.6], [-34, 5.6], [-27, 5.6], [24, -5.6], [42, 5.5], [-46, -5.5]];
+
+  // Self-contained (no closure references) so it can be stringified into a worker.
+  // Same seed, same code, same output on either thread.
+  function generateScan(beams, steps, cfg) {
+    function mulberry32(seed) {
+      return () => {
+        seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+        let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+        return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    const rand = mulberry32(20250919);
+    const GROUND = cfg.ground;
+    const car = cfg.car;
+    const cars = cfg.cars;
+    const KIND = { ground: 0, building: 1, car: 2, tree: 3, pole: 4, target: 5 };
+    const boxes = [];
+    const spheres = [];
+    const box = (x0, y0, z0, x1, y1, z1, kind) => boxes.push({ min: [x0, y0, z0], max: [x1, y1, z1], kind });
+
+    // Building blocks on both sides of the street, with gaps for side streets.
     for (const side of [-1, 1]) {
-      const px = x + (side > 0 ? 7 : 0);
-      box(px - 0.12, side * 8.2 - 0.12, GROUND, px + 0.12, side * 8.2 + 0.12, GROUND + 7, KIND.pole);
-      const tx = px + 5;
-      box(tx - 0.2, side * 9.8 - 0.2, GROUND, tx + 0.2, side * 9.8 + 0.2, GROUND + 2.6, KIND.tree);
-      spheres.push({ c: [tx, side * 9.8, GROUND + 4.1], r: 1.7 + rand() * 0.8, kind: KIND.tree });
-    }
-  }
-  [[4, 8.9], [5.2, 9.3], [-6, -9.1], [14, -8.8], [-15, 9.0]].forEach(([x, y]) => box(x - 0.25, y - 0.25, GROUND, x + 0.25, y + 0.25, GROUND + 1.72, KIND.pole));
-
-  function hitBox(o, d, b, tMax) {
-    let t0 = 0.3, t1 = tMax;
-    for (let a = 0; a < 3; a += 1) {
-      if (Math.abs(d[a]) < 1e-9) { if (o[a] < b.min[a] || o[a] > b.max[a]) return -1; continue; }
-      const inv = 1 / d[a];
-      let n = (b.min[a] - o[a]) * inv, f = (b.max[a] - o[a]) * inv;
-      if (n > f) { const s = n; n = f; f = s; }
-      if (n > t0) t0 = n;
-      if (f < t1) t1 = f;
-      if (t0 > t1) return -1;
-    }
-    return t0;
-  }
-  function hitSphere(o, d, s, tMax) {
-    const ox = o[0] - s.c[0], oy = o[1] - s.c[1], oz = o[2] - s.c[2];
-    const b = ox * d[0] + oy * d[1] + oz * d[2];
-    const c = ox * ox + oy * oy + oz * oz - s.r * s.r;
-    const disc = b * b - c;
-    if (disc < 0) return -1;
-    const t = -b - Math.sqrt(disc);
-    return t > 0.3 && t < tMax ? t : -1;
-  }
-
-  function scan(beams, steps) {
-    const origin = [0, 0, 0];
-    const maxRange = 72;
-    const out = [];
-    const elev = [];
-    for (let i = 0; i < beams; i += 1) {
-      const u = i / (beams - 1);
-      elev.push((-25 + 40 * Math.pow(u, 0.9)) * Math.PI / 180);
-    }
-    for (let s = 0; s < steps; s += 1) {
-      const az = (s / steps) * Math.PI * 2;
-      const ca = Math.cos(az), sa = Math.sin(az);
-      for (let bIdx = 0; bIdx < beams; bIdx += 1) {
-        const e = elev[bIdx] + (rand() - 0.5) * 0.0015;
-        const ce = Math.cos(e);
-        const d = [ca * ce, sa * ce, Math.sin(e)];
-        let best = maxRange, kind = -1;
-        if (d[2] < 0) {
-          const t = GROUND / d[2];
-          if (t < best) { best = t; kind = KIND.ground; }
+      let x = -64;
+      while (x < 64) {
+        const len = 8 + rand() * 14;
+        if (Math.abs(x + len / 2) > 6 || side > 0) {
+          const depth = 8 + rand() * 6;
+          const near = 12.5 + rand() * 2.5;
+          const h = 6 + rand() * 16;
+          if (side < 0) box(x, -near - depth, GROUND, x + len, -near, GROUND + h, KIND.building);
+          else box(x, near, GROUND, x + len, near + depth, GROUND + h, KIND.building);
         }
-        for (let k = 0; k < boxes.length; k += 1) {
-          const t = hitBox(origin, d, boxes[k], best);
-          if (t > 0 && t < best) { best = t; kind = boxes[k].kind; }
-        }
-        for (let k = 0; k < spheres.length; k += 1) {
-          const t = hitSphere(origin, d, spheres[k], best);
-          if (t > 0 && t < best) { best = t; kind = spheres[k].kind; }
-        }
-        if (kind < 0) continue;
-        if (kind === KIND.tree && rand() < 0.35) continue; // foliage lets some beams through
-        const noise = 1 + (rand() - 0.5) * 0.006;
-        const x = d[0] * best * noise, y = d[1] * best * noise;
-        let z = d[2] * best * noise;
-        if (kind === KIND.ground) z += Math.sin(x * 0.21) * 0.03 + Math.cos(y * 0.37) * 0.03;
-        out.push(x, y, z, kind);
+        x += len + (rand() < 0.25 ? 6 + rand() * 4 : 0.6);
       }
     }
-    return new Float32Array(out);
+    cars.forEach(([cx, cy], i) => {
+      const kind = i === 0 ? KIND.target : KIND.car;
+      box(cx - car.l / 2, cy - car.w / 2, GROUND + 0.22, cx + car.l / 2, cy + car.w / 2, GROUND + 0.9, kind);
+      box(cx - car.l / 2 + 0.9, cy - car.w / 2 + 0.08, GROUND + 0.9, cx + car.l / 2 - 1.1, cy + car.w / 2 - 0.08, GROUND + car.h, kind);
+    });
+    // Poles, trees and pedestrians along the sidewalks.
+    for (let x = -60; x <= 60; x += 15) {
+      for (const side of [-1, 1]) {
+        const px = x + (side > 0 ? 7 : 0);
+        box(px - 0.12, side * 8.2 - 0.12, GROUND, px + 0.12, side * 8.2 + 0.12, GROUND + 7, KIND.pole);
+        const tx = px + 5;
+        box(tx - 0.2, side * 9.8 - 0.2, GROUND, tx + 0.2, side * 9.8 + 0.2, GROUND + 2.6, KIND.tree);
+        spheres.push({ c: [tx, side * 9.8, GROUND + 4.1], r: 1.7 + rand() * 0.8, kind: KIND.tree });
+      }
+    }
+    [[4, 8.9], [5.2, 9.3], [-6, -9.1], [14, -8.8], [-15, 9.0]].forEach(([x, y]) => box(x - 0.25, y - 0.25, GROUND, x + 0.25, y + 0.25, GROUND + 1.72, KIND.pole));
+
+    function hitBox(o, d, b, tMax) {
+      let t0 = 0.3, t1 = tMax;
+      for (let a = 0; a < 3; a += 1) {
+        if (Math.abs(d[a]) < 1e-9) { if (o[a] < b.min[a] || o[a] > b.max[a]) return -1; continue; }
+        const inv = 1 / d[a];
+        let n = (b.min[a] - o[a]) * inv, f = (b.max[a] - o[a]) * inv;
+        if (n > f) { const s = n; n = f; f = s; }
+        if (n > t0) t0 = n;
+        if (f < t1) t1 = f;
+        if (t0 > t1) return -1;
+      }
+      return t0;
+    }
+    function hitSphere(o, d, s, tMax) {
+      const ox = o[0] - s.c[0], oy = o[1] - s.c[1], oz = o[2] - s.c[2];
+      const b = ox * d[0] + oy * d[1] + oz * d[2];
+      const c = ox * ox + oy * oy + oz * oz - s.r * s.r;
+      const disc = b * b - c;
+      if (disc < 0) return -1;
+      const t = -b - Math.sqrt(disc);
+      return t > 0.3 && t < tMax ? t : -1;
+    }
+
+    function scan(beams, steps) {
+      const origin = [0, 0, 0];
+      const maxRange = 72;
+      const out = [];
+      const elev = [];
+      for (let i = 0; i < beams; i += 1) {
+        const u = i / (beams - 1);
+        elev.push((-25 + 40 * Math.pow(u, 0.9)) * Math.PI / 180);
+      }
+      for (let s = 0; s < steps; s += 1) {
+        const az = (s / steps) * Math.PI * 2;
+        const ca = Math.cos(az), sa = Math.sin(az);
+        for (let bIdx = 0; bIdx < beams; bIdx += 1) {
+          const e = elev[bIdx] + (rand() - 0.5) * 0.0015;
+          const ce = Math.cos(e);
+          const d = [ca * ce, sa * ce, Math.sin(e)];
+          let best = maxRange, kind = -1;
+          if (d[2] < 0) {
+            const t = GROUND / d[2];
+            if (t < best) { best = t; kind = KIND.ground; }
+          }
+          for (let k = 0; k < boxes.length; k += 1) {
+            const t = hitBox(origin, d, boxes[k], best);
+            if (t > 0 && t < best) { best = t; kind = boxes[k].kind; }
+          }
+          for (let k = 0; k < spheres.length; k += 1) {
+            const t = hitSphere(origin, d, spheres[k], best);
+            if (t > 0 && t < best) { best = t; kind = spheres[k].kind; }
+          }
+          if (kind < 0) continue;
+          if (kind === KIND.tree && rand() < 0.35) continue; // foliage lets some beams through
+          const noise = 1 + (rand() - 0.5) * 0.006;
+          const x = d[0] * best * noise, y = d[1] * best * noise;
+          let z = d[2] * best * noise;
+          if (kind === KIND.ground) z += Math.sin(x * 0.21) * 0.03 + Math.cos(y * 0.37) * 0.03;
+          out.push(x, y, z, kind);
+        }
+      }
+      return new Float32Array(out);
+    }
+    return scan(beams, steps);
   }
 
   const small = Math.min(window.innerWidth, window.innerHeight) < 700 || (navigator.hardwareConcurrency || 8) <= 4;
-  const points = scan(small ? 48 : 64, small ? 900 : 1500);
-  const count = points.length / 4;
-  if (ptsEl) ptsEl.textContent = count.toLocaleString('en-US');
+  const scanArgs = [small ? 48 : 64, small ? 900 : 1500, { ground: GROUND, car, cars }];
+
+  // Ray-casting ~100k beams takes 60-200 ms of CPU, so it runs in a worker built from a Blob URL
+  // (no extra file, no build step). If workers are unavailable it falls back to the main thread
+  // after first paint. Either way the output is the same seeded point cloud.
+  function requestScan(done) {
+    const fallback = () => {
+      const run = () => done(generateScan(...scanArgs));
+      if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 1500 });
+      else window.setTimeout(run, 60);
+    };
+    let url = null;
+    try {
+      const source = `self.onmessage = (e) => { const pts = (${generateScan.toString()})(...e.data); self.postMessage(pts, [pts.buffer]); };`;
+      url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+      const worker = new Worker(url);
+      const finish = () => { worker.terminate(); URL.revokeObjectURL(url); };
+      worker.onmessage = (e) => { finish(); done(e.data); };
+      worker.onerror = (e) => { if (e && e.preventDefault) e.preventDefault(); finish(); fallback(); };
+      worker.postMessage(scanArgs);
+    } catch (_) {
+      if (url) URL.revokeObjectURL(url);
+      fallback();
+    }
+  }
 
   /* ---------------- GL programs ---------------- */
   const pointVS = `
@@ -213,8 +244,7 @@
     return;
   }
   const pointBuf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, pointBuf);
-  gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+  let count = 0; // points arrive asynchronously; until then only the annotation box and rings draw
 
   // Annotation cuboid around the target car, a heading tick, and the ego vehicle outline.
   const [tx, ty] = cars[0];
@@ -348,18 +378,20 @@
     });
     gl.disableVertexAttribArray(loc.aPos);
 
-    gl.useProgram(pointProg);
-    gl.uniformMatrix4fv(loc.uMVP, false, mvp);
-    gl.uniform3fv(loc.uEye, eye);
-    gl.uniform1f(loc.uSweep, sweep);
-    gl.uniform1f(loc.uSize, small ? 2.1 : 1.9);
-    gl.uniform1f(loc.uDpr, dpr);
-    gl.bindBuffer(gl.ARRAY_BUFFER, pointBuf);
-    gl.enableVertexAttribArray(loc.aPoint);
-    gl.vertexAttribPointer(loc.aPoint, 4, gl.FLOAT, false, 0, 0);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-    gl.drawArrays(gl.POINTS, 0, count);
-    gl.disableVertexAttribArray(loc.aPoint);
+    if (count > 0) {
+      gl.useProgram(pointProg);
+      gl.uniformMatrix4fv(loc.uMVP, false, mvp);
+      gl.uniform3fv(loc.uEye, eye);
+      gl.uniform1f(loc.uSweep, sweep);
+      gl.uniform1f(loc.uSize, small ? 2.1 : 1.9);
+      gl.uniform1f(loc.uDpr, dpr);
+      gl.bindBuffer(gl.ARRAY_BUFFER, pointBuf);
+      gl.enableVertexAttribArray(loc.aPoint);
+      gl.vertexAttribPointer(loc.aPoint, 4, gl.FLOAT, false, 0, 0);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      gl.drawArrays(gl.POINTS, 0, count);
+      gl.disableVertexAttribArray(loc.aPoint);
+    }
 
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.useProgram(lineProg);
@@ -420,4 +452,12 @@
   else window.addEventListener('resize', resize);
   resize();
   start();
+  requestScan((points) => {
+    if (gl.isContextLost()) return;
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+    count = points.length / 4;
+    if (ptsEl) ptsEl.textContent = count.toLocaleString('en-US');
+    if (!running) draw(performance.now()); // static frame under reduced motion or when off-screen
+  });
 })();
