@@ -32,7 +32,7 @@
       <a class="nav-mobile-only" href="#contact" data-nav><span class="zh">联系</span><span class="en">Contact</span></a>
     </nav>
     <div class="nav-tools">
-      <div class="languages" aria-label="Language">
+      <div class="languages" role="group" aria-label="Language / 语言">
         <button type="button" data-set-lang="zh" aria-pressed="true" aria-label="中文">中</button>
         <button type="button" data-set-lang="en" aria-pressed="false" aria-label="English">EN</button>
       </div>
@@ -75,8 +75,8 @@
       <div><dt><span class="zh">100 并发压测 p95</span><span class="en">p95, 100-user load test</span></dt><dd>50 ms</dd></div>
       <div><dt><span class="zh">生产 7 天请求</span><span class="en">Requests in 7 days</span></dt><dd><span class="zh">331 万</span><span class="en">3.31 M</span></dd></div>
       <div><dt><span class="zh">一年提交对象</span><span class="en">Commits in the year</span></dt><dd>5,839</dd></div>
-      <p class="ticker-note mono"><span class="zh">可用性与请求量为 SolarSense 生产实测；p95 为与生产同机同配置的压测；提交数来自 git。2026-08</span><span class="en">Availability and requests measured in SolarSense production; p95 from a load test on the production host and configuration; commits from git. Aug 2026</span></p>
     </dl>
+    <p class="ticker-note mono"><span class="zh">可用性与请求量为 SolarSense 生产实测；p95 为与生产同机同配置的压测；提交数来自 git。2026-08</span><span class="en">Availability and requests measured in SolarSense production; p95 from a load test on the production host and configuration; commits from git. Aug 2026</span></p>
   </section>
 
   <!-- ============ 01 THE YEAR ============ -->
@@ -98,10 +98,10 @@
 
     <figure class="heatmap-card">
       <div class="heatmap-head">
-        <figcaption><strong><span class="zh">每一格是一天</span><span class="en">Each cell is a day</span></strong><span class="mono" id="heat-readout" aria-live="polite"><span class="zh">悬停查看当天提交数</span><span class="en">Hover a day for its commit count</span></span></figcaption>
+        <figcaption><strong><span class="zh">每一格是一天</span><span class="en">Each cell is a day</span></strong><span class="mono" id="heat-readout"><span class="zh">悬停查看当天提交数</span><span class="en">Hover a day for its commit count</span></span></figcaption>
         <div class="heat-legend mono" aria-hidden="true"><span class="zh">少</span><span class="en">less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i><span class="zh">多</span><span class="en">more</span></div>
       </div>
-      <div class="heatmap-scroll"><div id="heatmap" class="heatmap" data-start="2025-09-01" data-days="0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1,0,0,5,0,0,0,2,0,1,7,0,0,0,4,0,0,1,0,0,0,0,0,0,0,1,0,2,0,13,17,9,0,0,0,0,7,10,2,0,0,0,2,0,2,6,0,0,12,19,4,5,6,0,0,5,2,20,6,10,0,0,0,3,4,11,0,0,0,3,19,18,14,17,0,9,11,13,7,9,0,0,0,30,7,7,14,6,0,0,5,10,0,12,6,0,0,10,18,5,11,9,0,0,3,13,6,0,0,0,2,14,32,15,34,8,0,0,31,29,11,18,13,0,0,0,24,8,7,5,0,18,7,5,8,21,26,8,1,7,32,59,23,15,3,2,20,20,10,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,2,23,10,7,27,19,0,0,60,74,70,28,38,0,22,72,57,70,35,22,0,0,21,32,72,21,22,6,5,37,18,18,48,8,12,0,0,28,40,0,36,11,0,1,1,25,24,15,0,0,23,13,22,5,9,0,0,29,0,0,2,0,0,0,0,0,34,5,0,0,5,0,2,3,0,0,0,0,0,1,7,13,42,30,66,72,67,70,43,53,0,0,12,23,3,25,31,0,0,0,3,12,14,52,9,7,28,16,11,20,24,4,0,25,28,25,69,32,5,10,17,15,10,33,5,24,42,24,5,71,66,45,49,70,56,110,75,26,28,7,33,113,45,61,81,56,28,41,22,25,55,42,6,19,21,12,25,21,26,27,6,0,6,10,1,5,16,7,19,23,92,84,88,186,54,36,38,70,87,54,25,25,60,15" role="img" aria-label="2025-09 至 2026-08 每日提交热力图，峰值月 2026-07 / Daily commit heatmap, Sep 2025 to Aug 2026, peaking in July 2026"></div></div>
+      <div class="heatmap-scroll"><div id="heatmap" class="heatmap" data-start="2025-09-01" data-days="0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1,0,0,5,0,0,0,2,0,1,7,0,0,0,4,0,0,1,0,0,0,0,0,0,0,1,0,2,0,13,17,9,0,0,0,0,7,10,2,0,0,0,2,0,2,6,0,0,12,19,4,5,6,0,0,5,2,20,6,10,0,0,0,3,4,11,0,0,0,3,19,18,14,17,0,9,11,13,7,9,0,0,0,30,7,7,14,6,0,0,5,10,0,12,6,0,0,10,18,5,11,9,0,0,3,13,6,0,0,0,2,14,32,15,34,8,0,0,31,29,11,18,13,0,0,0,24,8,7,5,0,18,7,5,8,21,26,8,1,7,32,59,23,15,3,2,20,20,10,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,2,23,10,7,27,19,0,0,60,74,70,28,38,0,22,72,57,70,35,22,0,0,21,32,72,21,22,6,5,37,18,18,48,8,12,0,0,28,40,0,36,11,0,1,1,25,24,15,0,0,23,13,22,5,9,0,0,29,0,0,2,0,0,0,0,0,34,5,0,0,5,0,2,3,0,0,0,0,0,1,7,13,42,30,66,72,67,70,43,53,0,0,12,23,3,25,31,0,0,0,3,12,14,52,9,7,28,16,11,20,24,4,0,25,28,25,69,32,5,10,17,15,10,33,5,24,42,24,5,71,66,45,49,70,56,110,75,26,28,7,33,113,45,61,81,56,28,41,22,25,55,42,6,19,21,12,25,21,26,27,6,0,6,10,1,5,16,7,19,23,92,84,88,186,54,36,38,70,87,54,25,25,60,15" role="group" aria-label="2025-09 至 2026-08 每日提交热力图，峰值月 2026-07；方向键逐日浏览 / Daily commit heatmap, Sep 2025 to Aug 2026, peaking in July 2026; use arrow keys to move between days"></div></div>
       <p class="heat-note"><span class="zh">由本地 git 按作者日期重算、跨分支按 hash 去重。春节那两周是空的；3 月、7 月、8 月三个峰值对应 QApex 拆分独立部署、可观测与能力平台、具身数据线与信创交付。</span><span class="en">Recomputed from local git by author date, deduplicated by hash across branches. The empty fortnight is Chinese New Year; the March, July and August peaks line up with splitting out QApex, observability and the capability platform, and the embodied-data line plus on-prem ARM64 delivery.</span></p>
     </figure>
 
@@ -248,7 +248,7 @@
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选单机 k3s，把单点风险写进方案而不是回避；Argo CD 先 apply-only 分批纳管，设五条硬停止条件。定下“CI 是唯一出图口”，回滚就是改一行镜像 tag。事故后固化：共享凭证一次性注入全量并重启全量，验证用 11 × 7 = 77 格全矩阵而不抽样。</span><span class="en">Single-node k3s, with the single point of failure written into the plan rather than hidden; Argo CD apply-only in batches behind five hard stop conditions. CI became the only source of images, so a rollback is a one-line tag change. After an incident I set two rules: when a shared credential changes, inject it everywhere and restart everything in one go; and verify the full 11 × 7 = 77-cell matrix instead of sampling.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">access log 从 1,313 万行降到 71.2 万行，告警有效覆盖 64/64。生产 15 天探针可用性 99.9975%，7 天 331 万真实请求；100 并发压测整体 p95 50 ms。在与生产同机同配置的预发环境做极限压测，定位 project 服务 CPU 打满，2 核扩到 6 核后 84 → 205 req/s，p95 2.6 s → 0.85 s。</span><span class="en">Access logs fell from 13.13 M to 0.712 M lines, with 64/64 effective alert coverage. In production: 99.9975% availability over a 15-day probe and 3.31 M real requests in 7 days; a 100-user load test ran at 50 ms p95. A stress test in pre-production, on the same host and configuration, found the project service CPU-bound; going from 2 to 6 cores took it from 84 to 205 req/s and p95 from 2.6 s to 0.85 s.</span></p></li>
         </ol>
-        <div class="bars" aria-label="优化前后 / Before and after">
+        <div class="bars" role="group" aria-label="优化前后 / Before and after">
           <div class="bar-row"><span class="bar-label"><span class="zh">日志行数</span><span class="en">Log lines</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">13.13 M</span></div>
           <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:5.4%"></i></span><span class="mono">0.71 M</span></div>
           <div class="bar-row"><span class="bar-label"><span class="zh">吞吐</span><span class="en">Throughput</span> <span class="tag lab"><span class="zh">预发</span><span class="en">LAB</span></span></span><span class="bar"><i style="--w:41%"></i></span><span class="mono">84 req/s</span></div>
@@ -271,7 +271,7 @@
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">换 EfficientViT-SAM。三条理由：质量上 FastSAM 不是检测器，CLIP 只能重排；速度上 9.4 倍；许可证上 README 写 Apache、LICENSE 文件实为 AGPL，私有化分发会触发 copyleft。INT8 被否决：只快 1.7 倍，mask IoU 掉到 0.42，而模型自估 IoU 不变，坏了也察觉不到。命名也守纪律：CPU 版不借用 SAM 3 的名字，不做虚假能力声明。</span><span class="en">EfficientViT-SAM, for three reasons: quality, since FastSAM is not a detector and CLIP can only re-rank; speed, at 9.4×; and licensing, since the README says Apache but the LICENSE file is AGPL, so shipping it on-prem would trigger copyleft. INT8 was rejected: only 1.7× faster, mask IoU fell to 0.42 while the model's self-estimated IoU stayed the same, so failure would be invisible. Naming stays honest too: the CPU service does not borrow the SAM 3 name.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">云上 4 核真机：6,000 ms → 640 ms；ORT 换 OpenVINO 后编码器 470 → 93 ms；线程数 2 → 4 为最优。另修一次 OOM：4K 图峰值内存 4,078 MB → 1,907 MB。</span><span class="en">On a real 4-core cloud VM: 6,000 ms → 640 ms; ORT to OpenVINO took the encoder from 470 to 93 ms; four threads was the sweet spot. A related OOM fix cut 4K-image peak memory from 4,078 MB to 1,907 MB.</span></p></li>
         </ol>
-        <div class="bars" aria-label="延迟对比 / Latency">
+        <div class="bars" role="group" aria-label="延迟对比 / Latency">
           <div class="bar-row"><span class="bar-label">FastSAM + CLIP</span><span class="bar"><i style="--w:100%"></i></span><span class="mono">6,000 ms</span></div>
           <div class="bar-row"><span class="bar-label">INT8</span><span class="bar warn"><i style="--w:59%"></i></span><span class="mono">IoU 0.42</span></div>
           <div class="bar-row after"><span class="bar-label">EfficientViT-SAM</span><span class="bar"><i style="--w:10.7%"></i></span><span class="mono">640 ms</span></div>

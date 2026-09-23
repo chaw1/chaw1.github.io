@@ -168,34 +168,50 @@
     const defaultReadout = () => {
       if (readout) readout.textContent = t('悬停或聚焦任一天查看提交数', 'Hover or focus a day to see its commits');
     };
+    const describe = (cell) => {
+      const n = Number(cell.dataset.n);
+      return language === 'zh' ? `${cell.dataset.date} · ${n} 个提交` : `${cell.dataset.date} · ${n} commit${n === 1 ? '' : 's'}`;
+    };
+    // Each day is a focusable image with its own accessible name (the visible readout mirrors it).
+    const labelCells = () => cells.forEach((c) => c.setAttribute('aria-label', describe(c)));
+    cells.forEach((c) => c.setAttribute('role', 'img'));
+    labelCells();
     const show = (cell) => {
       if (hot) hot.classList.remove('is-hot');
       hot = cell;
       if (!cell) { defaultReadout(); return; }
       cell.classList.add('is-hot');
-      const n = Number(cell.dataset.n);
-      readout.textContent = language === 'zh' ? `${cell.dataset.date} · ${n} 个提交` : `${cell.dataset.date} · ${n} commit${n === 1 ? '' : 's'}`;
+      if (readout) readout.textContent = describe(cell);
     };
     grid.addEventListener('pointerover', (e) => { if (e.target.classList.contains('heat-cell') && !e.target.classList.contains('pad')) show(e.target); });
     grid.addEventListener('pointerleave', () => show(null));
     // Keyboard: one roving tab stop, arrow keys move by day / week.
     let focusIndex = counts.indexOf(Math.max(...counts));
     cells.forEach((c, i) => c.setAttribute('tabindex', i === focusIndex ? '0' : '-1'));
-    grid.setAttribute('role', 'grid');
-    grid.addEventListener('focusin', (e) => { if (e.target.classList.contains('heat-cell')) show(e.target); });
+    grid.addEventListener('focusin', (e) => {
+      if (!e.target.classList.contains('heat-cell')) return;
+      // Keep the roving tab stop on the day that was actually focused (e.g. by click).
+      const i = cells.indexOf(e.target);
+      if (i >= 0 && i !== focusIndex) { cells[focusIndex].setAttribute('tabindex', '-1'); focusIndex = i; e.target.setAttribute('tabindex', '0'); }
+      show(e.target);
+    });
     grid.addEventListener('focusout', () => show(null));
     grid.addEventListener('keydown', (e) => {
       const deltas = { ArrowRight: 7, ArrowLeft: -7, ArrowDown: 1, ArrowUp: -1 };
-      if (!(e.key in deltas)) return;
+      let next;
+      if (e.key in deltas) next = focusIndex + deltas[e.key];
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = cells.length - 1;
+      else return;
       e.preventDefault();
-      const next = Math.max(0, Math.min(cells.length - 1, focusIndex + deltas[e.key]));
+      next = Math.max(0, Math.min(cells.length - 1, next));
       cells[focusIndex].setAttribute('tabindex', '-1');
       focusIndex = next;
       cells[next].setAttribute('tabindex', '0');
       cells[next].focus();
     });
     defaultReadout();
-    languageListeners.push(() => { monthLabels(); show(hot); });
+    languageListeners.push(() => { monthLabels(); labelCells(); show(hot); });
     if (!('IntersectionObserver' in window) || reducedMotion()) heat.classList.add('is-in');
   }
 
@@ -327,17 +343,19 @@
   tabs.forEach((tab, i) => {
     tab.addEventListener('click', () => selectTab(tab));
     tab.addEventListener('keydown', (e) => {
-      const vertical = window.innerWidth > 980;
-      const nextKey = vertical ? 'ArrowDown' : 'ArrowRight';
-      const prevKey = vertical ? 'ArrowUp' : 'ArrowLeft';
+      // The list is vertical on desktop and a horizontal strip on small screens; accept both axes.
       let target = null;
-      if (e.key === nextKey) target = tabs[(i + 1) % tabs.length];
-      else if (e.key === prevKey) target = tabs[(i - 1 + tabs.length) % tabs.length];
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') target = tabs[(i + 1) % tabs.length];
+      else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') target = tabs[(i - 1 + tabs.length) % tabs.length];
       else if (e.key === 'Home') target = tabs[0];
       else if (e.key === 'End') target = tabs[tabs.length - 1];
       if (target) { e.preventDefault(); selectTab(target, true); }
     });
   });
+  const tabList = $('.case-tabs');
+  const setOrientation = () => { if (tabList) tabList.setAttribute('aria-orientation', window.innerWidth > 980 ? 'vertical' : 'horizontal'); };
+  setOrientation();
+  window.addEventListener('resize', setOrientation, { passive: true });
   if (tabs.length) {
     const fromHash = tabs.find((tab) => `#${tab.getAttribute('aria-controls')}` === window.location.hash);
     selectTab(fromHash || tabs[0]);
@@ -377,6 +395,7 @@
       li.classList.toggle('done', i < s || (s === 5 && i === 5));
       li.classList.toggle('now', i === s && !fail && s !== 5);
       li.classList.toggle('fail', i === s && Boolean(fail));
+      if (i === s) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
     });
     const setButton = () => {
       playBtn.innerHTML = running
