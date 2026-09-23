@@ -159,6 +159,9 @@
     body.append(monthsRow, grid);
     heat.append(body);
     monthLabels();
+    // On narrow screens the grid scrolls sideways; open on the recent months, where the peaks are.
+    const heatScroll = heat.closest('.heatmap-scroll');
+    if (heatScroll && heatScroll.scrollWidth > heatScroll.clientWidth) heatScroll.scrollLeft = heatScroll.scrollWidth;
 
     const cells = $$('.heat-cell:not(.pad)', grid);
     let hot = null;
