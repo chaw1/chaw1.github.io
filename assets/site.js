@@ -209,13 +209,13 @@
     tools: {
       kicker: 'CLIENTS / ANNOTATION',
       title: ['标注工具矩阵', 'Annotation tool suite'],
-      body: ['图像、文本、音频、视频、点云、医学、时序、具身等 10 类模态的标注工具，以微前端方式挂载，React 与 Vue 双栈各自独立部署。点云工具在生产真机上承载百万级点。', 'Annotation tools for ten modalities, from images and text to point clouds, medical imaging, time series and embodied data, mounted as micro-frontends with React and Vue shipped independently. The point-cloud tool handles a million points in production.'],
+      body: ['图像、文本、音频、视频、点云、医学、时序、具身等 10 类模态的标注工具，以微前端方式挂载，React 与 Vue 双栈各自独立部署。点云工具在生产真机上承载百万级点。', 'Annotation tools for ten modalities, from images and text to point clouds, medical imaging, time series and embodied data, mounted as micro-frontends with React and Vue shipped independently. In production, the point-cloud tool handles frames of over a million points.'],
       facts: [[['标注工具 / 模态', 'Tools / modalities'], '21 / 10'], [['118 万点首帧', 'First frame, 1.18 M points'], '≤ 1.4 s', P], [['拖动帧率', 'Orbit frame rate'], '119–120 FPS', P]]
     },
     desktop: {
       kicker: 'CLIENTS / DESKTOP',
       title: ['桌面端', 'Desktop client'],
-      body: ['为本地大数据与离线场景立项的 Electron 客户端：Rust + NAPI-RS 自研点云八叉树，Go 写 BFF。我定下“桌面端只做宿主，工具只有一份实现”，一个 5,432 行的视图拆包后剩 259 行。截至 2026-08 仍处于内网集成态。', 'An Electron client for local data and offline work, with a Rust + NAPI-RS point-cloud octree and a Go BFF. I set the rule that the desktop is a host and every tool has exactly one implementation; a 5,432-line view shrank to 259 lines after packaging. As of Aug 2026 it was still in internal integration.'],
+      body: ['为本地大数据与离线场景立项的 Electron 客户端：Rust + NAPI-RS 自研点云八叉树，Go 写 BFF。我定下“桌面端只做宿主，工具只有一份实现”，一个 5,432 行的视图拆包后剩 259 行。截至 2026-08 仍处于内网集成态。', 'An Electron client for local data and offline work, with a Rust + NAPI-RS point-cloud octree and a Go BFF. I set the rule that the desktop is only a host and every tool has exactly one implementation; once the tools became packages, a 5,432-line view shrank to 259 lines. As of Aug 2026 it was still in internal integration.'],
       facts: [[['我的桌面端提交', 'My desktop commits'], '703'], [['LOD 更新 P95', 'LOD update P95'], '0.32 ms', L], [['Vitest 用例', 'Vitest cases'], '1,432 / 0 fail', L]]
     },
     gateway: {
@@ -257,7 +257,7 @@
     storage: {
       kicker: 'DATA / STORAGE',
       title: ['元数据 · 标注 · 版本 · 对象', 'Metadata · labels · versions · objects'],
-      body: ['MySQL 存元数据与权限，MongoDB 存标注正文，LakeFS 做数据版本（branch / commit / tag，零拷贝），对象存储承载原始数据。血缘用资产引用加事件建模，导出物可回溯到源数据集版本。', 'MySQL for metadata and permissions, MongoDB for annotation bodies, LakeFS for data versions (branch / commit / tag, zero-copy) and object storage for raw data. Lineage is modelled as asset references plus events, so every export traces back to a source version.'],
+      body: ['MySQL 存元数据与权限，MongoDB 存标注正文，LakeFS 做数据版本（branch / commit / tag，零拷贝），对象存储承载原始数据。血缘用资产引用加事件建模，导出物可回溯到源数据集版本。', 'MySQL for metadata and permissions, MongoDB for annotation bodies, LakeFS for data versions (branch / commit / tag, zero-copy) and object storage for raw data. Lineage is modeled as asset references plus events, so every export traces back to a source version.'],
       facts: [[['9.9 GiB 直传', '9.9 GiB direct upload'], '41.8 MiB/s', P], [['血缘事件回填，对账全等', 'Lineage events, reconciled'], '18,370', P], [['12 GB 事故重新入湖', '12 GB incident re-ingest'], '6 min', L]]
     },
     delivery: {
