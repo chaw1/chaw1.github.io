@@ -36,10 +36,11 @@
 }
 </script>
 <link rel="icon" href="assets/icons/stack.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260923-v8">
+<link rel="stylesheet" href="assets/site.css?v=20260925-v9">
 <script>(function(d){d.classList.add('js');try{var l=localStorage.getItem('jiawis-lang');if(l==='en'||l==='zh'){d.dataset.lang=l;d.lang=l==='zh'?'zh-CN':'en'}}catch(e){}})(document.documentElement)</script>
-<script src="assets/site.js?v=20260923-v8" defer></script>
-<script src="assets/pointcloud.js?v=20260923-v8" defer></script>
+<script src="assets/site.js?v=20260925-v9" defer></script>
+<script src="assets/pointcloud.js?v=20260925-v9" defer></script>
+<script src="assets/figures.js?v=20260925-v9" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到主要内容</span><span class="en">Skip to content</span></a>
@@ -222,17 +223,19 @@
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 MySQL 队列：<code>FOR UPDATE SKIP LOCKED</code> 并发领取，Redis 做心跳与 GPU 限流，outbox 发事件。队列可查、可修，不会出现“消息发了、状态没写”的双写不一致。再把“执行完成 ≠ 交付完成”写成状态机：产物可读、版本落账、血缘闭合才算 READY。</span><span class="en">I kept it in MySQL: concurrent claiming with <code>FOR UPDATE SKIP LOCKED</code>, Redis for heartbeats and GPU throttling, an outbox for events. The queue stays queryable and repairable, with no dual-write gap between message and state. Then I made "executed ≠ delivered" a state machine: READY only when the artifact is readable, the version recorded and the lineage closed.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">验收坚持故障注入，不只看吞吐：以“任务 + 文件”为幂等键，280 次重试只产出 1 个数据集版本。GPU 限流 3 Worker 并跑，Redis 采样 1,383 次仅 1 次瞬时越限。</span><span class="en">Acceptance required fault injection, not just throughput: with task + file as the idempotency key, 280 retries produced exactly one dataset version. Under GPU throttling with three workers, 1,383 Redis samples showed a single momentary overshoot.</span></p></li>
         </ol>
-        <div class="machine" id="machine" data-state="0">
-          <div class="machine-head">
-            <p class="mono"><span class="zh">五态交付机 · 示意</span><span class="en">FIVE-STAGE DELIVERY · ILLUSTRATION</span></p>
-            <button type="button" class="machine-play" id="machine-play"><i class="icon i-play" aria-hidden="true"></i><span class="zh">播放一次交付</span><span class="en">Run a delivery</span></button>
+        <figure class="fig machine" data-fig="queue" aria-labelledby="fig-a-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.A · <span class="zh">队列、租约与幂等</span><span class="en">QUEUE, LEASE, IDEMPOTENCY</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
           </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/6.4;--ar-m:4/5.6"><canvas aria-hidden="true"></canvas></div>
           <ol class="machine-rail" aria-label="状态 / States">
             <li data-i="0">QUEUED</li><li data-i="1">RUNNING</li><li data-i="2">MATERIALIZING</li><li data-i="3">COMMITTING</li><li data-i="4">VERSIONING</li><li data-i="5">READY</li>
           </ol>
-          <pre class="machine-log" id="machine-log" aria-live="polite"><span class="zh">按“播放”看一次包含 Worker 中断与恢复的交付过程。</span><span class="en">Press "Run" to watch a delivery that survives a worker restart.</span></pre>
-          <p class="machine-note"><span class="zh">通用流程示意，不是实时数据；状态名与恢复逻辑取自真实设计。</span><span class="en">A generic illustration, not live data; state names and recovery logic come from the real design.</span></p>
-        </div>
+          <pre class="machine-log" aria-live="off"></pre>
+          <figcaption class="fig-note" id="fig-a-cap"><span class="zh">一次交付的全过程：10,025 个文件切成 157 个 chunk，4 个 Worker 用 SKIP LOCKED 并发领取；worker-3 中途失联，租约到期后 worker-5 接手，已提交的文件按幂等键跳过，最后只产生 1 个数据集版本。流程示意，不是实时数据；文件数、状态名与恢复逻辑取自真实设计。</span><span class="en">One delivery end to end: 10,025 files become 157 chunks, claimed concurrently by four workers with SKIP LOCKED; worker-3 drops out mid-batch, worker-5 takes over when the lease expires, committed files are skipped by the idempotency key, and exactly one dataset version results. An illustration, not live data; the file count, state names and recovery logic come from the real design.</span></figcaption>
+        </figure>
       </article>
 
       <!-- B -->
@@ -248,13 +251,17 @@
           <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次导入几 GB 到几百 GB 的图像、视频、点云压缩包，要求能进、失败能恢复、能追溯版本，且新版本不能破坏历史数据。经后端代理上传时，网关 60 秒超时直接掐断慢客户端。</span><span class="en">Customers import archives from a few GB to hundreds of GB. Uploads have to land, resume after failure, trace back to a version and never damage history. Proxied through the backend, slow clients were cut off by the gateway's 60-second timeout.</span></p></li>
           <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">① 网关代理上传：被超时掐断。② LakeFS 原生预签名：签名与地域绑定，跨环境不可用。③ 后端用对象存储原生 SDK 重签，浏览器直传。</span><span class="en">(1) Proxy through the gateway: cut off by timeouts. (2) LakeFS native presigning: signatures bound to a region, unusable across environments. (3) Re-sign with the object store's native SDK and upload straight from the browser.</span></p></li>
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 ③。每个分片签一个 URL，直传到固定编号的 staging key；直传失败可按片回退到后端代理，两条路写同一个 key。complete 不信会话记录，直接列目录核对片数与总字节，缺片就拒。解压侧给每次 staging 写入包上应用层退避重试，把瞬断当成可重试。</span><span class="en">Option 3. One presigned URL per part, written to a fixed, numbered staging key; a failed part can fall back to the proxy and both paths write the same key. Completion ignores session records and lists the prefix to check part count and total bytes, rejecting any gap. On extraction, every staging write gets application-level retry with backoff, so transient drops are retryable.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 9.9 GiB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~9.9 GiB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 9.9 GiB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。生产血缘事件回填 18,370 条，六类对账全等。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~9.9 GiB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. Backfilling lineage in production produced 18,370 events, with all six reconciliations exact. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
         </ol>
-        <div class="figure-row">
-          <div class="mini-stat"><strong>310</strong><span><span class="zh">分片 · 每片 32 MiB</span><span class="en">parts · 32 MiB each</span></span></div>
-          <div class="mini-stat"><strong>237 s</strong><span><span class="zh">9.9 GiB 端到端</span><span class="en">9.9 GiB end to end</span></span></div>
-          <div class="mini-stat"><strong>18,370</strong><span><span class="zh">生产血缘事件回填，六类对账全等</span><span class="en">lineage events backfilled in production, six reconciliations exact</span></span></div>
-        </div>
+        <figure class="fig" data-fig="upload" aria-labelledby="fig-upload-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.B · <span class="zh">预签名分片直传</span><span class="en">PRESIGNED MULTIPART UPLOAD</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7.4;--ar-m:4/5.8"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-upload-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">代理上传在 60 秒处被网关掐断；预签名直传 310 片、237 秒、平均 41.8 MiB/s；complete 列目录核对片数与字节，故意缺第 197 片时拒绝（309 / 310）。分片完成顺序为示意，片数、耗时、吞吐与缺片结果为 2026-06-23 生产验收实测。</span><span class="en">The proxied upload is cut at the gateway’s 60-second timeout; presigned direct upload moves 310 parts in 237 s at 41.8 MiB/s on average; completion lists the prefix to check parts and bytes, and refuses when part 197 is withheld (309 / 310). The order parts finish in is illustrative; part count, duration, throughput and the refusal come from the production acceptance run on 2026-06-23.</span></figcaption>
+        </figure>
       </article>
 
       <!-- C -->
@@ -272,6 +279,15 @@
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选单机 k3s，把单点风险写进方案而不是回避；Argo CD 先 apply-only 分批纳管，设五条硬停止条件。定下“CI 是唯一出图口”，回滚就是改一行镜像 tag。事故后固化：共享凭证一次性注入全量并重启全量，验证用 11 × 7 = 77 格全矩阵而不抽样。</span><span class="en">Single-node k3s, with the single point of failure written into the plan rather than hidden; Argo CD apply-only in batches behind five hard stop conditions. CI became the only source of images, so a rollback is a one-line tag change. After an incident I set two rules: when a shared credential changes, inject it everywhere and restart everything in one go; and verify the full 11 × 7 = 77-cell matrix instead of sampling.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">access log 从 1,313 万行降到 71.2 万行，告警有效覆盖 64/64。生产 15 天探针可用性 99.9975%，7 天 331 万真实请求；100 并发压测整体 p95 50 ms。在与生产同机同配置的预发环境做极限压测，定位 project 服务 CPU 打满，2 核扩到 6 核后 84 → 205 req/s，p95 2.6 s → 0.85 s。</span><span class="en">Access logs fell from 13.13 M to 0.712 M lines, with 64/64 effective alert coverage. In production: 99.9975% availability over a 15-day probe and 3.31 M real requests in 7 days; a 100-user load test ran at 50 ms p95. A stress test in pre-production, on the same host and configuration, found the project service CPU-bound; going from 2 to 6 cores took it from 84 to 205 req/s and p95 from 2.6 s to 0.85 s.</span></p></li>
         </ol>
+        <figure class="fig" data-fig="matrix" aria-labelledby="fig-matrix-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.C · <span class="zh">11 × 7 凭证矩阵</span><span class="en">11 × 7 CREDENTIAL MATRIX</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7.4;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-matrix-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">一次发版后的验证：第一轮每个 Pod 只查 1 个变量（11 / 77 格）就报了通过，漏掉的那一格让上传链路返回 503。之后改为注入全量、重启全量、77 格逐格核对。模块与 token 用编号代替真实名称。</span><span class="en">Verification after a release: the first pass read one variable per pod (11 of 77 cells) and reported success; the cell it skipped broke the upload path with a 503. Since then: inject everywhere, restart everything, check all 77 cells. Modules and tokens are numbered instead of named.</span></figcaption>
+        </figure>
         <div class="bars" role="group" aria-label="优化前后 / Before and after">
           <div class="bar-row"><span class="bar-label"><span class="zh">日志行数</span><span class="en">Log lines</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">13.13 M</span></div>
           <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:5.4%"></i></span><span class="mono">0.71 M</span></div>
@@ -295,11 +311,15 @@
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">换 EfficientViT-SAM。三条理由：质量上 FastSAM 不是检测器，CLIP 只能重排；速度上 9.4 倍；许可证上 README 写 Apache、LICENSE 文件实为 AGPL，私有化分发会触发 copyleft。INT8 被否决：只快 1.7 倍，mask IoU 掉到 0.42，而模型自估 IoU 不变，坏了也察觉不到。命名也守纪律：CPU 版不借用 SAM 3 的名字，不做虚假能力声明。</span><span class="en">EfficientViT-SAM, for three reasons: quality, since FastSAM is not a detector and CLIP can only re-rank; speed, at 9.4×; and licensing, since the README says Apache but the LICENSE file is AGPL, so shipping it on-prem would trigger copyleft. INT8 was rejected: only 1.7× faster, mask IoU fell to 0.42 while the model's self-estimated IoU stayed the same, so failure would be invisible. Naming stays honest too: the CPU service does not borrow the SAM 3 name.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">云上 4 核真机：6,000 ms → 640 ms；ORT 换 OpenVINO 后编码器 470 → 93 ms；线程数 2 → 4 为最优。另修一次 OOM：4K 图峰值内存 4,078 MB → 1,907 MB。</span><span class="en">On a real 4-core cloud VM: 6,000 ms → 640 ms; ORT to OpenVINO took the encoder from 470 to 93 ms; four threads was the sweet spot. A related OOM fix cut 4K-image peak memory from 4,078 MB to 1,907 MB.</span></p></li>
         </ol>
-        <div class="bars" role="group" aria-label="延迟对比 / Latency">
-          <div class="bar-row"><span class="bar-label">FastSAM + CLIP</span><span class="bar"><i style="--w:100%"></i></span><span class="mono">6,000 ms</span></div>
-          <div class="bar-row"><span class="bar-label">INT8</span><span class="bar warn"><i style="--w:59%"></i></span><span class="mono">IoU 0.42</span></div>
-          <div class="bar-row after"><span class="bar-label">EfficientViT-SAM</span><span class="bar"><i style="--w:10.7%"></i></span><span class="mono">640 ms</span></div>
-        </div>
+        <figure class="fig" data-fig="seg" aria-labelledby="fig-seg-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.D · <span class="zh">CPU 分割选型</span><span class="en">CPU SEGMENTATION</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/8;--ar-m:4/7.4"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放），INT8 与 fp32 的掩码一致性，以及推理线程数与延迟的关系（1 / 2 / 4 / 8 / 16 / 32 线程：2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms）。测试在与生产同一物理机的预发命名空间完成；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed), INT8 vs fp32 mask agreement, and inference threads vs latency (1 / 2 / 4 / 8 / 16 / 32 threads: 2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms). Run in the pre-production namespace on the production host; the image and mask shapes are illustrative.</span></figcaption>
+        </figure>
       </article>
 
       <!-- E -->
@@ -317,6 +337,15 @@
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">冻结六个仓的基线 SHA，先在与客户同款 OS 的鲲鹏实机上真装。验证机 16 核全绿，到了客户现场的 32 核机器上，三个 Python 服务重启 60+ 次：OpenBLAS / OMP 按核数起线程，撞上 nproc 上限。于是给所有算力容器钉死线程数，并把“验证机与客户机同规格，核数也要对齐”写进规范。我的判断规则是：同类组件里只有一个配了某参数，往往是过去事故的遗迹，应推广到全部。</span><span class="en">Froze the baseline SHA of six repositories and did a real install on a Kunpeng machine running the customer's OS. The 16-core test machine was all green; on the customer's 32-core machine three Python services restarted 60+ times, because OpenBLAS / OMP start a thread per core and hit the nproc limit. So every compute container got pinned thread counts, and "the test machine matches the customer's, core count included" became a team rule. My rule of thumb: when only one of a family of components sets a parameter, it is usually the scar of an old incident, and should be applied to all of them.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">两轮真装累计发现 19 个问题、5 个致命，例如 Docker 自身二进制是 x86、Redis 在 ARM64 上拒启、端口避让脚本把 9 个端口分到同一个。补丁复查时搭仿真环境真跑 21 条异常路径断言；验证脚本本身也被验证过。现场 5 条反馈逐一定性：1 条是真实缺陷，出补丁修复；其余主要是客户浏览器版本过低。</span><span class="en">Two real installs surfaced 19 issues, 5 of them fatal: the Docker binary itself was x86, Redis refused to start on ARM64, a port-avoidance script mapped nine ports to one. Patch review ran 21 failure-path assertions in a simulated environment, and the verification scripts were themselves verified. Five field reports were each triaged: one genuine defect, patched; the rest came mostly from an outdated customer browser.</span></p></li>
         </ol>
+        <figure class="fig" data-fig="cores" aria-labelledby="fig-cores-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.E · <span class="zh">核数、线程与 nproc</span><span class="en">CORES, THREADS AND NPROC</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7.2;--ar-m:4/6"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-cores-cap"><span class="zh">同一套镜像，16 核验证机全绿；32 核现场机器上 OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。修复是给所有算力容器显式钉死线程数并放开 nproc。核数与重启次数取自现场记录，线程点数与上限高度为示意。</span><span class="en">The same images: all green on a 16-core test machine; on the 32-core machine on site, OpenBLAS and OMP started a thread per core, hit the nproc limit, and three Python services restarted 60+ times. The fix pins thread counts in every compute container and raises nproc. Core counts and restarts come from the field record; thread dots and the limit height are illustrative.</span></figcaption>
+        </figure>
       </article>
 
       <!-- F -->
@@ -334,6 +363,15 @@
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">逐项对照开源标杆后只补三个 P0：确定性工作流、Agent 委派、MCP 标准。定位出多轮失败的头号原因是跨轮丢失工具可见性；缓存命中低的真凶是易变内容排在稳定段之前。工具目录 28 → 20，并加预算上限与打转检测。</span><span class="en">After a point-by-point comparison with leading open-source agents, I added only three P0s: deterministic workflows, agent delegation and the MCP standard. The top cause of multi-turn failure was tool visibility lost between turns; low cache hit rates came from volatile content placed before stable sections. The tool catalog went from 28 to 20, with budget caps and loop detection.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">输入 token 159 万 → 89.6 万，24 例回归失败 53 → 20，reflection 失败率 34.7% → 0。修复 MCP 服务注册指向过期 Pod IP 后，一个工具的平均耗时 72 s → 3.4 s。</span><span class="en">Input tokens 1.59 M → 0.896 M, regression failures across 24 cases 53 → 20, reflection failure rate 34.7% → 0. Fixing an MCP registration that pointed at a stale Pod IP took one tool's average latency from 72 s to 3.4 s.</span></p></li>
         </ol>
+        <figure class="fig" data-fig="prompt" aria-labelledby="fig-prompt-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.F · <span class="zh">prompt 布局与缓存前缀</span><span class="en">PROMPT LAYOUT AND THE CACHE PREFIX</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7.3;--ar-m:4/6.6"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-prompt-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">缓存只复用与上一轮完全相同的前缀。改前易变段排在前面，实测命中 51.0%；改后稳定段在前、易变段压缩后放末尾，工具目录 28 → 20。分段比例为示意（按单 prompt 均值 12,726 → 9,631 token 配平），结果数字为同一套 24 例回归实测。</span><span class="en">A cache reuses only the prefix identical to the previous turn. Before, volatile content came first and the measured hit rate was 51.0%; after, stable sections lead, the volatile block is trimmed and moved last, and the tool catalog drops from 28 to 20. Segment proportions are illustrative (balanced to the measured per-prompt means, 12,726 → 9,631 tokens); the results are measured on the same 24-case regression.</span></figcaption>
+        </figure>
       </article>
     </div>
   </section>

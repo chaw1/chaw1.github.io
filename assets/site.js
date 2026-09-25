@@ -373,70 +373,7 @@
     window.setTimeout(() => panel.focus({ preventScroll: true }), reducedMotion() ? 0 : 500);
   }));
 
-  /* ---------------- delivery machine ---------------- */
-  const machine = $('#machine');
-  const playBtn = $('#machine-play');
-  const log = $('#machine-log');
-  if (machine && playBtn && log) {
-    const rail = $$('.machine-rail li', machine);
-    const script = [
-      { at: 0, s: 0, zh: 'submit  task#20417  files=10,025  → 已入队，0.89 s 返回', en: 'submit  task#20417  files=10,025  → queued, returned in 0.89 s' },
-      { at: 700, s: 1, zh: 'claim   worker-3 领取 chunk 1..64（FOR UPDATE SKIP LOCKED）', en: 'claim   worker-3 took chunks 1..64 (FOR UPDATE SKIP LOCKED)' },
-      { at: 1500, s: 2, zh: 'build   产物写入 staging，逐个校验非空 / 类型 / SHA-256', en: 'build   artifacts to staging, each checked: non-empty / type / SHA-256' },
-      { at: 2300, s: 3, fail: true, cls: 'warn', zh: 'WARN    worker-3 心跳超时（Pod 重启），任务停在 COMMITTING', en: 'WARN    worker-3 heartbeat lost (pod restart), task held at COMMITTING' },
-      { at: 3300, s: 3, cls: 'dim', zh: 'reclaim worker-5 接手；幂等键 task+file 命中 9,812 条，跳过已提交', en: 'reclaim worker-5 resumes; idempotency key task+file matched 9,812, skipping committed' },
-      { at: 4200, s: 4, zh: 'version LakeFS commit 一次，血缘事件闭合', en: 'version one LakeFS commit, lineage events closed' },
-      { at: 5000, s: 5, cls: 'ok', zh: 'READY   产物可读 · 版本落账 · 血缘闭合 — 数据集版本数 = 1', en: 'READY   readable · versioned · lineage closed — dataset versions = 1' }
-    ];
-    let timers = [];
-    let running = false;
-    const stop = () => { timers.forEach(clearTimeout); timers = []; running = false; };
-    const setRail = (s, fail) => rail.forEach((li, i) => {
-      li.classList.toggle('done', i < s || (s === 5 && i === 5));
-      li.classList.toggle('now', i === s && !fail && s !== 5);
-      li.classList.toggle('fail', i === s && Boolean(fail));
-      if (i === s) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
-    });
-    const setButton = () => {
-      playBtn.innerHTML = running
-        ? `<i class="icon i-reset" aria-hidden="true"></i>${t('重新播放', 'Replay')}`
-        : `<i class="icon i-play" aria-hidden="true"></i>${t(machine.dataset.played ? '重新播放' : '播放一次交付', machine.dataset.played ? 'Replay' : 'Run a delivery')}`;
-    };
-    const line = (step) => {
-      const span = document.createElement('span');
-      if (step.cls) span.className = step.cls;
-      span.textContent = `${t(step.zh, step.en)}\n`;
-      log.appendChild(span);
-      while (log.childNodes.length > 7) log.removeChild(log.firstChild);
-    };
-    const play = () => {
-      stop();
-      running = true;
-      machine.dataset.played = '1';
-      log.textContent = '';
-      setRail(-1);
-      setButton();
-      const speed = reducedMotion() ? 0 : 1;
-      script.forEach((step, idx) => {
-        timers.push(setTimeout(() => {
-          line(step);
-          setRail(step.s, step.fail);
-          if (idx === script.length - 1) { running = false; setButton(); }
-        }, step.at * speed));
-      });
-    };
-    playBtn.addEventListener('click', play);
-    languageListeners.push(() => { setButton(); if (!machine.dataset.played) log.textContent = t('按“播放”看一次包含 Worker 中断与恢复的交付过程。', 'Press "Run" to watch a delivery that survives a worker restart.'); });
-    // Auto-play once when first visible.
-    if ('IntersectionObserver' in window && !reducedMotion()) {
-      const mio = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !machine.dataset.played && !machine.closest('[hidden]')) { play(); mio.disconnect(); }
-        });
-      }, { threshold: 0.6 });
-      mio.observe(machine);
-    }
-  }
+  // The delivery machine in case A is driven by assets/figures.js (FIG.A).
 
   /* ---------------- email copy ---------------- */
   const copyButton = $('#copy-email');
