@@ -233,14 +233,15 @@ html:not(.js) .scan-fallback{display:grid}
 
 /* figures (assets/figures.js) */
 .fig{margin-top:26px;background:#fff;color:var(--ink);border:1px solid var(--line);padding:20px 22px 16px}
-.fig-head{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.fig-head{display:flex;align-items:center;gap:8px}
+.fig-head .fig-kicker{margin-right:auto}
 .fig-kicker{font-size:11px;letter-spacing:.14em;color:var(--blue)}
 .fig-replay{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:6px 14px;background:transparent;border:1px solid #c6c9ce;color:var(--ink);font-size:12.5px;transition:border-color .2s,background .2s}
 .fig-replay:hover{border-color:var(--blue);background:rgba(34,85,238,.06)}
 .fig-replay .icon{width:14px;height:14px}
 .fig-say{font-size:14.5px;line-height:1.75;color:var(--ink);margin-top:10px;min-height:3.5em;max-width:880px}
 .fig-readout{font-size:11px;color:var(--quiet);margin-top:8px;min-height:1.7em}
-.fig-stage{position:relative;aspect-ratio:var(--ar,16/8);margin-top:10px;background:radial-gradient(circle,rgba(23,25,28,.07) 1px,transparent 1.2px) 0 0/16px 16px}
+.fig-stage{position:relative;aspect-ratio:var(--ar,16/8);margin-top:10px}
 .fig-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .fig-foot{margin-top:14px}
 .fig-progress{position:relative;height:2px;background:var(--line-2)}
@@ -257,7 +258,14 @@ html:not(.js) .scan-fallback{display:grid}
 .fig-note .tag{margin-right:6px}
 .fig.machine{padding:20px 22px 16px}
 .fig .machine-rail{margin-top:14px}
-.fig .machine-log{min-height:0;max-height:none;height:calc(7 * 1.75em + 24px)}
+.fig .machine-rail{margin-top:16px}
+.machine-rail li.now{box-shadow:none}
+.machine-now{font-size:12px;line-height:1.7;color:var(--muted);margin-top:10px;min-height:3.4em;white-space:pre-wrap}
+.machine-now.warn{color:var(--amber-ink)}.machine-now.ok{color:var(--green)}
+.machine-details{margin-top:6px;font-size:12px}
+.machine-details summary{cursor:pointer;color:var(--quiet);font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:6px 0}
+.machine-details summary:hover{color:var(--ink)}
+.fig .machine-log{min-height:0;max-height:none;height:auto;margin-top:6px}
 
 /* ---------- 04 method (dark) ---------- */
 .section-dark{padding:0;border-bottom:0}
@@ -303,6 +311,16 @@ html:not(.js) .scan-fallback{display:grid}
 .card p:not(.card-meta){font-size:14px;line-height:1.85;color:var(--muted);margin-top:10px}
 .card-feature{grid-column:span 1;background:var(--blue-soft)}
 .card-feature:hover{background:#dde6fc}
+.fig-table{margin-top:10px;font-size:12px}
+.fig-table summary{cursor:pointer;font:11px var(--mono);letter-spacing:.06em;color:var(--quiet);padding:6px 0}
+.fig-table summary:hover{color:var(--ink)}
+.fig-table-scroll{overflow-x:auto;margin-top:6px}
+.fig-table table{width:100%;border-collapse:collapse;min-width:620px}
+.fig-table th{text-align:left;font:500 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--quiet);padding:6px 8px 6px 0;border-bottom:1px solid var(--line)}
+.fig-table td{padding:6px 8px 6px 0;border-bottom:1px solid var(--line-2);color:var(--muted);vertical-align:top}
+.fig-table td.num{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+.fig-table td.mono{font-size:10.5px;white-space:nowrap}
+.fig-table td:nth-child(5),.fig-table td:nth-child(6){white-space:nowrap}
 .card-wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.4fr);gap:40px;align-items:start}
 .card-wide .card-copy p:not(.card-meta)+p{margin-top:12px}
 .card-wide .fig{margin-top:0;border-color:#cdd8f7}
@@ -460,7 +478,7 @@ html:not(.js) .scan-fallback{display:grid}
   .bar-row{grid-template-columns:92px minmax(0,1fr) 70px;gap:10px;font-size:11.5px}
   .machine,.fig.machine,.fig{padding:16px 14px 14px}
   .fig-stage{aspect-ratio:var(--ar-m,4/5)}
-  .fig .machine-log{height:auto;min-height:calc(9 * 1.75em + 24px)}
+  .machine-now{min-height:5.2em}
   .fig-say{font-size:13.5px;min-height:5.3em}
   .fig-chapters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px}
   .fig-chapters button{padding-top:8px}

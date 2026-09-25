@@ -91,7 +91,7 @@
         <div class="scan-fallback"><p><span class="zh">此处是一段实时渲染的激光雷达点云。<br>当前浏览器未启用 WebGL。</span><span class="en">A live-rendered LiDAR point cloud.<br>WebGL is unavailable in this browser.</span></p></div>
         <figcaption id="scan-caption" class="scan-caption">
           <span class="mono">FIG.0 · WEBGL · NO LIBRARIES</span>
-          <span><span class="zh">程序生成的街景，虚拟 64 线激光雷达逐束光线投射得到的点云，框为 3D 标注。可拖动旋转。</span><span class="en">A procedurally generated street, ray-cast by a 64-beam virtual LiDAR, with a 3D annotation box. Drag to orbit.</span></span>
+          <span><span class="zh">程序生成的街景，虚拟多线激光雷达逐束光线投射得到的点云，框为 3D 标注。可拖动旋转。</span><span class="en">A procedurally generated street, ray-cast beam by beam by a virtual LiDAR, with a 3D annotation box. Drag to orbit.</span></span>
         </figcaption>
       </figure>
     </div>
@@ -229,11 +229,12 @@
             <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
           </div>
           <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/6.4;--ar-m:4/5.6"><canvas aria-hidden="true"></canvas></div>
+          <div class="fig-stage" style="--ar:16/7.2;--ar-m:4/6.4"><canvas aria-hidden="true"></canvas></div>
           <ol class="machine-rail" aria-label="状态 / States">
             <li data-i="0">QUEUED</li><li data-i="1">RUNNING</li><li data-i="2">MATERIALIZING</li><li data-i="3">COMMITTING</li><li data-i="4">VERSIONING</li><li data-i="5">READY</li>
           </ol>
-          <pre class="machine-log" aria-live="off"></pre>
+          <p class="machine-now mono" aria-live="off"></p>
+          <details class="machine-details"><summary><span class="zh">完整事件日志</span><span class="en">Full event log</span></summary><pre class="machine-log"></pre></details>
           <figcaption class="fig-note" id="fig-a-cap"><span class="zh">一次交付的全过程：10,025 个文件切成 157 个 chunk，4 个 Worker 用 SKIP LOCKED 并发领取；worker-3 中途失联，租约到期后 worker-5 接手，已提交的文件按幂等键跳过，最后只产生 1 个数据集版本。流程示意，不是实时数据；文件数、状态名与恢复逻辑取自真实设计。</span><span class="en">One delivery end to end: 10,025 files become 157 chunks, claimed concurrently by four workers with SKIP LOCKED; worker-3 drops out mid-batch, worker-5 takes over when the lease expires, committed files are skipped by the idempotency key, and exactly one dataset version results. An illustration, not live data; the file count, state names and recovery logic come from the real design.</span></figcaption>
         </figure>
       </article>
@@ -260,7 +261,7 @@
           </div>
           <p class="fig-say" aria-hidden="true"></p>
           <div class="fig-stage" style="--ar:16/7.4;--ar-m:4/5.8"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-upload-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">代理上传在 60 秒处被网关掐断；预签名直传 310 片、237 秒、平均 41.8 MiB/s；complete 列目录核对片数与字节，故意缺第 197 片时拒绝（309 / 310）。分片完成顺序为示意，片数、耗时、吞吐与缺片结果为 2026-06-23 生产验收实测。</span><span class="en">The proxied upload is cut at the gateway’s 60-second timeout; presigned direct upload moves 310 parts in 237 s at 41.8 MiB/s on average; completion lists the prefix to check parts and bytes, and refuses when part 197 is withheld (309 / 310). The order parts finish in is illustrative; part count, duration, throughput and the refusal come from the production acceptance run on 2026-06-23.</span></figcaption>
+          <figcaption class="fig-note" id="fig-upload-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">代理上传在 60 秒处被网关掐断；预签名直传 310 片、237 秒、平均 41.8 MiB/s；complete 列目录核对片数与字节，故意少传一片时拒绝（309 / 310）。分片完成顺序为示意，片数、耗时、吞吐与缺片结果为 2026-06-23 生产验收实测。</span><span class="en">The proxied upload is cut at the gateway’s 60-second timeout; presigned direct upload moves 310 parts in 237 s at 41.8 MiB/s on average; completion lists the prefix to check parts and bytes, and refuses when one part is withheld (309 / 310). The order parts finish in is illustrative; part count, duration, throughput and the refusal come from the production acceptance run on 2026-06-23.</span></figcaption>
         </figure>
       </article>
 
@@ -318,7 +319,7 @@
           </div>
           <p class="fig-say" aria-hidden="true"></p>
           <div class="fig-stage" style="--ar:16/8;--ar-m:4/7.4"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放），INT8 与 fp32 的掩码一致性，以及推理线程数与延迟的关系（1 / 2 / 4 / 8 / 16 / 32 线程：2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms）。测试在与生产同一物理机的预发命名空间完成；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed), INT8 vs fp32 mask agreement, and inference threads vs latency (1 / 2 / 4 / 8 / 16 / 32 threads: 2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms). Run in the pre-production namespace on the production host; the image and mask shapes are illustrative.</span></figcaption>
+          <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放）；INT8 与 fp32 掩码的实际 IoU；推理线程从 2 调到 4 的前后对比。测试在云上 4 核真机上完成，环境标为内网非生产；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed); the actual IoU between INT8 and fp32 masks; and inference threads before and after, 2 versus 4. Run on a real 4-core cloud machine, a non-production environment; the image and mask shapes are illustrative.</span></figcaption>
         </figure>
       </article>
 

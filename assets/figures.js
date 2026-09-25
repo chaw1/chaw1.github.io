@@ -31,6 +31,7 @@
   const mix = (a, b, p) => { const A = rgb(a); const B = rgb(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], p))).join(',')})`; };
   const alpha = (h, a) => `rgba(${rgb(h).join(',')},${a})`;
   const fmt = (n) => Math.round(n).toLocaleString('en-US');
+  const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function mulberry32(seed) {
     return () => {
       seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
@@ -141,30 +142,59 @@
       if (spec.dom) spec.dom(t);
       syncChrome();
     }
+    let stopAt = spec.duration;
+    // Pause / continue sits next to Replay; its label follows the clock.
+    let toggle = null;
+    if (replay) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'fig-replay fig-toggle';
+      replay.before(toggle);
+      toggle.addEventListener('click', () => {
+        if (playing) pause();
+        else if (t >= spec.duration) play(0);
+        else resume();
+      });
+    }
+    function syncToggle() {
+      if (!toggle) return;
+      const done = t >= spec.duration;
+      toggle.hidden = reduced();
+      toggle.innerHTML = playing
+        ? `<i class="icon i-pause" aria-hidden="true"></i><span class="zh">暂停</span><span class="en">Pause</span>`
+        : `<i class="icon i-play" aria-hidden="true"></i><span class="zh">${done ? '从头播放' : '继续'}</span><span class="en">${done ? 'Play again' : 'Continue'}</span>`;
+    }
     function frame(now) {
       raf = 0;
       if (!playing) return;
-      t = Math.min(spec.duration, t + Math.min(64, now - last));
+      t = Math.min(stopAt, t + Math.min(64, now - last));
       last = now;
       render();
-      if (t >= spec.duration) { playing = false; return; }
+      if (t >= stopAt) { playing = false; syncToggle(); return; }
       if (visible) raf = requestAnimationFrame(frame);
     }
-    function play(from) {
-      started = true;
-      if (reduced()) { t = spec.duration; playing = false; render(); return; }
-      t = from; playing = true; last = performance.now();
+    function run() {
+      playing = true; last = performance.now(); syncToggle();
       if (!raf) raf = requestAnimationFrame(frame);
     }
+    function pause() { playing = false; if (raf) { cancelAnimationFrame(raf); raf = 0; } syncToggle(); }
+    function resume() { stopAt = spec.duration; if (reduced()) { t = spec.duration; render(); syncToggle(); return; } run(); }
+    function play(from) {
+      started = true; stopAt = spec.duration;
+      if (reduced()) { t = spec.duration; pause(); render(); return; }
+      t = from; run();
+    }
     function seek(i) {
-      if (reduced()) {
-        // Show the settled state at the end of that chapter.
-        const end = i + 1 < chapters.length ? chapters[i + 1].at - 1 : spec.duration;
-        started = true; t = end; render(); return;
-      }
-      play(chapters[i].at);
+      // Play just that chapter and hold on its last, settled frame.
+      const end = i + 1 < chapters.length ? chapters[i + 1].at - 1 : spec.duration;
+      started = true;
+      if (reduced()) { t = end; pause(); render(); return; }
+      t = chapters[i].at; stopAt = end; run();
     }
     if (replay) replay.addEventListener('click', () => play(0));
+    if (motionQuery && motionQuery.addEventListener) {
+      motionQuery.addEventListener('change', () => { if (reduced()) { pause(); t = spec.duration; render(); } syncToggle(); });
+    }
 
     function resize() {
       const r = stage.getBoundingClientRect();
@@ -195,20 +225,24 @@
       canvas.addEventListener('pointermove', move);
       canvas.addEventListener('pointerleave', () => { api.pointer = null; render(); });
     }
-    langHooks.push(() => { syncChrome.force = true; render(); });
+    langHooks.push(() => { syncChrome.force = true; render(); syncToggle(); });
     resize();
   }
 
   /* =====================================================================
-   * FIG.A — MySQL queue: SKIP LOCKED claiming, a dead worker, idempotent reclaim.
+   * FIG.A — chunk table → workers → staging manifest → one version.
+   * A worker dies mid-batch; its lease runs out; another worker finishes
+   * the batch, skipping files already staged. Artifacts are verified before
+   * anything is committed, so the failure never reaches COMMITTING.
    * ===================================================================== */
   function figQueue(el) {
-    const N = 157; const B = 4; const T0 = 1300;
+    const N = 157; const B = 4; const T0 = 1500; const FILES = 10025;
     const rand = mulberry32(20417);
-    const chunks = [...Array(N)].map((_, i) => ({ i, files: i === N - 1 ? 41 : 64, appear: 80 + (i / N) * 700 + rand() * 90, runs: [] }));
-    const ws = [1, 2, 3, 4, 5].map((id) => ({ id, free: id === 5 ? Infinity : T0 + (id - 1) * 120, on: true, spans: [] }));
+    const chunks = [...Array(N)].map((_, i) => ({ i, files: i === N - 1 ? 41 : 64, appear: 120 + (i / N) * 900 + rand() * 80, runs: [] }));
+    let acc = 0; chunks.forEach((c) => { c.base = acc; acc += c.files; });
+    const ws = [1, 2, 3, 4, 5].map((id) => ({ id, free: id === 5 ? Infinity : T0 + (id - 1) * 150, on: true, spans: [], claims: [] }));
     let next = 0; let orphan = null; let DIE = 0; let LEASE = 0;
-    const work = () => 100 + rand() * 105;
+    const work = () => 160 + rand() * 120;
     for (let guard = 0; guard < 4000; guard += 1) {
       let wk = null;
       ws.forEach((x) => { if (x.on && (!wk || x.free < wk.free)) wk = x; });
@@ -218,198 +252,283 @@
       if (wk.id === 5 && orphan && !orphan.taken) { batch = orphan.list; orphan.taken = true; reclaim = true; }
       else if (next < N) { batch = []; while (batch.length < B && next < N) batch.push(next++); }
       else { wk.on = false; continue; }
-      let cur = claim + 50; let died = false;
-      // worker-3 dies inside the first batch it claims after ~3.9 s: two chunks done, the third half-way.
-      const doomed = wk.id === 3 && !orphan && claim >= 3900 && batch.length === B;
+      wk.claims.push({ at: claim, batch });
+      let cur = claim + 140; let died = false;
+      const doomed = wk.id === 3 && !orphan && claim >= 4200 && batch.length === B;
       for (let k = 0; k < batch.length; k += 1) {
         const c = chunks[batch[k]];
         if (reclaim) {
           const prev = c.runs[0];
-          if (prev.kind === 'run') { c.runs.push({ w: 5, claim, start: cur, end: cur + 90, kind: 'skip' }); cur += 90; continue; }
-          const d = prev.start != null ? prev.d * (1 - prev.frac) + 30 : work();
-          c.runs.push({ w: 5, claim, start: cur, end: cur + d, kind: 'run', from: prev.start != null ? prev.frac : 0 });
+          if (prev.kind === 'run') { c.runs.push({ w: 5, claim, start: cur, end: cur + 180, kind: 'skip', from: 1 }); cur += 180; continue; }
+          const from = prev.start != null ? prev.frac : 0;
+          const d = prev.start != null ? prev.d * (1 - from) + 60 : work();
+          c.runs.push({ w: 5, claim, start: cur, end: cur + d, kind: 'run', from, skipTo: from });
           wk.spans.push({ i: c.i, start: cur, end: cur + d }); cur += d;
           continue;
         }
         const d = work();
         if (doomed && k === 2) {
-          DIE = cur + d * 0.6; LEASE = DIE + 1500;
+          DIE = cur + d * 0.6; LEASE = DIE + 1800;
           for (let j = k; j < batch.length; j += 1) {
-            const cc = chunks[batch[j]]; const startedHere = j === k;
-            cc.runs.push({ w: 3, claim, start: startedHere ? cur : null, d, frac: startedHere ? 0.6 : 0, kind: 'stall' });
+            const cc = chunks[batch[j]]; const here = j === k;
+            cc.runs.push({ w: 3, claim, start: here ? cur : null, d, frac: here ? 0.6 : 0, kind: 'stall' });
           }
           wk.spans.push({ i: c.i, start: cur, end: DIE });
           orphan = { list: batch, taken: false };
           ws[4].free = LEASE; wk.on = false; died = true; break;
         }
-        c.runs.push({ w: wk.id, claim, start: cur, end: cur + d, kind: 'run' });
+        c.runs.push({ w: wk.id, claim, start: cur, end: cur + d, kind: 'run', from: 0 });
         wk.spans.push({ i: c.i, start: cur, end: cur + d }); cur += d;
       }
-      if (!died) wk.free = cur + 40;
+      if (!died) wk.free = cur + 80;
     }
     let tDone = 0;
     chunks.forEach((c) => c.runs.forEach((r) => { if (r.end) tDone = Math.max(tDone, r.end); }));
-    const tCommit = tDone + 260; const tReady = tCommit + 900; const duration = tReady + 500;
-    const hits = orphan ? orphan.list.reduce((s, i) => { const r = chunks[i].runs[0]; return s + (r.kind === 'run' ? chunks[i].files : Math.round(r.frac * chunks[i].files)); }, 0) : 0;
-    const k = orphan ? orphan.list.length : 0;
+    const FLY = 520;
+    const tVerify = tDone + FLY + 150; const tCommit = tVerify + 1300; const tReady = tCommit + 1100; const duration = tReady + 800;
 
-    function state(c, t) {
-      if (t < c.appear) return null;
-      const [r1, r2] = c.runs;
-      if (!r1 || t < r1.claim) return { s: 'queued' };
-      if (r1.kind === 'run') {
-        if (t < r1.start) return { s: 'locked', w: r1.w };
-        if (t < r1.end) return { s: 'run', p: (t - r1.start) / (r1.end - r1.start), w: r1.w };
-        if (r2 && t >= r2.claim && t < r2.end + 420) return { s: 'skip', p: clamp((t - r2.claim) / (r2.end + 420 - r2.claim)) };
-        return { s: 'done' };
+    // Per file: when it was staged, by whom, and whether a later run skipped it by key.
+    chunks.forEach((c) => {
+      const [r1, r2] = c.runs; c.ft = [];
+      for (let f = 0; f < c.files; f += 1) {
+        const q = (f + 0.5) / c.files;
+        let t = null; let by = null; let skip = null;
+        if (r1.kind === 'run') { t = r1.start + q * (r1.end - r1.start); by = r1.w; }
+        else if (r1.start != null && q < r1.frac) { t = r1.start + q * r1.d; by = 3; }
+        if (r2) {
+          if (t != null) skip = r2.kind === 'skip' ? r2.start + q * (r2.end - r2.start) : r2.start + (q / Math.max(r2.from, 0.01)) * 120;
+          else { const u = (q - r2.from) / (1 - r2.from); t = r2.start + 120 + u * (r2.end - r2.start - 120); by = 5; }
+        }
+        c.ft.push({ t, by, skip });
       }
-      if (t < DIE) {
-        if (r1.start != null && t >= r1.start) return { s: 'run', p: (t - r1.start) / r1.d, w: 3 };
-        return { s: 'locked', w: 3 };
-      }
-      if (!r2 || t < r2.claim) return { s: 'stall', p: r1.frac };
-      if (t < r2.start) return { s: 'locked', w: 5 };
-      if (t < r2.end) return { s: 'run', p: r2.from + (1 - r2.from) * (t - r2.start) / (r2.end - r2.start), w: 5 };
-      return { s: 'done' };
-    }
-    const alive = (id, tau) => (id === 3 ? tau >= T0 - 400 && tau < DIE : id === 5 ? tau >= LEASE : tau >= T0 - 400);
-    function beat(id, tau) {
-      const x = ((tau - id * 131) % 620 + 620) % 620;
-      if (x < 36) return -Math.sin((x / 36) * Math.PI);
-      if (x < 64) return Math.sin(((x - 36) / 28) * Math.PI) * 0.35;
-      return 0;
-    }
+    });
+    const orphanSet = new Set(orphan ? orphan.list : []);
+
+    const events = [
+      { at: 0, s: 0, zh: `submit   task#20417 files=10,025 → ${N} 个 chunk 与任务状态同一事务写入，0.89 s 返回`, en: `submit   task#20417 files=10,025 → ${N} chunks written in the same transaction as task state; returns in 0.89 s` },
+      { at: T0, s: 1, zh: 'claim    worker-1..4 各用一次短事务 SKIP LOCKED 领一批，之后按租约处理', en: 'claim    workers 1–4 each claim a batch in one short SKIP LOCKED transaction, then work under a lease' },
+      { at: T0 + 900, s: 2, zh: 'build    产物写入 staging，逐个校验非空 / 类型 / SHA-256', en: 'build    artifacts to staging, each checked: non-empty / type / SHA-256' },
+      { at: DIE, s: 2, cls: 'warn', fail: true, zh: 'WARN     worker-3 心跳中断（Pod 重启）；它那一批停在物化阶段，等租约到期', en: 'WARN     worker-3 heartbeat lost (pod restart); its batch waits in MATERIALIZING for the lease to expire' },
+      { at: LEASE, s: 2, cls: 'dim', zh: 'reclaim  租约到期，worker-5 接手整批；已在 staging 的文件按 task+file 键跳过，只补余下的', en: 'reclaim  lease expired; worker-5 takes the batch, skips files already staged (key task+file), fills in the rest' },
+      { at: tVerify, s: 3, zh: 'verify   10,025 / 10,025 个产物校验通过，才进入提交', en: 'verify   10,025 / 10,025 artifacts check out; only now does it commit' },
+      { at: tCommit, s: 4, zh: 'version  LakeFS commit 一次，血缘事件闭合', en: 'version  one LakeFS commit, lineage events closed' },
+      { at: tReady, s: 5, cls: 'ok', zh: 'READY    产物可读 · 版本落账 · 血缘闭合 — 数据集版本数 = 1', en: 'READY    readable · versioned · lineage closed — dataset versions = 1' }
+    ];
 
     function draw(ctx, w, h, t) {
-      const wide = w >= 640;
-      const cols = wide ? 20 : 16; const rows = Math.ceil(N / cols);
-      const G = wide ? { x: 18, y: 38, w: w * 0.56 - 18, h: h - 38 - 40 } : { x: 14, y: 32, w: w - 28, h: h * 0.52 - 40 };
-      const P = wide ? { x: w * 0.62, y: 38, w: w * 0.38 - 18, h: h - 38 - 40 } : { x: 14, y: h * 0.52 + 22, w: w - 28, h: h * 0.48 - 22 - 36 };
-      const cell = Math.min(G.w / cols, G.h / rows); const gap = Math.max(2, cell * 0.17); const s = cell - gap;
-      const gx = G.x + (G.w - cell * cols) / 2 * (wide ? 0 : 1); const gy = G.y;
-      text(ctx, L('chunk 表 · FOR UPDATE SKIP LOCKED', 'chunk table · FOR UPDATE SKIP LOCKED'), gx, G.y - 14, { size: 10.5 });
-      text(ctx, L('Worker · Redis 心跳', 'Workers · Redis heartbeats'), P.x, P.y - 14, { size: 10.5 });
+      const wide = w >= 760;
+      const pad = wide ? 22 : 14;
+      const head = 34;
+      // Regions.
+      let Lr; let Mr; let Rr;
+      if (wide) {
+        const colW = w - pad * 2; const gap = 30;
+        const lw = colW * 0.36; const mw = colW * 0.2; const rw = colW - lw - mw - gap * 2;
+        Lr = { x: pad, y: head, w: lw, h: h - head - pad };
+        Mr = { x: pad + lw + gap, y: head, w: mw, h: h - head - pad };
+        Rr = { x: pad + lw + mw + gap * 2, y: head, w: rw, h: h - head - pad };
+      } else {
+        const lh = Math.ceil(N / 20) * ((w - pad * 2) / 20); const mh = 44; const rh = h - 3 * 26 - lh - mh - 6;
+        Lr = { x: pad, y: 26, w: w - pad * 2, h: lh };
+        Mr = { x: pad, y: 26 * 2 + lh, w: w - pad * 2, h: mh };
+        Rr = { x: pad, y: 26 * 3 + lh + mh, w: w - pad * 2, h: rh };
+      }
+      const capY = (r) => r.y - (wide ? 14 : 10);
+      const caption = (r, n, zh, en) => {
+        const a = text(ctx, n, r.x, capY(r), { size: 10.5, color: C.blue, weight: 600 });
+        text(ctx, L(zh, en), r.x + a + 8, capY(r), { size: 11, color: C.muted });
+      };
+      caption(Lr, '01', 'chunk 表 · MySQL', 'chunk table · MySQL');
+      caption(Mr, '02', 'Worker · Redis 心跳', 'workers · Redis heartbeat');
+      caption(Rr, '03', 'staging 清单 → LakeFS', 'staging manifest → LakeFS');
 
-      const pos = (i) => ({ x: gx + (i % cols) * cell, y: gy + Math.floor(i / cols) * cell });
-      const center = (i) => { const p = pos(i); return { x: p.x + s / 2, y: p.y + s / 2 }; };
-      let done = 0; let locked = 0;
-      const pulse = 0.55 + 0.45 * Math.sin(t / 140);
+      /* --- 01 chunk tiles, each a 8×8 texture of its files --- */
+      const cols = wide ? 13 : 20; const rows = Math.ceil(N / cols);
+      const tile = Math.min(Lr.w / cols, Lr.h / rows);
+      const gap = Math.max(2, tile * 0.16); const inner = tile - gap; const pitch = inner / 8; const dot = Math.max(1, pitch * 0.66);
+      const tpos = (i) => ({ x: Lr.x + (i % cols) * tile, y: Lr.y + Math.floor(i / cols) * tile });
+      const verifyP = (g) => clamp((t - tVerify - (g / FILES) * 900) / 160);
+      let staged = 0;
       chunks.forEach((c) => {
-        const st = state(c, t);
-        if (!st) return;
-        const { x, y } = pos(c.i);
-        const a = clamp((t - c.appear) / 220);
+        if (t < c.appear) return;
+        const a = clamp((t - c.appear) / 260);
+        const { x, y } = tpos(c.i);
+        const [r1, r2] = c.runs;
+        const leased = r1 && ((t >= r1.claim && t < (r1.kind === 'stall' ? DIE : r1.end)) || (r2 && t >= r2.claim && t < r2.end));
+        const waiting = orphanSet.has(c.i) && r1.kind === 'stall' && t >= DIE && t < LEASE;
         ctx.globalAlpha = a;
-        if (st.s === 'queued') { ctx.fillStyle = C.line2; rr(ctx, x, y, s, s, 2); ctx.fill(); }
-        else if (st.s === 'locked') { locked += 1; ctx.fillStyle = '#fff'; rr(ctx, x, y, s, s, 2); ctx.fill(); ctx.strokeStyle = C.blue; ctx.lineWidth = 1.2; rr(ctx, x + 0.6, y + 0.6, s - 1.2, s - 1.2, 2); ctx.stroke(); }
-        else if (st.s === 'run') {
-          locked += 1;
-          ctx.fillStyle = C.blueSoft; rr(ctx, x, y, s, s, 2); ctx.fill();
-          ctx.save(); rr(ctx, x, y, s, s, 2); ctx.clip(); ctx.fillStyle = C.blue; ctx.fillRect(x, y + s * (1 - st.p), s, s * st.p); ctx.restore();
-        } else if (st.s === 'stall') {
-          locked += 1;
-          ctx.fillStyle = C.amberSoft; rr(ctx, x, y, s, s, 2); ctx.fill();
-          if (st.p) { ctx.save(); rr(ctx, x, y, s, s, 2); ctx.clip(); ctx.fillStyle = alpha(C.amber, 0.55); ctx.fillRect(x, y + s * (1 - st.p), s, s * st.p); ctx.restore(); }
-          ctx.strokeStyle = alpha(C.amber, pulse); ctx.lineWidth = 1.6; rr(ctx, x + 0.8, y + 0.8, s - 1.6, s - 1.6, 2); ctx.stroke();
-        } else if (st.s === 'skip') {
-          done += 1;
-          const g = Math.sin(st.p * Math.PI);
-          ctx.fillStyle = mix(C.blue, C.greenSoft, g); rr(ctx, x, y, s, s, 2); ctx.fill();
-          ctx.strokeStyle = alpha(C.green, g); ctx.lineWidth = 1.5; rr(ctx, x + 0.75, y + 0.75, s - 1.5, s - 1.5, 2); ctx.stroke();
-          ctx.globalAlpha = a * g; tick(ctx, x + s / 2, y + s / 2, s * 0.55, C.green, 1.6);
-        } else {
-          done += 1;
-          const col = c.i % cols; const row = Math.floor(c.i / cols);
-          const wave = clamp((t - tCommit - (col + row) * 22) / 260);
-          ctx.fillStyle = mix(C.blue, C.green, wave); rr(ctx, x, y, s, s, 2); ctx.fill();
+        for (let f = 0; f < c.files; f += 1) {
+          const e = c.ft[f];
+          let col = C.line2;
+          if (e.t != null && t >= e.t) { staged += 1; const v = verifyP(c.base + f); col = v > 0 ? mix(C.blue, C.green, v) : C.blue; }
+          else if (waiting) col = alpha(C.amber, 0.55);
+          else if (leased) col = C.blueSoft;
+          ctx.fillStyle = col; ctx.fillRect(x + (f % 8) * pitch, y + Math.floor(f / 8) * pitch, dot, dot);
+        }
+        if (leased || waiting) {
+          ctx.strokeStyle = waiting ? C.amber : C.blue; ctx.lineWidth = 1.2;
+          ctx.strokeRect(x - 1.5, y - 1.5, inner + 2.5, inner + 2.5);
+        }
+        // End frame keeps a quiet mark on the recovered batch.
+        if (orphanSet.has(c.i) && t >= LEASE) {
+          ctx.strokeStyle = alpha(C.amber, 0.7); ctx.lineWidth = 1; ctx.setLineDash([2, 2]);
+          ctx.strokeRect(x - 3, y - 3, inner + 5.5, inner + 5.5); ctx.setLineDash([]);
         }
         ctx.globalAlpha = 1;
       });
 
-      // Worker rows: label, a scrolling heartbeat trace, and the chunk in hand.
-      const rowH = P.h / 5;
-      const labelW = wide ? 68 : 64; const statusW = wide ? 92 : 98;
-      ws.forEach((wk, j) => {
-        const cy = P.y + rowH * (j + 0.5);
+      /* --- 02 workers --- */
+      const wy = (k) => (wide ? Mr.y + (Mr.h / 5) * (k + 0.5) : Mr.y + Mr.h / 2);
+      const wx = (k) => (wide ? Mr.x : Mr.x + (Mr.w / 5) * k);
+      const rowW = wide ? Mr.w : Mr.w / 5 - 6;
+      const anchorOut = (k) => ({ x: wide ? Mr.x + Math.min(Mr.w - 10, 150) : wx(k) + rowW / 2, y: wide ? wy(k) - 4 : Mr.y + Mr.h - 4 });
+      ws.forEach((wk, k) => {
+        const x = wx(k); const y = wy(k);
         const dead = wk.id === 3 && t >= DIE; const standby = wk.id === 5 && t < LEASE;
-        const col = dead ? C.amberInk : standby ? C.faint : C.ink;
-        text(ctx, `worker-${wk.id}`, P.x, cy + 4, { size: 11, color: col, weight: 500 });
-        const tx = P.x + labelW; const tw = Math.max(40, P.w - labelW - statusW);
-        ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(tx, cy + 0.5); ctx.lineTo(tx + tw, cy + 0.5); ctx.stroke();
-        ctx.beginPath();
-        for (let px = 0; px <= tw; px += 1.5) {
-          const tau = t - (1 - px / tw) * 2400;
-          const v = alive(wk.id, tau) ? beat(wk.id, tau) : 0;
-          const y = cy - v * rowH * 0.26;
-          if (px === 0) ctx.moveTo(tx + px, y); else ctx.lineTo(tx + px, y);
-        }
-        ctx.strokeStyle = dead ? C.amber : standby ? C.faint : C.blue; ctx.lineWidth = 1.3; ctx.stroke();
-        ctx.fillStyle = dead ? alpha(C.amber, pulse) : standby ? C.faint : C.blue;
-        ctx.beginPath(); ctx.arc(tx + tw, cy, 2.6, 0, Math.PI * 2); ctx.fill();
+        const reclaiming = wk.id === 5 && t >= LEASE && orphan && chunks[orphan.list[orphan.list.length - 1]].runs[1] && t < chunks[orphan.list[orphan.list.length - 1]].runs[1].end;
         const span = wk.spans.find((sp) => t >= sp.start && t < sp.end);
+        const beat = !dead && !standby && t >= T0 - 400 ? ((t - wk.id * 173) % 800 + 800) % 800 : -1;
+        // status dot: steady, with a small pulse on each heartbeat
+        const dc = dead ? C.red : standby ? C.faint : reclaiming ? C.amber : span ? C.blue : C.quiet;
+        if (beat >= 0 && beat < 380) { const q = beat / 380; ctx.strokeStyle = alpha(dc, 0.5 * (1 - q)); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x + 5, y - 4, 4 + q * 6, 0, Math.PI * 2); ctx.stroke(); }
+        ctx.fillStyle = dc; ctx.beginPath(); ctx.arc(x + 5, y - 4, 4, 0, Math.PI * 2); ctx.fill();
+        text(ctx, wide ? `worker-${wk.id}` : `w${wk.id}`, x + 16, y, { size: wide ? 12 : 11, color: dead ? C.red : standby ? C.faint : C.ink, weight: 600 });
         let status = ''; let sc = C.quiet;
-        if (dead && t < LEASE) { status = L('心跳中断', 'no heartbeat'); sc = C.amberInk; }
-        else if (dead) { status = L('已被接手', 'reclaimed'); sc = C.faint; }
+        if (dead && t < LEASE) { status = L('心跳中断', 'heartbeat lost'); sc = C.red; }
+        else if (dead) { status = L('已由 worker-5 接手', 'taken over by worker-5'); sc = C.faint; }
         else if (standby) { status = L('待命', 'standby'); sc = C.faint; }
-        else if (span) { status = `chunk #${String(span.i + 1).padStart(3, '0')}`; sc = C.ink; }
-        else if (t >= T0) { status = L('空闲', 'idle'); }
-        text(ctx, status, P.x + P.w, cy + 4, { size: 10.5, color: sc, align: 'right' });
-        // Claim lines from the worker to the chunk it is holding.
-        const anchor = wide ? { x: P.x - 8, y: cy } : { x: P.x + 30, y: cy - 10 };
-        const targets = [];
-        if (span && !dead) targets.push({ i: span.i, c: C.blue, dash: false });
-        if (wk.id === 3 && t >= DIE && t < LEASE && orphan) orphan.list.forEach((i) => { if (chunks[i].runs[0].kind === 'stall') targets.push({ i, c: C.amber, dash: true }); });
-        targets.forEach((tg) => {
-          const p = center(tg.i);
-          ctx.strokeStyle = alpha(tg.c, tg.dash ? 0.75 : 0.4); ctx.lineWidth = 1; ctx.setLineDash(tg.dash ? [3, 3] : []);
-          ctx.beginPath(); ctx.moveTo(anchor.x, anchor.y);
-          if (wide) ctx.bezierCurveTo(anchor.x - 60, anchor.y, p.x + 60, p.y, p.x + s / 2, p.y);
-          else ctx.bezierCurveTo(anchor.x, anchor.y - 40, p.x, p.y + 40, p.x, p.y + s / 2);
-          ctx.stroke(); ctx.setLineDash([]);
+        else if (reclaiming) { status = L('接手 · 跳过已存在', 'reclaim · skip existing'); sc = C.amberInk; }
+        else if (span) { status = `chunk ${String(span.i + 1).padStart(3, '0')}`; sc = C.muted; }
+        else if (t >= T0) status = L('空闲', 'idle');
+        if (wide) text(ctx, status, x + 16, y + 17, { size: 11, color: sc });
+        else if (dead || reclaiming || standby) text(ctx, dead ? (t < LEASE ? L('中断', 'lost') : L('已接手', 'taken')) : reclaiming ? L('接手', 'reclaim') : L('待命', 'idle'), x + 16, y + 15, { size: 10, color: sc });
+        // Lease bar for the dead worker, marked as compressed time.
+        if (dead && t < LEASE && wide) {
+          const q = 1 - (t - DIE) / (LEASE - DIE);
+          ctx.fillStyle = C.line2; ctx.fillRect(x + 16, y + 26, rowW - 24, 3);
+          ctx.fillStyle = C.amber; ctx.fillRect(x + 16, y + 26, (rowW - 24) * q, 3);
+          text(ctx, L('租约剩余 · 时间压缩示意', 'lease left · time compressed'), x + 16, y + 42, { size: 10, color: C.amberInk });
+        }
+        // Claim: one short transaction, drawn as a brief link from the batch to the worker.
+        wk.claims.forEach((cl) => {
+          const q = (t - cl.at) / 420;
+          if (q < 0 || q > 1) return;
+          cl.batch.forEach((i) => {
+            const p = tpos(i);
+            const x0 = wide ? p.x + inner + 2 : p.x + inner / 2; const y0 = wide ? p.y + inner / 2 : p.y + inner + 2;
+            const x1 = wide ? x - 4 : x + rowW / 2; const y1 = wide ? y - 4 : Mr.y + 2;
+            ctx.strokeStyle = alpha(wk.id === 5 ? C.amber : C.blue, 0.55 * (1 - q)); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(x0, y0);
+            if (wide) ctx.bezierCurveTo(x0 + (x1 - x0) * 0.5, y0, x0 + (x1 - x0) * 0.5, y1, x1, y1);
+            else ctx.bezierCurveTo(x0, y0 + (y1 - y0) * 0.5, x1, y0 + (y1 - y0) * 0.5, x1, y1);
+            ctx.stroke();
+          });
         });
       });
 
-      const versions = t >= tCommit + 200 ? 1 : 0;
-      const by = h - 16;
-      const items = [
-        [L('已完成', 'done'), `${done} / ${N}`, C.ink],
-        [L('持锁', 'locked'), String(locked), locked ? C.blue : C.quiet],
-        [L('数据集版本', 'dataset versions'), String(versions), versions ? C.green : C.quiet]
-      ];
-      let bx = wide ? 18 : 14;
-      items.forEach(([k2, v, c2]) => { bx += text(ctx, `${k2} `, bx, by, { size: wide ? 10.5 : 9.5 }); bx += text(ctx, v, bx, by, { size: wide ? 11.5 : 10.5, color: c2, weight: 600 }) + (wide ? 18 : 10); });
-      if (wide && t >= tReady) chip(ctx, 'READY', w - 18, by - 4, C.green, C.greenSoft, { align: 'right' });
+      /* --- 03 staging manifest: one cell per file, in file order --- */
+      const verH = wide ? 92 : 70;
+      const S = { x: Rr.x, y: Rr.y, w: Rr.w, h: Rr.h - verH };
+      const scols = Math.max(40, Math.floor(Math.sqrt(FILES * S.w / S.h)));
+      const srows = Math.ceil(FILES / scols);
+      const sp = Math.min(S.w / scols, S.h / srows); const sd = Math.max(1, sp * 0.72);
+      const sx = (g) => S.x + (g % scols) * sp; const sy = (g) => S.y + Math.floor(g / scols) * sp;
+      ctx.fillStyle = '#fbfbf8'; ctx.fillRect(S.x - 4, S.y - 4, scols * sp + 8, srows * sp + 8);
+      ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.strokeRect(S.x - 4.5, S.y - 4.5, scols * sp + 9, srows * sp + 9);
+      const landed = []; const flying = [];
+      chunks.forEach((c) => {
+        for (let f = 0; f < c.files; f += 1) {
+          const e = c.ft[f]; if (e.t == null || t < e.t) continue;
+          if (t < e.t + FLY) flying.push([c, f, e]); else landed.push(c.base + f);
+        }
+      });
+      ctx.fillStyle = C.blue;
+      landed.forEach((g) => { const v = verifyP(g); if (v > 0) return; ctx.fillRect(sx(g), sy(g), sd, sd); });
+      ctx.fillStyle = C.green;
+      landed.forEach((g) => { const v = verifyP(g); if (v <= 0) return; ctx.globalAlpha = 0.35 + 0.65 * v; ctx.fillRect(sx(g), sy(g), sd, sd); });
+      ctx.globalAlpha = 1;
+      // Files that a later run skipped by key: outline the region they occupy.
+      if (orphan && t >= LEASE) {
+        let gmin = Infinity; let gmax = -1;
+        orphan.list.forEach((i) => { const c = chunks[i]; c.ft.forEach((e, f) => { if (e.skip != null) { gmin = Math.min(gmin, c.base + f); gmax = Math.max(gmax, c.base + f); } }); });
+        if (gmax >= 0) {
+          const y0 = sy(gmin) - 2; const y1 = sy(gmax) + sp + 2;
+          const q = clamp((t - LEASE) / 400);
+          ctx.strokeStyle = alpha(C.amber, 0.9 * q); ctx.lineWidth = 1.2;
+          ctx.strokeRect(S.x - 2, y0, scols * sp + 4, y1 - y0);
+          const lx = wide ? S.x + scols * sp + 8 : S.x;
+          if (wide && lx + 60 < w) {
+            text(ctx, L('已存在', 'present'), lx, y0 + 9, { size: 10, color: C.amberInk, alpha: q });
+            text(ctx, L('按键跳过', 'skipped'), lx, y0 + 21, { size: 10, color: C.amberInk, alpha: q });
+          }
+        }
+      }
+      // In flight: short dots on one fixed path per worker — a curve to the manifest edge, then straight in.
+      const entry = (k) => (wide ? { x: S.x - 10, y: S.y + ((k + 0.5) / 5) * srows * sp } : { x: S.x + ((k + 0.5) / 5) * scols * sp, y: S.y - 10 });
+      const pathAt = (k, u) => {
+        const a0 = anchorOut(k); const e1 = entry(k);
+        const m = 1 - u;
+        if (wide) { const c1 = a0.x + (e1.x - a0.x) * 0.55; return { x: m * m * m * a0.x + 3 * m * m * u * c1 + 3 * m * u * u * c1 + u * u * u * e1.x, y: m * m * m * a0.y + 3 * m * m * u * a0.y + 3 * m * u * u * e1.y + u * u * u * e1.y }; }
+        const c1 = a0.y + (e1.y - a0.y) * 0.55; return { x: m * m * m * a0.x + 3 * m * m * u * a0.x + 3 * m * u * u * e1.x + u * u * u * e1.x, y: m * m * m * a0.y + 3 * m * m * u * c1 + 3 * m * u * u * c1 + u * u * u * e1.y };
+      };
+      const busy = new Set(flying.map(([, , e]) => e.by - 1));
+      busy.forEach((k) => {
+        ctx.strokeStyle = alpha(k === 4 ? C.amber : C.blue, 0.22); ctx.lineWidth = 1; ctx.beginPath();
+        for (let q = 0; q <= 1.0001; q += 0.05) { const pt = pathAt(k, q); if (q === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y); }
+        ctx.stroke();
+      });
+      // Every fourth file is drawn as a packet; they stop at the manifest edge and the slot lights up.
+      flying.forEach(([c, f, e]) => {
+        if (f % 4) return;
+        const u = (t - e.t) / FLY; const k = e.by - 1;
+        const pt = pathAt(k, easeInOut(u));
+        ctx.fillStyle = e.by === 5 ? C.amber : C.blue; ctx.globalAlpha = 0.9 * (1 - Math.max(0, u - 0.85) / 0.15);
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.8, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      // Verification sweep line.
+      if (t >= tVerify && t < tVerify + 1000) {
+        const g = Math.min(FILES - 1, Math.floor(((t - tVerify) / 900) * FILES));
+        ctx.strokeStyle = C.green; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(S.x - 4, sy(g) + sp); ctx.lineTo(S.x + scols * sp + 4, sy(g) + sp); ctx.stroke();
+      }
+      text(ctx, `${staged.toLocaleString('en-US')} / 10,025`, S.x, S.y + srows * sp + 22, { size: wide ? 13 : 11.5, color: C.ink, weight: 650, font: SANS });
+      text(ctx, t >= tVerify + 900 ? L('全部校验通过', 'all verified') : L('已落 staging', 'staged'), S.x + scols * sp, S.y + srows * sp + 22, { size: 10.5, color: t >= tVerify + 900 ? C.green : C.quiet, align: 'right' });
+
+      /* --- version line: main, with one new commit --- */
+      const gy = Rr.y + Rr.h - (wide ? 18 : 12);
+      const gx0 = Rr.x; const gx1 = Rr.x + scols * sp; const cx = lerp(gx0, gx1, 0.78);
+      ctx.strokeStyle = C.faint; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(gx0, gy); ctx.lineTo(gx1, gy); ctx.stroke();
+      [0.1, 0.32, 0.54].forEach((q) => { ctx.fillStyle = '#fff'; ctx.strokeStyle = C.faint; ctx.beginPath(); ctx.arc(lerp(gx0, gx1, q), gy, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); });
+      text(ctx, 'main', gx0, gy - 9, { size: 10, color: C.quiet });
+      if (t >= tCommit) {
+        const q = easeOut(clamp((t - tCommit) / 500));
+        // Bracket from the manifest to the commit: metadata points at the verified objects, nothing moves.
+        ctx.strokeStyle = alpha(C.green, 0.6 * q); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(S.x, S.y + srows * sp + 30); ctx.lineTo(S.x, S.y + srows * sp + 36); ctx.lineTo(gx1, S.y + srows * sp + 36); ctx.lineTo(gx1, S.y + srows * sp + 30); ctx.moveTo(cx, S.y + srows * sp + 36); ctx.lineTo(cx, gy - 6); ctx.stroke();
+        ctx.fillStyle = C.green; ctx.beginPath(); ctx.arc(cx, gy, 3.5 + 2.5 * q, 0, Math.PI * 2); ctx.fill();
+        text(ctx, L('1 次 commit · 数据集版本 +1', '1 commit · dataset version +1'), cx - 10, gy - 10, { size: 10.5, color: C.green, weight: 600, align: 'right', alpha: q });
+      } else {
+        ctx.strokeStyle = C.faint; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.arc(cx, gy, 5, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      }
     }
 
-    // The five-stage rail and the log below the canvas follow the same clock.
+    // State rail and the current event line follow the same clock; the full log is a disclosure.
     const rail = [...el.querySelectorAll('.machine-rail li')];
+    const now = el.querySelector('.machine-now');
     const log = el.querySelector('.machine-log');
-    const steps = [
-      { at: 0, s: 0, zh: `submit  task#20417  files=10,025 → ${N} 个 chunk 入队，0.89 s 返回`, en: `submit  task#20417  files=10,025 → ${N} chunks queued, returned in 0.89 s` },
-      { at: T0, s: 1, zh: 'claim   worker-1..4 并发领取，SKIP LOCKED 让彼此不等锁', en: 'claim   workers 1–4 claim concurrently; SKIP LOCKED means nobody waits on a lock' },
-      { at: T0 + 900, s: 2, zh: 'build   产物写入 staging，逐个校验非空 / 类型 / SHA-256', en: 'build   artifacts to staging, each checked: non-empty / type / SHA-256' },
-      { at: DIE, s: 3, fail: true, cls: 'warn', zh: `WARN    worker-3 心跳中断（Pod 重启），它锁住的 ${k} 个 chunk 停住`, en: `WARN    worker-3 heartbeat lost (pod restart); its ${k} locked chunks stall` },
-      { at: LEASE, s: 3, cls: 'dim', zh: `reclaim 租约到期，worker-5 接手；幂等键 task+file 命中 ${hits} 个已提交文件，跳过`, en: `reclaim lease expired, worker-5 takes over; key task+file matched ${hits} committed files, skipped` },
-      { at: tCommit, s: 4, zh: 'version LakeFS commit 一次，血缘事件闭合', en: 'version one LakeFS commit, lineage events closed' },
-      { at: tReady, s: 5, cls: 'ok', zh: 'READY   产物可读 · 版本落账 · 血缘闭合 — 数据集版本数 = 1', en: 'READY   readable · versioned · lineage closed — dataset versions = 1' }
-    ];
     let shown = -1; let shownLang = '';
     function dom(t) {
-      const n = steps.filter((st) => t >= st.at).length;
+      const n = events.filter((ev) => t >= ev.at).length;
       if (n === shown && lang() === shownLang) return;
       shown = n; shownLang = lang();
+      const cur = n ? events[n - 1] : null;
+      if (now) { now.textContent = cur ? L(cur.zh, cur.en) : ''; now.className = `machine-now mono ${cur && cur.cls ? cur.cls : ''}`; }
       if (log) {
         log.textContent = '';
-        steps.slice(Math.max(0, n - 7), n).forEach((st) => {
-          const span = document.createElement('span');
-          if (st.cls) span.className = st.cls;
-          span.textContent = `${L(st.zh, st.en)}\n`;
-          log.appendChild(span);
-        });
+        events.slice(0, n).forEach((ev) => { const s2 = document.createElement('span'); if (ev.cls) s2.className = ev.cls; s2.textContent = `${L(ev.zh, ev.en)}\n`; log.appendChild(s2); });
       }
-      const cur = n ? steps[n - 1] : null;
+      const s = cur ? cur.s : -1;
       rail.forEach((li, i) => {
-        const s = cur ? cur.s : -1;
         li.classList.toggle('done', i < s || (s === 5 && i === 5));
         li.classList.toggle('now', i === s && !(cur && cur.fail) && s !== 5);
         li.classList.toggle('fail', i === s && Boolean(cur && cur.fail));
@@ -421,13 +540,13 @@
       duration,
       draw,
       dom,
-      footAfter: el.querySelector('.machine-log'),
+      footAfter: el.querySelector('.machine-rail'),
       chapters: [
-        { at: 0, zh: '提交', en: 'Submit', sayZh: '10,025 个文件切成 157 个 chunk 写进 MySQL，同一事务里记下任务状态，0.89 秒返回。', sayEn: '10,025 files become 157 chunk rows in MySQL, written in the same transaction as task state; the call returns in 0.89 s.' },
-        { at: T0, zh: '并发领取', en: 'Claim', sayZh: '每个 Worker 用 FOR UPDATE SKIP LOCKED 领一批：被别人锁住的行直接跳过，谁也不等谁。', sayEn: 'Each worker claims a batch with FOR UPDATE SKIP LOCKED: rows locked by someone else are skipped, so nobody waits.' },
-        { at: DIE, zh: 'Worker 中断', en: 'Worker dies', sayZh: 'worker-3 的 Pod 重启，Redis 心跳断了。它手里的 chunk 还锁着，要等租约到期。', sayEn: "worker-3's pod restarts and its Redis heartbeat stops. Its chunks stay locked until the lease runs out." },
-        { at: LEASE, zh: '接手与幂等', en: 'Reclaim', sayZh: 'worker-5 接手整批。已经提交过的文件按 task + file 幂等键命中，直接跳过，不会重复产出。', sayEn: 'worker-5 takes over the batch. Files already committed hit the task + file idempotency key and are skipped, never produced twice.' },
-        { at: tCommit, zh: '落账', en: 'Commit', sayZh: '全部产物校验通过后只做一次 LakeFS commit。READY 的条件是：产物可读、版本落账、血缘闭合。', sayEn: 'Once every artifact checks out, exactly one LakeFS commit. READY means readable, versioned and lineage-closed.' }
+        { at: 0, zh: '提交', en: 'Submit', sayZh: '10,025 个文件切成 157 个 chunk，与任务状态在同一个 MySQL 事务里写入，0.89 秒返回。', sayEn: '10,025 files become 157 chunks, written in the same MySQL transaction as the task state; the call returns in 0.89 s.' },
+        { at: T0, zh: '领取', en: 'Claim', sayZh: '每个 Worker 用一次短事务 FOR UPDATE SKIP LOCKED 领一批，之后按租约处理，产物逐个写进 staging。', sayEn: 'Each worker claims a batch in one short FOR UPDATE SKIP LOCKED transaction, then works under a lease, writing artifacts to staging one by one.' },
+        { at: DIE, zh: '中断', en: 'Failure', sayZh: 'worker-3 的 Pod 重启，心跳中断。它那一批停在物化阶段，要等租约到期才能被别人接手。', sayEn: "worker-3's pod restarts and its heartbeat stops. Its batch waits in the materializing stage until the lease expires." },
+        { at: LEASE, zh: '接手', en: 'Reclaim', sayZh: 'worker-5 接手整批。已经在 staging 里的文件按 task + file 键跳过，只补上缺的部分。', sayEn: 'worker-5 takes over the batch. Files already in staging are skipped by the task + file key; only the missing ones are produced.' },
+        { at: tVerify, zh: '校验与落账', en: 'Verify, commit', sayZh: '全部产物校验通过后才提交：一次 LakeFS commit，版本与血缘同时落账。故障从头到尾没有越过物化阶段。', sayEn: 'Only after every artifact checks out does it commit: one LakeFS commit, version and lineage recorded together. The failure never got past materializing.' }
       ]
     });
   }
@@ -530,7 +649,7 @@
         rows2.push([L('耗时', 'elapsed'), t >= D0 ? `${Math.round(simS)} s` : '—', C.ink]);
         rows2.push([L('平均吞吐', 'mean throughput'), simS >= TOTAL ? '41.8 MiB/s' : '—', C.blue]);
       } else {
-        rows2.push([L('验收二', 'Acceptance 2'), L('故意缺第 197 片', 'part 197 withheld'), C.ink]);
+        rows2.push([L('验收二', 'Acceptance 2'), L('故意少传一片（位置示意）', 'one part withheld (position illustrative)'), C.ink]);
         rows2.push([L('列目录核对', 'prefix listing'), `${Math.min(sweepB + (sweepB >= HOLE ? 0 : 1), 309)} / ${PARTS}`, C.ink]);
       }
       if (wide) {
@@ -716,7 +835,7 @@
     function draw(ctx, w, h, t) {
       const wide = w >= 640; const pad = wide ? 20 : 14;
       // Chapter 1: the race, in real time.
-      const aR = t < R1 ? 1 : fadeOut(t, R1 + 300);
+      const aR = t < I0 ? 1 : fadeOut(t, I0 + 300);
       if (aR > 0) {
         ctx.globalAlpha = aR;
         const el2 = Math.max(0, t - R0 - 300);
@@ -760,7 +879,7 @@
         ctx.globalAlpha = 1;
       }
       // Chapter 2: INT8 looks fine to the model and is wrong to the eye.
-      const aI = t < I0 ? 0 : Math.min(fadeIn(t, I0), t < I1 ? 1 : fadeOut(t, I1 + 300));
+      const aI = t < I0 ? 0 : Math.min(fadeIn(t, I0 + 250), t < H0 ? 1 : fadeOut(t, H0 + 300));
       if (aI > 0) {
         ctx.globalAlpha = aI;
         const imgW = wide ? w * 0.46 : w - pad * 2; const imgH = wide ? h - pad * 2 - 16 : h * 0.46;
@@ -776,20 +895,20 @@
           if (b) text(ctx, b, sx + aw + 10, sy + (big ? 30 : 22), { size: 11, color: C.muted });
           sy += big ? 58 : 46;
         };
-        row(L('模型自估 IoU · fp32 / INT8', 'model self-estimated IoU · fp32 / INT8'), '0.686 / 0.692', L('几乎不变', 'barely moves'));
-        row(L('INT8 与 fp32 掩码的实际 IoU', 'actual IoU, INT8 vs fp32 masks'), '0.42', L('48–59% 的样本低于 0.5', '48–59% of samples below 0.5'), true);
+        row(L('模型自估 IoU', 'model self-estimated IoU'), L('几乎不变', 'barely moves'), L('坏了也察觉不到', 'so the damage is invisible'));
+        row(L('INT8 与 fp32 掩码的实际 IoU', 'actual IoU, INT8 vs fp32 masks'), '0.42', '', true);
         row(L('换来的提速', 'what it buys'), '1.7×', L('不值得', 'not worth it'));
         if (wide) text(ctx, L('只看延迟表，会得出“INT8 提速 1.7 倍”的结论。', 'A latency table alone says "INT8: 1.7× faster".'), sx, sy + 4, { size: 11, color: C.red, font: SANS, weight: 600 });
         ctx.globalAlpha = 1;
       }
       // Chapter 3: threads vs latency, minimum at the cgroup quota.
-      const aH = t < H0 ? 0 : fadeIn(t, H0);
+      const aH = t < H0 ? 0 : fadeIn(t, H0 + 250);
       if (aH > 0) {
         ctx.globalAlpha = aH;
-        const data = [[1, 2402], [2, 1242], [4, 640], [8, 755], [16, 796], [32, 1007]];
+        const data = [[2, 1242], [4, 640]];
         const X = pad + (wide ? 56 : 44); const Y = pad + 26; const Wd = w - X - pad - (wide ? 230 : 10); const Ht = wide ? h - Y - 44 : (h - Y) * 0.58;
-        const xs = (n) => X + (Math.log2(n) / 5) * Wd; const ys = (ms) => Y + Ht - (ms / 2600) * Ht;
-        [0, 500, 1000, 1500, 2000, 2500].forEach((v) => {
+        const xs = (n) => X + ((Math.log2(n) - 0.5) / 2) * Wd; const ys = (ms) => Y + Ht - (ms / 1500) * Ht;
+        [0, 500, 1000, 1500].forEach((v) => {
           ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X, ys(v) + 0.5); ctx.lineTo(X + Wd, ys(v) + 0.5); ctx.stroke();
           text(ctx, `${fmt(v)}`, X - 8, ys(v) + 4, { size: 9.5, align: 'right', color: C.faint });
         });
@@ -798,7 +917,7 @@
         text(ctx, L('推理线程数', 'inference threads'), X + Wd, Y + Ht + 34, { size: 10, align: 'right' });
         // Quota band.
         ctx.fillStyle = alpha(C.green, 0.08); ctx.fillRect(xs(4) - 14, Y, 28, Ht);
-        text(ctx, L('= cgroup 配额 4 核', '= cgroup quota, 4 cores'), xs(4), Y - 8, { size: 10.5, color: C.green, align: 'center', weight: 600 });
+        text(ctx, L('= 4 核配额', '= the 4-core quota'), xs(4), Y - 8, { size: 10.5, color: C.green, align: 'center', weight: 600 });
         const p = easeInOut(win(t, H0 + 200, H0 + 1600));
         const upto = p * (data.length - 1);
         ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.beginPath();
@@ -820,9 +939,8 @@
         const note = (a, b, c2) => { text(ctx, a, sx, sy, { size: 10.5 }); text(ctx, b, sx, sy + 19, { size: 12, color: c2, weight: 600, font: SANS }); sy += wide ? 48 : 38; };
         const q = win(t, H0 + 1600, H0 + 2000);
         ctx.globalAlpha = aH * q;
-        note(L('容器里 os.cpu_count()', 'os.cpu_count() in the container'), L('32（宿主核数）', '32 (the host)'), C.ink);
-        note(L('原配置 OMP_NUM_THREADS=2', 'shipped OMP_NUM_THREADS=2'), L('1,242 ms，慢 1.94 倍', '1,242 ms, 1.94× slower'), C.amberInk);
-        note(L('改成配额核数', 'set to the quota'), L('640 ms，只改一行 env', '640 ms, a one-line env change'), C.green);
+        note(L('原配置 2 线程', 'shipped with 2 threads'), '1,242 ms', C.amberInk);
+        note(L('线程数与 4 核配额对齐', 'threads matched to the 4-core quota'), '640 ms', C.green);
         ctx.globalAlpha = 1;
       }
     }
@@ -832,7 +950,7 @@
       chapters: [
         { at: R0, zh: '延迟（实时）', en: 'Latency, live', sayZh: '同一张图、同一台 4 核机器，按真实时长播放：FastSAM + CLIP 6,000 ms，EfficientViT-SAM 640 ms。', sayEn: 'Same image, same 4-core machine, played at real speed: FastSAM + CLIP takes 6,000 ms, EfficientViT-SAM 640 ms.' },
         { at: I0, zh: 'INT8 陷阱', en: 'INT8 trap', sayZh: 'INT8 再快 1.7 倍，但掩码和 fp32 的 IoU 只有 0.42，而模型自估的 IoU 几乎没变：坏了也察觉不到。', sayEn: "INT8 buys another 1.7×, but its masks overlap fp32's at IoU 0.42 while the model's own IoU estimate barely moves: failure you cannot see." },
-        { at: H0, zh: '线程数', en: 'Threads', sayZh: '容器看到的是宿主 32 核，真正配额是 4 核。线程数等于配额时最快。', sayEn: 'The container sees the host’s 32 cores; its real quota is 4. Latency bottoms out when threads match the quota.' }
+        { at: H0, zh: '线程数', en: 'Threads', sayZh: '服务按 2 线程上线；把推理线程数对齐到 4 核配额后，同一张图从 1,242 ms 降到 640 ms。', sayEn: 'The service shipped with 2 threads; matching inference threads to the 4-core quota took the same image from 1,242 ms to 640 ms.' }
       ]
     });
   }
@@ -1051,83 +1169,111 @@
    * FIG.P — astock-research: every pre-registered test against its matched control.
    * ===================================================================== */
   function figForest(el) {
+    // Every row is copied from the named results file. `stat` is the statistical verdict of that
+    // single comparison; `fin` is the report's final verdict after its data-boundary review.
+    const X = 'x'; const I = 'i'; const N2 = 'n';
     const rows = [
-      { g: 0, zh: '连板 · 持有 5 日', en: 'Limit-up streak · 5-day', e: -13.79, lo: -17.63, hi: -9.74, v: 'x', src: 'v8' },
-      { g: 0, zh: '连板 · 持有 20 日', en: 'Limit-up streak · 20-day', e: -9.31, lo: -11.93, hi: -6.76, v: 'x', src: 'v8' },
-      { g: 0, zh: '放量启动 · 5 日', en: 'Volume breakout · 5-day', e: -5.56, lo: -11.30, hi: -0.03, v: 'xn', src: 'v8' },
-      { g: 0, zh: '趋势动量 · 20 日', en: 'Trend momentum · 20-day', e: -2.91, lo: -5.61, hi: -0.47, v: 'xn', src: 'v8' },
-      { g: 1, zh: '行业 1 月动量 · 前 3', en: 'Sector 1-month momentum · top 3', e: -13.56, lo: -21.20, hi: -5.99, v: 'x', src: 'v13' },
-      { g: 1, zh: '行业 3 月动量 · 前 3', en: 'Sector 3-month momentum · top 3', e: -11.00, lo: -17.84, hi: -4.63, v: 'x', src: 'v13' },
-      { g: 1, zh: '行业 6-1 月动量 · 前 3', en: 'Sector 6-1 momentum · top 3', e: -4.66, lo: -10.63, hi: 1.82, v: 'n', src: 'v13' },
-      { g: 2, zh: '小市值 · 30 只', en: 'Small cap · 30 names', e: 9.05, lo: -4.45, hi: 28.57, v: 'i', src: 'v12.1', was: { e: 13.93, lo: -1.40, hi: 42.71 } },
-      { g: 2, zh: '12-1 动量 · 30 只', en: '12-1 momentum · 30 names', e: -12.80, lo: -26.76, hi: 3.61, v: 'i', src: 'v12.1' },
-      { g: 2, zh: '低 PB · 30 只', en: 'Low P/B · 30 names', e: -7.41, lo: -25.91, hi: 9.23, v: 'i', src: 'v12.1' },
-      { g: 2, zh: '低波动 · 30 只', en: 'Low volatility · 30 names', e: -0.73, lo: -20.41, hi: 15.89, v: 'i', src: 'v12.1' },
-      { g: 3, zh: '主动基金 · 近 3 年业绩前组', en: 'Active funds · top 3-year record', e: -0.24, lo: -4.90, hi: 4.94, v: 'i', src: 'v9' },
-      { g: 3, zh: '主动基金 · 质量评分', en: 'Active funds · quality score', e: -0.72, lo: -6.64, hi: 5.22, v: 'i', src: 'v9' },
-      { g: 3, zh: 'ETF 组合 · 10% 回撤止损', en: 'ETF basket · 10% stop-loss', e: -4.05, lo: -9.32, hi: 0.08, v: 'i', src: 'v7' }
+      { g: 0, zh: '连板 · 持有 5 日', en: 'Limit-up streak · 5-day', e: -13.79, lo: -17.63, hi: -9.74, stat: X, src: 'build-v8/results.md' },
+      { g: 0, zh: '连板 · 持有 20 日', en: 'Limit-up streak · 20-day', e: -9.31, lo: -11.93, hi: -6.76, stat: X, src: 'build-v8/results.md' },
+      { g: 0, zh: '放量启动 · 5 日', en: 'Volume breakout · 5-day', e: -5.56, lo: -11.30, hi: -0.03, stat: X, src: 'build-v8/results.md' },
+      { g: 0, zh: '趋势动量 · 20 日', en: 'Trend momentum · 20-day', e: -2.91, lo: -5.61, hi: -0.47, stat: X, src: 'build-v8/results.md' },
+      { g: 1, zh: '1 月动量 · 前 3', en: '1-month momentum · top 3', e: -13.56, lo: -21.20, hi: -5.99, stat: X, src: 'build-v13/results.md' },
+      { g: 1, zh: '3 月动量 · 前 3', en: '3-month momentum · top 3', e: -11.00, lo: -17.84, hi: -4.63, stat: X, src: 'build-v13/results.md' },
+      { g: 1, zh: '6-1 月动量 · 前 3', en: '6-1 momentum · top 3', e: -4.66, lo: -10.63, hi: 1.82, stat: N2, src: 'build-v13/results.md' },
+      { g: 2, zh: '小市值 · 30 只', en: 'Small cap · 30 names', e: 9.05, lo: -4.45, hi: 28.57, stat: I, src: 'build-v12.1/results.md', was: { e: 13.93, lo: -1.40, hi: 42.71 } },
+      { g: 2, zh: '12-1 动量 · 30 只', en: '12-1 momentum · 30 names', e: -12.80, lo: -26.76, hi: 3.61, stat: I, src: 'build-v12.1/results.md' },
+      { g: 2, zh: '低 PB · 30 只', en: 'Low P/B · 30 names', e: -7.41, lo: -25.91, hi: 9.23, stat: I, src: 'build-v12.1/results.md' },
+      { g: 2, zh: '低波动 · 30 只', en: 'Low volatility · 30 names', e: -0.73, lo: -20.41, hi: 15.89, stat: I, src: 'build-v12.1/results.md' },
+      { g: 3, zh: '近 3 年业绩前组', en: 'Top 3-year record', e: -0.24, lo: -4.90, hi: 4.94, stat: I, src: 'build-v9/results.md' },
+      { g: 3, zh: '质量评分增量', en: 'Quality-score increment', e: -0.72, lo: -6.64, hi: 5.22, stat: I, src: 'build-v9/results.md' },
+      { g: 4, zh: '10% 回撤止损', en: '10% drawdown stop', e: -4.05, lo: -9.32, hi: 0.08, stat: I, src: 'build-v7/results.md' }
     ];
-    const groups = [['短线', 'Short-term'], ['行业轮动', 'Sector rotation'], ['个股因子', 'Stock factors'], ['基金与 ETF', 'Funds & ETFs']];
+    const groups = [
+      { zh: '短线规则', en: 'Short-term rules', nzh: '年化净增量，对照为资金部署匹配的账户；60 日块、Holm 校正区间', nen: 'annualized net increment vs a deployment-matched account; 60-day block, Holm-corrected' },
+      { zh: '行业轮动', en: 'Sector rotation', nzh: '年化收益差，对照为行业等权；60 日块 95% 区间', nen: 'annualized return gap vs equal-weight sectors; 60-day block 95% interval' },
+      { zh: '个股因子（剔除北交所）', en: 'Stock factors (BSE excluded)', nzh: '年化净增量，对照为匹配账户；19 项族校正区间', nen: 'annualized net increment vs a matched account; 19-test family interval' },
+      { zh: '主动基金', en: 'Active funds', nzh: '未来 12 个月超额；年度 / 季度块与基金、经理连通簇重采样', nen: 'next-12-month excess; annual / quarterly blocks with fund and manager clusters' },
+      { zh: 'ETF 组合', en: 'ETF basket', nzh: '止损减不止损的年化差；仅 5 次事件，低于预设的推广门槛', nen: 'annualized gap, stop minus no stop; only 5 events, below the preset threshold' }
+    ];
+    const STAT = { x: ['统计：证伪或排除实用价值', 'statistically: falsified / no practical value'], n: ['统计：排除实用价值', 'statistically: no practical value'], i: ['', ''] };
     const MIN = -30; const MAX = 30;
-    const D1 = 2400; const SH0 = 3000; const SH1 = 4200; const duration = 5000;
     let hot = -1;
     const readout = el.querySelector('.fig-readout');
-    const verdict = { x: ['证伪', 'Falsified', C.red], n: ['排除实用价值', 'No practical value', C.amberInk], xn: ['证伪 / 排除', 'Falsified / no value', C.red], i: ['证据不足', 'Insufficient', C.quiet] };
-    function draw(ctx, w, h, t, api) {
+    const fmtv = (v) => `${v > 0 ? '+' : ''}${v.toFixed(2)}`;
+    const describe = (r) => `${L(r.zh, r.en)} · ${fmtv(r.e)} [${fmtv(r.lo)}, ${fmtv(r.hi)}] ${L('百分点', 'pp')} · ${L('最终：证据不足', 'final: insufficient evidence')}${STAT[r.stat][0] ? ` · ${L(STAT[r.stat][0], STAT[r.stat][1])}` : ''} · ${r.src}`;
+
+    function layout(w, h) {
       const wide = w >= 640; const pad = wide ? 16 : 12;
-      const labW = wide ? Math.min(230, w * 0.34) : 0;
-      const verW = wide ? 96 : 0;
-      const X = pad + labW; const Wd = w - X - pad - verW - 8;
-      const xs = (v) => X + ((clamp(v, MIN, MAX) - MIN) / (MAX - MIN)) * Wd;
-      const top = 30; const rowH = (h - top - 26) / (rows.length + groups.length * 0.6);
+      const labW = wide ? Math.min(210, w * 0.3) : 0;
+      const verW = wide ? 170 : 0;
+      const X0 = pad + labW; const Wd = w - X0 - pad - verW - (wide ? 12 : 0);
+      const top = 34; const groupH = wide ? 38 : 40; const rowH = wide ? 32 : 34;
+      return { wide, pad, labW, verW, X0, Wd, top, groupH, rowH };
+    }
+    function draw(ctx, w, h, t, api) {
+      const Lo = layout(w, h); const { wide, pad, X0, Wd, top } = Lo;
+      const xs = (v) => X0 + ((clamp(v, MIN, MAX) - MIN) / (MAX - MIN)) * Wd;
+      const bottom = h - 24;
       [-30, -20, -10, 0, 10, 20, 30].forEach((v) => {
         ctx.strokeStyle = v === 0 ? C.ink : C.line2; ctx.lineWidth = v === 0 ? 1.2 : 1;
-        ctx.beginPath(); ctx.moveTo(xs(v) + 0.5, top - 8); ctx.lineTo(xs(v) + 0.5, h - 22); ctx.stroke();
-        text(ctx, v > 0 ? `+${v}` : String(v), xs(v), h - 8, { size: 9.5, align: 'center', color: v === 0 ? C.ink : C.faint });
+        ctx.beginPath(); ctx.moveTo(xs(v) + 0.5, top - 6); ctx.lineTo(xs(v) + 0.5, bottom); ctx.stroke();
+        text(ctx, v > 0 ? `+${v}` : String(v), xs(v), h - 8, { size: 10, align: 'center', color: v === 0 ? C.ink : C.quiet });
       });
-      text(ctx, L('← 跑输对照', '← worse than control'), xs(-1.5), top - 14, { size: 10, align: 'right', color: C.red });
-      text(ctx, L('跑赢对照 →', 'better than control →'), xs(1.5), top - 14, { size: 10, color: C.green });
-      if (wide) text(ctx, L('判定', 'verdict'), w - pad, top - 14, { size: 10, align: 'right' });
+      text(ctx, L('← 不如对照', '← worse than control'), xs(0) - 8, top - 14, { size: 10.5, align: 'right', color: C.muted });
+      text(ctx, L('好于对照 →', 'better than control →'), xs(0) + 8, top - 14, { size: 10.5, color: C.muted });
+      if (wide) text(ctx, L('最终判定', 'final verdict'), w - pad, top - 14, { size: 10.5, align: 'right', color: C.muted });
       let y = top; let g = -1; hot = -1;
       rows.forEach((r, i) => {
-        if (r.g !== g) { g = r.g; y += rowH * 0.6; text(ctx, L(groups[g][0], groups[g][1]).toUpperCase(), pad, y - 2, { size: 9.5, color: C.blue, weight: 600 }); }
-        const cy = wide ? y + rowH / 2 : y + rowH * 0.72;
-        const p = easeOut(win(t, 150 + i * (D1 / rows.length), 150 + i * (D1 / rows.length) + 500));
-        if (api.pointer && api.pointer.y >= y && api.pointer.y < y + rowH) hot = i;
-        if (hot === i) { ctx.fillStyle = alpha(C.blue, 0.06); ctx.fillRect(pad - 4, y, w - pad * 2 + 8, rowH); }
-        const [vz, ve, vc] = verdict[r.v];
-        if (wide) text(ctx, L(r.zh, r.en), X - 12, cy + 4, { size: 11.5, align: 'right', color: C.ink, font: SANS });
-        else text(ctx, `${L(r.zh, r.en)} · ${L(verdict[r.v][0], verdict[r.v][1])}`, pad, y + rowH * 0.36, { size: 10, color: C.ink, font: SANS });
-        let e = r.e; let lo = r.lo; let hi = r.hi;
-        if (r.was) {
-          const q = easeInOut(win(t, SH0, SH1));
-          e = lerp(r.was.e, r.e, q); lo = lerp(r.was.lo, r.lo, q); hi = lerp(r.was.hi, r.hi, q);
-          if (q > 0) { // ghost of the contaminated estimate
-            ctx.globalAlpha = 0.7 * p; ctx.strokeStyle = C.faint; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
-            ctx.beginPath(); ctx.moveTo(xs(r.was.lo), cy); ctx.lineTo(xs(r.was.hi), cy); ctx.stroke(); ctx.setLineDash([]);
-            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(xs(r.was.e), cy, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.faint; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(xs(r.was.e), cy, 3.5, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
-            if (wide) text(ctx, L('剔除北交所后', 'after removing BSE'), xs(r.was.e) + 8, cy - 7, { size: 9.5, color: C.muted, alpha: q });
-          }
+        if (r.g !== g) {
+          g = r.g; y += Lo.groupH;
+          text(ctx, L(groups[g].zh, groups[g].en), pad, y - (wide ? 20 : 24), { size: 11, color: C.ink, weight: 650, font: SANS });
+          text(ctx, L(groups[g].nzh, groups[g].nen), pad, y - (wide ? 6 : 10), { size: wide ? 10 : 9.5, color: C.quiet });
         }
-        const mid = e;
-        const l2 = lerp(mid, lo, p); const h2 = lerp(mid, hi, p);
-        ctx.strokeStyle = vc; ctx.lineWidth = 2; ctx.globalAlpha = p;
-        ctx.beginPath(); ctx.moveTo(xs(l2), cy); ctx.lineTo(xs(h2), cy); ctx.stroke();
-        if (hi > MAX && p > 0.9) { ctx.beginPath(); ctx.moveTo(xs(MAX) - 5, cy - 4); ctx.lineTo(xs(MAX), cy); ctx.lineTo(xs(MAX) - 5, cy + 4); ctx.stroke(); }
-        ctx.fillStyle = vc; ctx.beginPath(); ctx.arc(xs(mid), cy, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.globalAlpha = 1;
-        if (wide) text(ctx, L(vz, ve), w - pad, cy + 4, { size: 10, align: 'right', color: vc, weight: 600, alpha: p });
-        r.cy = cy;
-        y += rowH;
+        const cy = wide ? y + Lo.rowH / 2 : y + Lo.rowH * 0.7;
+        if (api.pointer && api.pointer.y >= y && api.pointer.y < y + Lo.rowH) hot = i;
+        if (hot === i) { ctx.fillStyle = alpha(C.blue, 0.06); ctx.fillRect(pad - 4, y, w - pad * 2 + 8, Lo.rowH); }
+        if (wide) text(ctx, L(r.zh, r.en), X0 - 12, cy + 4, { size: 12, align: 'right', color: C.ink, font: SANS });
+        else text(ctx, L(r.zh, r.en), pad, y + Lo.rowH * 0.34, { size: 11, color: C.ink, font: SANS });
+        if (r.was) {
+          ctx.strokeStyle = C.faint; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+          ctx.beginPath(); ctx.moveTo(xs(r.was.lo), cy - 5); ctx.lineTo(xs(r.was.hi), cy - 5); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(xs(r.was.e), cy - 5, 3, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = C.faint; ctx.lineWidth = 1.2; ctx.stroke();
+          if (wide) text(ctx, L('含北交所时', 'with BSE'), xs(r.was.e) + 7, cy - 8, { size: 9.5, color: C.quiet });
+        }
+        const col = hot === i ? C.blue : C.ink;
+        ctx.strokeStyle = col; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(xs(r.lo), cy); ctx.lineTo(xs(r.hi), cy); ctx.stroke();
+        [r.lo, r.hi].forEach((v) => { if (v < MIN || v > MAX) return; ctx.beginPath(); ctx.moveTo(xs(v) + 0.5, cy - 3.5); ctx.lineTo(xs(v) + 0.5, cy + 3.5); ctx.stroke(); });
+        if (r.hi > MAX) { ctx.beginPath(); ctx.moveTo(xs(MAX) - 5, cy - 4); ctx.lineTo(xs(MAX), cy); ctx.lineTo(xs(MAX) - 5, cy + 4); ctx.stroke(); }
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(xs(r.e), cy, 3.6, 0, Math.PI * 2); ctx.fill();
+        if (wide) {
+          text(ctx, L('证据不足', 'insufficient'), w - pad, cy + (STAT[r.stat][0] ? -1 : 4), { size: 11, align: 'right', color: C.ink, weight: 600 });
+          if (STAT[r.stat][0]) text(ctx, L(r.stat === 'n' ? '统计：排除实用价值' : '统计：证伪 / 排除', r.stat === 'n' ? 'stat: no practical value' : 'stat: falsified / no value'), w - pad, cy + 11, { size: 9.5, align: 'right', color: C.muted });
+        }
+        y += Lo.rowH;
       });
-      if (readout) {
-        const r = rows[hot];
-        readout.textContent = r
-          ? `${L(r.zh, r.en)} · ${r.e > 0 ? '+' : ''}${r.e.toFixed(2)} ${L('点', 'pts')} [${r.lo.toFixed(2)}, ${r.hi > 0 ? '+' : ''}${r.hi.toFixed(2)}] · ${L(verdict[r.v][0], verdict[r.v][1])} · ${r.src}`
-          : L('悬停任一行查看估计值、区间与出处', 'Hover a row for its estimate, interval and source');
-      }
+      if (readout) readout.textContent = rows[hot] ? describe(rows[hot]) : L('悬停任一行，查看估计、区间、判定与出处；完整数据见图下表格。', 'Hover a row for its estimate, interval, verdicts and source; the full data is in the table below.');
     }
-    mount(el, { duration, draw, hover: true });
+
+    // The same rows, as a real table: keyboard, touch and screen readers get every number.
+    const table = el.querySelector('.fig-table tbody');
+    if (table) {
+      const build = () => {
+        table.innerHTML = rows.map((r) => `<tr><td>${esc(L(groups[r.g].zh, groups[r.g].en))}</td><td>${esc(L(r.zh, r.en))}</td><td class="num">${fmtv(r.e)}</td><td class="num">[${fmtv(r.lo)}, ${fmtv(r.hi)}]</td><td>${esc(L(STAT[r.stat][0].replace('统计：', '') || '证据不足', STAT[r.stat][1].replace('statistically: ', '') || 'insufficient evidence'))}</td><td>${esc(L('证据不足', 'insufficient evidence'))}</td><td class="mono">${r.src}</td></tr>`).join('');
+      };
+      build(); langHooks.push(build);
+    }
+    // Height follows the row count, so nothing is squeezed at any width.
+    const stage = el.querySelector('.fig-stage');
+    const fit = () => {
+      const w = stage.getBoundingClientRect().width || 600;
+      const Lo = layout(w, 0);
+      stage.style.aspectRatio = 'auto';
+      stage.style.height = `${Lo.top + groups.length * Lo.groupH + rows.length * Lo.rowH + 30}px`;
+    };
+    fit(); window.addEventListener('resize', fit, { passive: true });
+    mount(el, { duration: 1, draw, hover: true });
   }
 
   const figs = { queue: figQueue, upload: figUpload, matrix: figMatrix, seg: figSeg, cores: figCores, prompt: figPrompt, forest: figForest };
