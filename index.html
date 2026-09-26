@@ -344,8 +344,9 @@
             <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
           </div>
           <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/7.2;--ar-m:4/6"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-cores-cap"><span class="zh">同一套镜像，16 核验证机全绿；32 核现场机器上 OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。修复是给所有算力容器显式钉死线程数并放开 nproc。核数与重启次数取自现场记录，线程点数与上限高度为示意。</span><span class="en">The same images: all green on a 16-core test machine; on the 32-core machine on site, OpenBLAS and OMP started a thread per core, hit the nproc limit, and three Python services restarted 60+ times. The fix pins thread counts in every compute container and raises nproc. Core counts and restarts come from the field record; thread dots and the limit height are illustrative.</span></figcaption>
+          <div class="fig-stage" style="--ar:16/7;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
+          <p class="fig-code"><span class="fig-code-k"><span class="zh">修复：每个算力容器</span><span class="en">Fix, in every compute container:</span></span> <code>OPENBLAS_NUM_THREADS</code> <code>OMP_NUM_THREADS</code> <code>MKL_NUM_THREADS</code> <code>NUMEXPR_NUM_THREADS</code> <span class="zh">显式设置，</span><span class="en">set explicitly;</span> <code>ulimits.nproc</code> <span class="zh">放开</span><span class="en">raised</span></p>
+          <figcaption class="fig-note" id="fig-cores-cap"><span class="zh">同一套镜像，16 核验证机全绿；32 核现场机器上 OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。修复是给所有算力容器显式钉死线程数并放开 nproc。核数与重启次数取自现场记录，线程条与上限线的高度为示意。</span><span class="en">The same images: all green on a 16-core test machine; on the 32-core machine on site, OpenBLAS and OMP started a thread per core, hit the nproc limit, and three Python services restarted 60+ times. The fix pins thread counts in every compute container and raises nproc. Core counts and restarts come from the field record; thread-bar and limit heights are illustrative.</span></figcaption>
         </figure>
       </article>
 

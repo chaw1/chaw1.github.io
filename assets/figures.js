@@ -1015,96 +1015,86 @@
   }
 
   /* =====================================================================
-   * FIG.E — 16 cores green, 32 cores crash-looping: threads per core vs nproc.
+   * FIG.E — the same images on three machines: 16 cores, 32 cores, 32 cores fixed.
+   * Thread pools scale with the core count; one nproc line runs across all three.
+   * The end frame keeps the before-and-after side by side.
    * ===================================================================== */
   function figCores(el) {
-    const A1 = 2700; const B0 = 3000; const B1 = 6400; const P0 = 6700; const duration = 9800;
-    const ENV = ['OPENBLAS_NUM_THREADS', 'OMP_NUM_THREADS', 'MKL_NUM_THREADS', 'NUMEXPR_NUM_THREADS', 'ulimits.nproc'];
+    const A0 = 200; const A1 = 2600; const B0 = 3000; const B1 = 6400; const F0 = 6800; const F1 = 9000; const duration = 9800;
+    const cols = [
+      { zh: '验证机', en: 'Test machine', cores: 16, units: 96, t0: A0, t1: A1 },
+      { zh: '客户现场', en: 'Customer site', cores: 32, units: 192, t0: B0, t1: B1 },
+      { zh: '钉死线程数之后', en: 'Threads pinned', cores: 32, units: 24, t0: F0, t1: F1, fixed: true }
+    ];
+    const MAXU = 210; const LIMIT = 150; // illustrative heights; only cores and restarts are measured
+    const svc = ['#6f8fe8', '#2255ee', '#15309a'];
     function draw(ctx, w, h, t) {
-      const wide = w >= 640; const pad = wide ? 20 : 14;
-      const grow = easeInOut(win(t, B0, B0 + 900));
-      const pinned = easeInOut(win(t, P0 + 400, P0 + 1400));
-      const cores = Math.round(16 + 16 * grow);
-      // Host box with a core grid.
-      const hostW = wide ? w * 0.24 : w - pad * 2; const hostH = wide ? h - pad * 2 - 20 : h * 0.24;
-      const hx = pad; const hy = pad + 18;
-      text(ctx, L(t < B0 ? '验证机 · 鲲鹏 aarch64' : '客户现场 · 鲲鹏 aarch64', t < B0 ? 'test machine · Kunpeng aarch64' : 'customer site · Kunpeng aarch64'), hx, hy - 8, { size: 10.5 });
-      ctx.strokeStyle = C.line; ctx.lineWidth = 1; rr(ctx, hx + 0.5, hy + 0.5, hostW - 1, hostH - 1, 3); ctx.stroke();
-      const gc = wide ? 4 : 8; const gr = Math.ceil(32 / gc);
-      const cs = Math.min((hostW - 24) / gc, (hostH - 48) / gr); const cg = cs * 0.2;
-      for (let i = 0; i < 32; i += 1) {
-        const x = hx + 12 + (i % gc) * cs; const y = hy + 12 + Math.floor(i / gc) * cs;
-        const on = i < cores; const a = on ? (i < 16 ? 1 : clamp((grow * 16 - (i - 16)) / 1)) : 0;
-        ctx.fillStyle = on ? alpha(C.ink, 0.8 * a) : C.line2; if (!on) { ctx.globalAlpha = 0.5; }
-        rr(ctx, x, y, cs - cg, cs - cg, 2); ctx.fill(); ctx.globalAlpha = 1;
-      }
-      text(ctx, L(`${cores} 核`, `${cores} cores`), hx + 12, hy + hostH - 12, { size: wide ? 20 : 15, color: C.ink, weight: 650, font: SANS });
-
-      // Three Python services, each spawning threads per visible core.
-      const sx0 = wide ? hx + hostW + 28 : pad; const sy0 = wide ? hy : hy + hostH + 26;
-      const gaugeW = wide ? 120 : 0;
-      const sw = wide ? w - sx0 - pad - gaugeW - 24 : w - pad * 2; const sh = wide ? (hostH - 24 - 34) / 3 : (h - sy0 - pad - 60) / 3;
-      const crashFrom = B0 + 1100; const restarts = t < crashFrom ? 0 : Math.min(60, Math.floor((Math.min(t, P0 + 900) - crashFrom) / 38));
-      const crashing = t >= crashFrom && t < P0 + 900;
-      for (let k = 0; k < 3; k += 1) {
-        const y = sy0 + k * (sh + 12);
-        const status = crashing ? 'CrashLoopBackOff' : 'Running';
-        const col = crashing ? C.red : C.green;
-        ctx.fillStyle = crashing ? alpha(C.red, 0.05) : '#fff'; rr(ctx, sx0, y, sw, sh, 3); ctx.fill();
-        ctx.strokeStyle = crashing ? alpha(C.red, 0.5) : C.line; ctx.lineWidth = 1; rr(ctx, sx0 + 0.5, y + 0.5, sw - 1, sh - 1, 3); ctx.stroke();
-        text(ctx, L(`Python 算力服务 ${k + 1}`, `Python compute service ${k + 1}`), sx0 + 12, y + 18, { size: 11, color: C.ink, weight: 500 });
-        chip(ctx, status, sx0 + sw - 10, y + 15, col, crashing ? C.redSoft : C.greenSoft, { align: 'right', size: 9.5 });
-        if (restarts) text(ctx, `↻ ${restarts}${restarts >= 60 ? '+' : ''}`, sx0 + sw - 10, y + sh - 10, { size: 11, color: crashing ? C.red : C.quiet, align: 'right', weight: 600 });
-        // Thread dots: one pool per library, each sized by core count until pinned.
-        const threads = Math.round(lerp(cores, 4, pinned));
-        const dotR = Math.max(1.6, Math.min(3, sh / 26));
-        const perRow = Math.floor((sw - 90) / (dotR * 3.2));
-        const libs = ['OpenBLAS', 'OMP'];
-        libs.forEach((lib, li) => {
-          const ly = y + 34 + li * (dotR * 3.4 + 6);
-          if (ly > y + sh - 8) return;
-          text(ctx, lib, sx0 + 12, ly + 3, { size: 9.5, color: C.faint });
-          for (let d = 0; d < Math.min(threads, perRow); d += 1) {
-            ctx.fillStyle = crashing ? C.red : pinned > 0.5 ? C.green : C.blue;
-            ctx.globalAlpha = crashing ? 0.5 + 0.5 * Math.sin(t / 90 + d) : 1;
-            ctx.beginPath(); ctx.arc(sx0 + 78 + d * dotR * 3.2, ly, dotR, 0, Math.PI * 2); ctx.fill();
-          }
-          ctx.globalAlpha = 1;
-        });
-      }
-      // Gauge: threads in the container against the nproc ceiling.
-      if (wide) {
-        const gx = w - pad - gaugeW; const gy = hy; const gh = hostH; const bw = 34;
-        text(ctx, L('线程总数', 'total threads'), gx, gy - 8, { size: 10.5 });
-        ctx.fillStyle = C.line2; ctx.fillRect(gx, gy, bw, gh);
-        const level = lerp(lerp(0.52, 1.04, grow), 0.16, pinned);
-        const fillH = Math.min(1, level) * gh;
-        const over = level > 0.78;
-        ctx.fillStyle = over ? C.red : pinned > 0.5 ? C.green : C.blue; ctx.fillRect(gx, gy + gh - fillH, bw, fillH);
-        const limY = gy + gh * (1 - 0.78);
-        ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(gx - 6, limY); ctx.lineTo(gx + bw + 6, limY); ctx.stroke(); ctx.setLineDash([]);
-        text(ctx, L('nproc 上限', 'nproc limit'), gx + bw + 10, limY + 4, { size: 10.5, color: C.ink, weight: 600 });
-        text(ctx, L('∝ 核数', '∝ cores'), gx + bw + 10, gy + gh - 4, { size: 10, color: C.faint });
-      }
-      // The fix, typed in.
-      if (t >= P0) {
-        const lines = ENV.map((e, i) => (i < 4 ? `${e}=N` : L('ulimits.nproc 放开', 'ulimits.nproc raised')));
-        const n = Math.floor(win(t, P0, P0 + 1100) * lines.length * 1.0001);
-        const px = wide ? sx0 : pad; const py = wide ? hy + hostH - 6 : h - pad - 22;
-        const shownLines = lines.slice(0, Math.max(1, n));
-        text(ctx, L('每个算力容器：', 'every compute container:'), px, py - (wide ? 0 : 14), { size: 10.5, color: C.green, weight: 600 });
-        if (wide) { ctx.save(); ctx.beginPath(); ctx.rect(px, py - 14, sw, 20); ctx.clip(); text(ctx, shownLines.join('  '), px + 118, py, { size: w > 1100 ? 10.5 : 9.5, color: C.ink }); ctx.restore(); }
-        else text(ctx, shownLines.slice(0, 2).join('  ') + (shownLines.length > 2 ? '  …' : ''), px, py + 4, { size: 9.5, color: C.ink });
-      }
-      if (t >= A1 - 400 && t < B0 + 200) chip(ctx, L('全绿', 'all green'), hx + hostW - 10, hy + hostH - 18, C.green, C.greenSoft, { align: 'right', alpha: win(t, A1 - 400, A1 - 100) });
+      const wide = w >= 640; const pad = wide ? 22 : 12; const gap = wide ? 28 : 10;
+      const colW = (w - pad * 2 - gap * 2) / 3;
+      const top = 20; const gridTop = top + (wide ? 34 : 40);
+      const cell = Math.min((colW - 8) / 8, wide ? 16 : 10); const cg = Math.max(1.5, cell * 0.18);
+      const gridH = 4 * cell;
+      const barTop = gridTop + gridH + (wide ? 36 : 26); const barBot = h - (wide ? 64 : 58);
+      const barH = barBot - barTop;
+      const yOf = (u) => barBot - (u / MAXU) * barH;
+      // nproc line across all columns.
+      const ly = yOf(LIMIT);
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 1.3; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(pad, ly); ctx.lineTo(w - pad, ly); ctx.stroke(); ctx.setLineDash([]);
+      if (wide) text(ctx, L('nproc 上限（高度示意）', 'nproc limit (height illustrative)'), w - pad, ly - 6, { size: 10.5, color: C.ink, align: 'right', weight: 600 });
+      else text(ctx, 'nproc', pad, ly - 5, { size: 9.5, color: C.ink, weight: 600 });
+      cols.forEach((c, k) => {
+        const x = pad + k * (colW + gap);
+        const on = t >= c.t0 - 200;
+        const a = on ? win(t, c.t0 - 200, c.t0 + 200) : 0.18;
+        ctx.globalAlpha = a;
+        text(ctx, L(c.zh, c.en), x, top + 10, { size: wide ? 12.5 : 10.5, color: C.ink, weight: 650, font: SANS });
+        text(ctx, wide ? L(`${c.cores} 核 · 同一套镜像`, `${c.cores} cores · same images`) : L(`${c.cores} 核`, `${c.cores} cores`), x, top + (wide ? 27 : 24), { size: wide ? 10.5 : 9, color: C.quiet });
+        for (let i = 0; i < 32; i += 1) {
+          const cx = x + (i % 8) * cell; const cy = gridTop + Math.floor(i / 8) * cell;
+          ctx.fillStyle = i < c.cores ? C.ink : C.line2; if (i >= c.cores) ctx.globalAlpha = a * 0.6;
+          ctx.fillRect(cx, cy, cell - cg, cell - cg); ctx.globalAlpha = a;
+        }
+        // Threads: one stacked bar, three services, each two pools sized by cores (or pinned).
+        const grow = easeOut(win(t, c.t0, c.t0 + (c.t1 - c.t0) * 0.55));
+        const units = c.units * grow;
+        const bw = Math.min(colW * 0.42, 90); const bx = x + (wide ? 0 : 0);
+        let acc = 0;
+        for (let sv = 0; sv < 3; sv += 1) {
+          const u = Math.min(units - acc, c.units / 3); if (u <= 0) break;
+          const y0 = yOf(acc + u); const y1 = yOf(acc);
+          ctx.fillStyle = c.fixed ? mix(C.green, '#ffffff', sv * 0.25) : svc[sv];
+          ctx.fillRect(bx, y0, bw, y1 - y0 - 1);
+          acc += u;
+        }
+        const over = units > LIMIT && !c.fixed;
+        if (over) { ctx.fillStyle = alpha(C.red, 0.18); ctx.fillRect(bx - 3, yOf(units), bw + 6, ly - yOf(units)); ctx.strokeStyle = C.red; ctx.lineWidth = 1.5; ctx.strokeRect(bx - 3, yOf(units), bw + 6, ly - yOf(units)); }
+        if (wide) text(ctx, L('线程数', 'threads'), bx + bw + 8, barBot - 2, { size: 9.5, color: C.quiet });
+        if (wide) text(ctx, c.fixed ? L('按配置固定', 'fixed by config') : L('∝ 核数', '∝ cores'), bx + bw + 8, barBot - 16, { size: 9.5, color: C.quiet });
+        // Services: three pills.
+        const sy = barBot + (wide ? 22 : 20);
+        const crash = over && t >= c.t0 + (c.t1 - c.t0) * 0.45;
+        const restarts = crash ? Math.min(60, Math.floor((t - c.t0 - (c.t1 - c.t0) * 0.45) / 30)) : 0;
+        const pillW = wide ? (colW - 16) / 3 : colW;
+        for (let sv = 0; sv < (wide ? 3 : 1); sv += 1) {
+          const px = x + sv * (pillW + (wide ? 8 : 2));
+          const bad = crash; const ok = on && grow > 0.9 && !bad;
+          ctx.fillStyle = bad ? C.redSoft : ok ? C.greenSoft : C.line2; rr(ctx, px, sy - 11, pillW, 20, 3); ctx.fill();
+          text(ctx, bad ? (wide ? 'CrashLoop' : 'CrashLoop ×3') : ok ? (wide ? 'Running' : 'Running ×3') : '…', px + pillW / 2, sy + 3, { size: wide ? 9.5 : 8.5, color: bad ? C.red : ok ? C.green : C.quiet, align: 'center', weight: 600 });
+        }
+        if (restarts) text(ctx, `${L('重启', 'restarts')} ${restarts}${restarts >= 60 ? '+' : ''}`, x, sy + (wide ? 30 : 28), { size: wide ? 12 : 10.5, color: C.red, weight: 650 });
+        else if (on && grow > 0.9) text(ctx, c.fixed ? L('稳定', 'stable') : L('全绿', 'all green'), x, sy + (wide ? 30 : 28), { size: wide ? 12 : 10.5, color: C.green, weight: 650 });
+        ctx.globalAlpha = 1;
+      });
     }
     mount(el, {
       duration,
       draw,
+      footAfter: el.querySelector('.fig-code'),
       chapters: [
-        { at: 0, zh: '验证机 16 核', en: '16-core test box', sayZh: '与客户同款 OS 的验证机，16 核，整套平台全绿。', sayEn: 'A test machine on the customer’s OS: 16 cores, the whole platform green.' },
-        { at: B0, zh: '现场 32 核', en: '32 cores on site', sayZh: '客户现场是 32 核。OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。', sayEn: 'On site: 32 cores. OpenBLAS and OMP start a thread per core, hit the nproc limit, and three Python services restart 60+ times.' },
-        { at: P0, zh: '钉死线程数', en: 'Pin the threads', sayZh: '所有算力容器显式钉死线程数并放开 nproc；验证机从此必须与客户机同规格，核数也要对齐。', sayEn: 'Every compute container gets explicit thread counts and a raised nproc; test machines must now match the customer’s, core count included.' }
+        { at: 0, zh: '验证机 16 核', en: '16-core test box', sayZh: '与客户同款 OS 的验证机，16 核：每个库按核数起线程，总数还在 nproc 上限以内，整套平台全绿。', sayEn: 'A test machine on the customer’s OS, 16 cores: each library starts a thread per core, the total stays under the nproc limit, and the platform is green.' },
+        { at: B0, zh: '现场 32 核', en: '32 cores on site', sayZh: '同一套镜像到了 32 核的客户机器，线程数跟着翻倍，越过 nproc 上限，三个 Python 服务重启 60+ 次。', sayEn: 'The same images on the customer’s 32-core machine: thread counts double, cross the nproc limit, and three Python services restart 60+ times.' },
+        { at: F0, zh: '钉死线程数', en: 'Pin the threads', sayZh: '所有算力容器显式设置线程数、放开 nproc。从此验证机必须与客户机同规格，核数也要对齐。', sayEn: 'Every compute container gets explicit thread counts and a raised nproc. Test machines must now match the customer’s, core count included.' }
       ]
     });
   }
