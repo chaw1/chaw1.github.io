@@ -767,6 +767,7 @@
             ctx.fillStyle = mix('#ffffff', C.greenSoft, p); rr(ctx, x, y, s, s, 2); ctx.fill();
             ctx.strokeStyle = alpha(C.green, 0.5 * p); ctx.lineWidth = 1; rr(ctx, x + 0.5, y + 0.5, s - 1, s - 1, 2); ctx.stroke();
             ctx.globalAlpha = p; tick(ctx, x + s / 2, y + s / 2, s * 0.42, C.green, 1.5); ctx.globalAlpha = 1;
+            if (isMiss) { ctx.strokeStyle = C.red; ctx.lineWidth = 1.6; rr(ctx, x - 2, y - 2, s + 4, s + 4, 3); ctx.stroke(); }
           } else if (isMiss && t >= F0) {
             red = true;
             const pulse = 0.6 + 0.4 * Math.sin((t - F0) / 150);
@@ -779,15 +780,15 @@
             ctx.fillStyle = mix('#ffffff', C.greenSoft, p); rr(ctx, x, y, s, s, 2); ctx.fill();
             ctx.globalAlpha = p; tick(ctx, x + s / 2, y + s / 2, s * 0.42, C.green, 1.5); ctx.globalAlpha = 1;
           } else {
-            ctx.fillStyle = '#fbfbf8'; rr(ctx, x, y, s, s, 2); ctx.fill();
-            hatch(ctx, x, y, s, s, alpha(C.line, 0.9), 5);
+            ctx.fillStyle = '#f3f3ee'; rr(ctx, x, y, s, s, 2); ctx.fill();
           }
         }
       }
       // Sample bracket around the first column during the first chapter.
-      if (t >= S0 && t < V0) {
-        ctx.strokeStyle = alpha(C.blue, 0.8 * (1 - win(t, V0 - 300, V0))); ctx.lineWidth = 1.2; ctx.setLineDash([4, 3]);
-        rr(ctx, gx - 3, gy - 3, s + 6, R * cell - gap + 6, 3); ctx.stroke(); ctx.setLineDash([]);
+      if (t >= S0) {
+        ctx.strokeStyle = alpha(C.blue, 0.85); ctx.lineWidth = 1.2; ctx.setLineDash([4, 3]);
+        rr(ctx, gx - 4, gy - 4, s + 8, R * cell - gap + 8, 3); ctx.stroke(); ctx.setLineDash([]);
+        text(ctx, L('当时抽查的范围', 'what was sampled'), gx + s / 2, gy + R * cell + 14, { size: 10, color: C.blue, align: 'center' });
       }
       // Side panel.
       const sx = wide ? Math.min(w - pad - sideW, gx + Q * cell + 56) : pad; let sy = wide ? gy + 4 : gy + R * cell + 18;
@@ -814,9 +815,9 @@
           }
         }
       } else {
-        line(L('规则', 'Rule'), L('注入全量 · 重启全量 · 逐格核对', 'inject all · restart all · check every cell'), C.ink);
+        line(L('当时', 'Then'), L('抽查 11 / 77 格报绿，漏掉的一格导致上传 503', 'sampled 11 / 77 cells, green; the missed cell broke upload with a 503'), C.red);
+        line(L('之后的规则', 'The rule since'), L('注入全量 · 重启全量 · 逐格核对', 'inject all · restart all · check every cell'), C.ink);
         line(L('已核对', 'Cells checked'), `${checked} / 77`, checked === 77 ? C.green : C.blue, true);
-        if (checked === 77) chip(ctx, L('全矩阵通过', 'full matrix passes'), sx, sy - (wide ? 8 : 4), C.green, C.greenSoft);
       }
     }
     mount(el, {
