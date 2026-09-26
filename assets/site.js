@@ -277,7 +277,7 @@
       kicker: 'DATA / STORAGE',
       title: ['元数据 · 标注 · 版本 · 对象', 'Metadata · labels · versions · objects'],
       body: ['MySQL 存元数据与权限，MongoDB 存标注正文，LakeFS 做数据版本（branch / commit / tag，零拷贝），对象存储承载原始数据。血缘用资产引用加事件建模，导出物可回溯到源数据集版本。', 'MySQL for metadata and permissions, MongoDB for annotation bodies, LakeFS for data versions (branch / commit / tag, zero-copy) and object storage for raw data. Lineage is modeled as asset references plus events, so every export traces back to a source version.'],
-      facts: [[['9.9 GiB 直传', '9.9 GiB direct upload'], '41.8 MiB/s', P], [['血缘事件回填，对账全等', 'Lineage events, reconciled'], '18,370', P], [['12 GB 事故重新入湖', '12 GB incident re-ingest'], '6 min', L]]
+      facts: [[['约 10 GB 直传', '~10 GB direct upload'], '41.8 MiB/s', P], [['血缘事件回填，对账全等', 'Lineage events, reconciled'], '18,370', P], [['12 GB 事故重新入湖', '12 GB incident re-ingest'], '6 min', L]]
     },
     delivery: {
       kicker: 'RUNTIME / DELIVERY',
@@ -289,7 +289,7 @@
       kicker: 'RUNTIME / OBSERVABILITY',
       title: ['可观测', 'Observability'],
       body: ['request id 贯穿、日志护栏与错误分级、Loki + Prometheus + Grafana、飞书告警与自愈。一次生产假死 3 天无人报障，原因是探针只探 JVM 存活；之后探针改为打业务路径。', 'Request IDs end to end, logging guardrails and error grading, Loki + Prometheus + Grafana, alerting and self-healing. Once, production hung for three days unnoticed because probes only checked that the JVM was alive; probes now exercise real business paths.'],
-      facts: [[['日志量', 'Log volume'], '−84.9%', P], [['告警有效覆盖', 'Effective alert coverage'], '64 / 64', P], [['15 天探针可用性', 'Availability, 15-day probe'], '99.9975%', P]]
+      facts: [[['access log 行数', 'Access-log lines'], '−94.6%', P], [['告警有效覆盖', 'Effective alert coverage'], '64 / 64', P], [['15 天探针可用性', 'Availability, 15-day probe'], '99.9975%', P]]
     }
   };
   const archNodes = $$('.arch-node');

@@ -31,7 +31,6 @@
   const mix = (a, b, p) => { const A = rgb(a); const B = rgb(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], p))).join(',')})`; };
   const alpha = (h, a) => `rgba(${rgb(h).join(',')},${a})`;
   const fmt = (n) => Math.round(n).toLocaleString('en-US');
-  const esc = (v) => String(v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function mulberry32(seed) {
     return () => {
       seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
@@ -895,8 +894,8 @@
           if (b) text(ctx, b, sx + aw + 10, sy + (big ? 30 : 22), { size: 11, color: C.muted });
           sy += big ? 58 : 46;
         };
-        row(L('模型自估 IoU', 'model self-estimated IoU'), L('几乎不变', 'barely moves'), L('坏了也察觉不到', 'so the damage is invisible'));
-        row(L('INT8 与 fp32 掩码的实际 IoU', 'actual IoU, INT8 vs fp32 masks'), '0.42', '', true);
+        row(L('模型自估 IoU · fp32 / INT8', 'model self-estimated IoU · fp32 / INT8'), '0.686 / 0.692', L('几乎不变，坏了也察觉不到', 'barely moves: the damage is invisible'));
+        row(L('INT8 与 fp32 掩码的实际 IoU', 'actual IoU, INT8 vs fp32 masks'), '0.42', L('48–59% 的样本低于 0.5', '48–59% of samples below 0.5'), true);
         row(L('换来的提速', 'what it buys'), '1.7×', L('不值得', 'not worth it'));
         if (wide) text(ctx, L('只看延迟表，会得出“INT8 提速 1.7 倍”的结论。', 'A latency table alone says "INT8: 1.7× faster".'), sx, sy + 4, { size: 11, color: C.red, font: SANS, weight: 600 });
         ctx.globalAlpha = 1;
@@ -905,10 +904,10 @@
       const aH = t < H0 ? 0 : fadeIn(t, H0 + 250);
       if (aH > 0) {
         ctx.globalAlpha = aH;
-        const data = [[2, 1242], [4, 640]];
+        const data = [[1, 2402], [2, 1242], [4, 640], [8, 755], [16, 796], [32, 1007]];
         const X = pad + (wide ? 56 : 44); const Y = pad + 26; const Wd = w - X - pad - (wide ? 230 : 10); const Ht = wide ? h - Y - 44 : (h - Y) * 0.58;
-        const xs = (n) => X + ((Math.log2(n) - 0.5) / 2) * Wd; const ys = (ms) => Y + Ht - (ms / 1500) * Ht;
-        [0, 500, 1000, 1500].forEach((v) => {
+        const xs = (n) => X + (Math.log2(n) / 5) * Wd; const ys = (ms) => Y + Ht - (ms / 2600) * Ht;
+        [0, 500, 1000, 1500, 2000, 2500].forEach((v) => {
           ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X, ys(v) + 0.5); ctx.lineTo(X + Wd, ys(v) + 0.5); ctx.stroke();
           text(ctx, `${fmt(v)}`, X - 8, ys(v) + 4, { size: 9.5, align: 'right', color: C.faint });
         });
@@ -917,7 +916,7 @@
         text(ctx, L('推理线程数', 'inference threads'), X + Wd, Y + Ht + 34, { size: 10, align: 'right' });
         // Quota band.
         ctx.fillStyle = alpha(C.green, 0.08); ctx.fillRect(xs(4) - 14, Y, 28, Ht);
-        text(ctx, L('= 4 核配额', '= the 4-core quota'), xs(4), Y - 8, { size: 10.5, color: C.green, align: 'center', weight: 600 });
+        text(ctx, L('= cgroup 配额 4 核', '= cgroup quota, 4 cores'), xs(4), Y - 8, { size: 10.5, color: C.green, align: 'center', weight: 600 });
         const p = easeInOut(win(t, H0 + 200, H0 + 1600));
         const upto = p * (data.length - 1);
         ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.beginPath();
@@ -939,8 +938,9 @@
         const note = (a, b, c2) => { text(ctx, a, sx, sy, { size: 10.5 }); text(ctx, b, sx, sy + 19, { size: 12, color: c2, weight: 600, font: SANS }); sy += wide ? 48 : 38; };
         const q = win(t, H0 + 1600, H0 + 2000);
         ctx.globalAlpha = aH * q;
-        note(L('原配置 2 线程', 'shipped with 2 threads'), '1,242 ms', C.amberInk);
-        note(L('线程数与 4 核配额对齐', 'threads matched to the 4-core quota'), '640 ms', C.green);
+        note(L('容器里 os.cpu_count()', 'os.cpu_count() in the container'), L('32（宿主核数）', '32 (the host)'), C.ink);
+        note(L('原配置 OMP_NUM_THREADS=2', 'shipped OMP_NUM_THREADS=2'), L('1,242 ms，慢 1.94 倍', '1,242 ms, 1.94× slower'), C.amberInk);
+        note(L('线程数改成配额核数', 'threads set to the quota'), L('640 ms，只改一行 env', '640 ms, a one-line env change'), C.green);
         ctx.globalAlpha = 1;
       }
     }
@@ -950,7 +950,7 @@
       chapters: [
         { at: R0, zh: '延迟（实时）', en: 'Latency, live', sayZh: '同一张图、同一台 4 核机器，按真实时长播放：FastSAM + CLIP 6,000 ms，EfficientViT-SAM 640 ms。', sayEn: 'Same image, same 4-core machine, played at real speed: FastSAM + CLIP takes 6,000 ms, EfficientViT-SAM 640 ms.' },
         { at: I0, zh: 'INT8 陷阱', en: 'INT8 trap', sayZh: 'INT8 再快 1.7 倍，但掩码和 fp32 的 IoU 只有 0.42，而模型自估的 IoU 几乎没变：坏了也察觉不到。', sayEn: "INT8 buys another 1.7×, but its masks overlap fp32's at IoU 0.42 while the model's own IoU estimate barely moves: failure you cannot see." },
-        { at: H0, zh: '线程数', en: 'Threads', sayZh: '服务按 2 线程上线；把推理线程数对齐到 4 核配额后，同一张图从 1,242 ms 降到 640 ms。', sayEn: 'The service shipped with 2 threads; matching inference threads to the 4-core quota took the same image from 1,242 ms to 640 ms.' }
+        { at: H0, zh: '线程数', en: 'Threads', sayZh: '容器看到的是宿主 32 核，真正配额只有 4 核。线程数等于配额时最快：原配置 2 线程 1,242 ms，改成 4 线程 640 ms。', sayEn: 'The container sees the host\u2019s 32 cores, but its quota is 4. Latency bottoms out when threads match the quota: 1,242 ms with the shipped 2 threads, 640 ms with 4.' }
       ]
     });
   }
@@ -1165,117 +1165,6 @@
     });
   }
 
-  /* =====================================================================
-   * FIG.P — astock-research: every pre-registered test against its matched control.
-   * ===================================================================== */
-  function figForest(el) {
-    // Every row is copied from the named results file. `stat` is the statistical verdict of that
-    // single comparison; `fin` is the report's final verdict after its data-boundary review.
-    const X = 'x'; const I = 'i'; const N2 = 'n';
-    const rows = [
-      { g: 0, zh: '连板 · 持有 5 日', en: 'Limit-up streak · 5-day', e: -13.79, lo: -17.63, hi: -9.74, stat: X, src: 'build-v8/results.md' },
-      { g: 0, zh: '连板 · 持有 20 日', en: 'Limit-up streak · 20-day', e: -9.31, lo: -11.93, hi: -6.76, stat: X, src: 'build-v8/results.md' },
-      { g: 0, zh: '放量启动 · 5 日', en: 'Volume breakout · 5-day', e: -5.56, lo: -11.30, hi: -0.03, stat: X, src: 'build-v8/results.md' },
-      { g: 0, zh: '趋势动量 · 20 日', en: 'Trend momentum · 20-day', e: -2.91, lo: -5.61, hi: -0.47, stat: X, src: 'build-v8/results.md' },
-      { g: 1, zh: '1 月动量 · 前 3', en: '1-month momentum · top 3', e: -13.56, lo: -21.20, hi: -5.99, stat: X, src: 'build-v13/results.md' },
-      { g: 1, zh: '3 月动量 · 前 3', en: '3-month momentum · top 3', e: -11.00, lo: -17.84, hi: -4.63, stat: X, src: 'build-v13/results.md' },
-      { g: 1, zh: '6-1 月动量 · 前 3', en: '6-1 momentum · top 3', e: -4.66, lo: -10.63, hi: 1.82, stat: N2, src: 'build-v13/results.md' },
-      { g: 2, zh: '小市值 · 30 只', en: 'Small cap · 30 names', e: 9.05, lo: -4.45, hi: 28.57, stat: I, src: 'build-v12.1/results.md', was: { e: 13.93, lo: -1.40, hi: 42.71 } },
-      { g: 2, zh: '12-1 动量 · 30 只', en: '12-1 momentum · 30 names', e: -12.80, lo: -26.76, hi: 3.61, stat: I, src: 'build-v12.1/results.md' },
-      { g: 2, zh: '低 PB · 30 只', en: 'Low P/B · 30 names', e: -7.41, lo: -25.91, hi: 9.23, stat: I, src: 'build-v12.1/results.md' },
-      { g: 2, zh: '低波动 · 30 只', en: 'Low volatility · 30 names', e: -0.73, lo: -20.41, hi: 15.89, stat: I, src: 'build-v12.1/results.md' },
-      { g: 3, zh: '近 3 年业绩前组', en: 'Top 3-year record', e: -0.24, lo: -4.90, hi: 4.94, stat: I, src: 'build-v9/results.md' },
-      { g: 3, zh: '质量评分增量', en: 'Quality-score increment', e: -0.72, lo: -6.64, hi: 5.22, stat: I, src: 'build-v9/results.md' },
-      { g: 4, zh: '10% 回撤止损', en: '10% drawdown stop', e: -4.05, lo: -9.32, hi: 0.08, stat: I, src: 'build-v7/results.md' }
-    ];
-    const groups = [
-      { zh: '短线规则', en: 'Short-term rules', nzh: '年化净增量，对照为资金部署匹配的账户；60 日块、Holm 校正区间', nen: 'annualized net increment vs a deployment-matched account; 60-day block, Holm-corrected' },
-      { zh: '行业轮动', en: 'Sector rotation', nzh: '年化收益差，对照为行业等权；60 日块 95% 区间', nen: 'annualized return gap vs equal-weight sectors; 60-day block 95% interval' },
-      { zh: '个股因子（剔除北交所）', en: 'Stock factors (BSE excluded)', nzh: '年化净增量，对照为匹配账户；19 项族校正区间', nen: 'annualized net increment vs a matched account; 19-test family interval' },
-      { zh: '主动基金', en: 'Active funds', nzh: '未来 12 个月超额；年度 / 季度块与基金、经理连通簇重采样', nen: 'next-12-month excess; annual / quarterly blocks with fund and manager clusters' },
-      { zh: 'ETF 组合', en: 'ETF basket', nzh: '止损减不止损的年化差；仅 5 次事件，低于预设的推广门槛', nen: 'annualized gap, stop minus no stop; only 5 events, below the preset threshold' }
-    ];
-    const STAT = { x: ['统计：证伪或排除实用价值', 'statistically: falsified / no practical value'], n: ['统计：排除实用价值', 'statistically: no practical value'], i: ['', ''] };
-    const MIN = -30; const MAX = 30;
-    let hot = -1;
-    const readout = el.querySelector('.fig-readout');
-    const fmtv = (v) => `${v > 0 ? '+' : ''}${v.toFixed(2)}`;
-    const describe = (r) => `${L(r.zh, r.en)} · ${fmtv(r.e)} [${fmtv(r.lo)}, ${fmtv(r.hi)}] ${L('百分点', 'pp')} · ${L('最终：证据不足', 'final: insufficient evidence')}${STAT[r.stat][0] ? ` · ${L(STAT[r.stat][0], STAT[r.stat][1])}` : ''} · ${r.src}`;
-
-    function layout(w, h) {
-      const wide = w >= 640; const pad = wide ? 16 : 12;
-      const labW = wide ? Math.min(210, w * 0.3) : 0;
-      const verW = wide ? 170 : 0;
-      const X0 = pad + labW; const Wd = w - X0 - pad - verW - (wide ? 12 : 0);
-      const top = 34; const groupH = wide ? 38 : 40; const rowH = wide ? 32 : 34;
-      return { wide, pad, labW, verW, X0, Wd, top, groupH, rowH };
-    }
-    function draw(ctx, w, h, t, api) {
-      const Lo = layout(w, h); const { wide, pad, X0, Wd, top } = Lo;
-      const xs = (v) => X0 + ((clamp(v, MIN, MAX) - MIN) / (MAX - MIN)) * Wd;
-      const bottom = h - 24;
-      [-30, -20, -10, 0, 10, 20, 30].forEach((v) => {
-        ctx.strokeStyle = v === 0 ? C.ink : C.line2; ctx.lineWidth = v === 0 ? 1.2 : 1;
-        ctx.beginPath(); ctx.moveTo(xs(v) + 0.5, top - 6); ctx.lineTo(xs(v) + 0.5, bottom); ctx.stroke();
-        text(ctx, v > 0 ? `+${v}` : String(v), xs(v), h - 8, { size: 10, align: 'center', color: v === 0 ? C.ink : C.quiet });
-      });
-      text(ctx, L('← 不如对照', '← worse than control'), xs(0) - 8, top - 14, { size: 10.5, align: 'right', color: C.muted });
-      text(ctx, L('好于对照 →', 'better than control →'), xs(0) + 8, top - 14, { size: 10.5, color: C.muted });
-      if (wide) text(ctx, L('最终判定', 'final verdict'), w - pad, top - 14, { size: 10.5, align: 'right', color: C.muted });
-      let y = top; let g = -1; hot = -1;
-      rows.forEach((r, i) => {
-        if (r.g !== g) {
-          g = r.g; y += Lo.groupH;
-          text(ctx, L(groups[g].zh, groups[g].en), pad, y - (wide ? 20 : 24), { size: 11, color: C.ink, weight: 650, font: SANS });
-          text(ctx, L(groups[g].nzh, groups[g].nen), pad, y - (wide ? 6 : 10), { size: wide ? 10 : 9.5, color: C.quiet });
-        }
-        const cy = wide ? y + Lo.rowH / 2 : y + Lo.rowH * 0.7;
-        if (api.pointer && api.pointer.y >= y && api.pointer.y < y + Lo.rowH) hot = i;
-        if (hot === i) { ctx.fillStyle = alpha(C.blue, 0.06); ctx.fillRect(pad - 4, y, w - pad * 2 + 8, Lo.rowH); }
-        if (wide) text(ctx, L(r.zh, r.en), X0 - 12, cy + 4, { size: 12, align: 'right', color: C.ink, font: SANS });
-        else text(ctx, L(r.zh, r.en), pad, y + Lo.rowH * 0.34, { size: 11, color: C.ink, font: SANS });
-        if (r.was) {
-          ctx.strokeStyle = C.faint; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
-          ctx.beginPath(); ctx.moveTo(xs(r.was.lo), cy - 5); ctx.lineTo(xs(r.was.hi), cy - 5); ctx.stroke(); ctx.setLineDash([]);
-          ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(xs(r.was.e), cy - 5, 3, 0, Math.PI * 2); ctx.fill();
-          ctx.strokeStyle = C.faint; ctx.lineWidth = 1.2; ctx.stroke();
-          if (wide) text(ctx, L('含北交所时', 'with BSE'), xs(r.was.e) + 7, cy - 8, { size: 9.5, color: C.quiet });
-        }
-        const col = hot === i ? C.blue : C.ink;
-        ctx.strokeStyle = col; ctx.lineWidth = 1.6;
-        ctx.beginPath(); ctx.moveTo(xs(r.lo), cy); ctx.lineTo(xs(r.hi), cy); ctx.stroke();
-        [r.lo, r.hi].forEach((v) => { if (v < MIN || v > MAX) return; ctx.beginPath(); ctx.moveTo(xs(v) + 0.5, cy - 3.5); ctx.lineTo(xs(v) + 0.5, cy + 3.5); ctx.stroke(); });
-        if (r.hi > MAX) { ctx.beginPath(); ctx.moveTo(xs(MAX) - 5, cy - 4); ctx.lineTo(xs(MAX), cy); ctx.lineTo(xs(MAX) - 5, cy + 4); ctx.stroke(); }
-        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(xs(r.e), cy, 3.6, 0, Math.PI * 2); ctx.fill();
-        if (wide) {
-          text(ctx, L('证据不足', 'insufficient'), w - pad, cy + (STAT[r.stat][0] ? -1 : 4), { size: 11, align: 'right', color: C.ink, weight: 600 });
-          if (STAT[r.stat][0]) text(ctx, L(r.stat === 'n' ? '统计：排除实用价值' : '统计：证伪 / 排除', r.stat === 'n' ? 'stat: no practical value' : 'stat: falsified / no value'), w - pad, cy + 11, { size: 9.5, align: 'right', color: C.muted });
-        }
-        y += Lo.rowH;
-      });
-      if (readout) readout.textContent = rows[hot] ? describe(rows[hot]) : L('悬停任一行，查看估计、区间、判定与出处；完整数据见图下表格。', 'Hover a row for its estimate, interval, verdicts and source; the full data is in the table below.');
-    }
-
-    // The same rows, as a real table: keyboard, touch and screen readers get every number.
-    const table = el.querySelector('.fig-table tbody');
-    if (table) {
-      const build = () => {
-        table.innerHTML = rows.map((r) => `<tr><td>${esc(L(groups[r.g].zh, groups[r.g].en))}</td><td>${esc(L(r.zh, r.en))}</td><td class="num">${fmtv(r.e)}</td><td class="num">[${fmtv(r.lo)}, ${fmtv(r.hi)}]</td><td>${esc(L(STAT[r.stat][0].replace('统计：', '') || '证据不足', STAT[r.stat][1].replace('statistically: ', '') || 'insufficient evidence'))}</td><td>${esc(L('证据不足', 'insufficient evidence'))}</td><td class="mono">${r.src}</td></tr>`).join('');
-      };
-      build(); langHooks.push(build);
-    }
-    // Height follows the row count, so nothing is squeezed at any width.
-    const stage = el.querySelector('.fig-stage');
-    const fit = () => {
-      const w = stage.getBoundingClientRect().width || 600;
-      const Lo = layout(w, 0);
-      stage.style.aspectRatio = 'auto';
-      stage.style.height = `${Lo.top + groups.length * Lo.groupH + rows.length * Lo.rowH + 30}px`;
-    };
-    fit(); window.addEventListener('resize', fit, { passive: true });
-    mount(el, { duration: 1, draw, hover: true });
-  }
-
-  const figs = { queue: figQueue, upload: figUpload, matrix: figMatrix, seg: figSeg, cores: figCores, prompt: figPrompt, forest: figForest };
+  const figs = { queue: figQueue, upload: figUpload, matrix: figMatrix, seg: figSeg, cores: figCores, prompt: figPrompt };
   document.querySelectorAll('[data-fig]').forEach((el) => { const f = figs[el.dataset.fig]; if (f) f(el); });
 })();

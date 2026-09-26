@@ -252,7 +252,7 @@
           <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次导入几 GB 到几百 GB 的图像、视频、点云压缩包，要求能进、失败能恢复、能追溯版本，且新版本不能破坏历史数据。经后端代理上传时，网关 60 秒超时直接掐断慢客户端。</span><span class="en">Customers import archives from a few GB to hundreds of GB. Uploads have to land, resume after failure, trace back to a version and never damage history. Proxied through the backend, slow clients were cut off by the gateway's 60-second timeout.</span></p></li>
           <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">① 网关代理上传：被超时掐断。② LakeFS 原生预签名：签名与地域绑定，跨环境不可用。③ 后端用对象存储原生 SDK 重签，浏览器直传。</span><span class="en">(1) Proxy through the gateway: cut off by timeouts. (2) LakeFS native presigning: signatures bound to a region, unusable across environments. (3) Re-sign with the object store's native SDK and upload straight from the browser.</span></p></li>
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 ③。每个分片签一个 URL，直传到固定编号的 staging key；直传失败可按片回退到后端代理，两条路写同一个 key。complete 不信会话记录，直接列目录核对片数与总字节，缺片就拒。解压侧给每次 staging 写入包上应用层退避重试，把瞬断当成可重试。</span><span class="en">Option 3. One presigned URL per part, written to a fixed, numbered staging key; a failed part can fall back to the proxy and both paths write the same key. Completion ignores session records and lists the prefix to check part count and total bytes, rejecting any gap. On extraction, every staging write gets application-level retry with backoff, so transient drops are retryable.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 9.9 GiB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。生产血缘事件回填 18,370 条，六类对账全等。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~9.9 GiB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. Backfilling lineage in production produced 18,370 events, with all six reconciliations exact. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 10 GB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。生产血缘事件回填 18,370 条，六类对账全等。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~10 GB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. Backfilling lineage in production produced 18,370 events, with all six reconciliations exact. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
         </ol>
         <figure class="fig" data-fig="upload" aria-labelledby="fig-upload-cap">
           <div class="fig-head">
@@ -272,7 +272,7 @@
             <p class="case-kicker mono">CASE C · RELEASE &amp; OBSERVABILITY</p>
             <h3><span class="zh">让发布可重复、可回滚，<br>让运维从查日志变成看告警。</span><span class="en">Releases you can repeat and roll back.<br>Operations run on alerts, not log-grepping.</span></h3>
           </div>
-          <div class="case-metric"><span class="after">−84.9%</span><span class="unit"><span class="zh">日志量</span><span class="en">log volume</span></span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
+          <div class="case-metric"><span class="after">−94.6%</span><span class="unit"><span class="zh">access log 行数</span><span class="en">access-log lines</span></span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
         </header>
         <ol class="notes">
           <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">2026-05 之前只有内网与客户线。要在云上建正式环境，同时维持离线交付、内网研发、云上生产三条线不漂移。</span><span class="en">Before May 2026 there were only internal and customer environments. I had to stand up production in the cloud while keeping offline delivery, internal development and cloud production from drifting apart.</span></p></li>
@@ -319,7 +319,7 @@
           </div>
           <p class="fig-say" aria-hidden="true"></p>
           <div class="fig-stage" style="--ar:16/8;--ar-m:4/7.4"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放）；INT8 与 fp32 掩码的实际 IoU；推理线程从 2 调到 4 的前后对比。测试在云上 4 核真机上完成，环境标为内网非生产；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed); the actual IoU between INT8 and fp32 masks; and inference threads before and after, 2 versus 4. Run on a real 4-core cloud machine, a non-production environment; the image and mask shapes are illustrative.</span></figcaption>
+          <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放）；INT8 与 fp32 掩码的实际 IoU；推理线程数与延迟（1 / 2 / 4 / 8 / 16 / 32 线程：2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms）。测试在云上 4 核真机上完成，环境标为内网非生产；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed); the actual IoU between INT8 and fp32 masks; and inference threads vs latency (1 / 2 / 4 / 8 / 16 / 32 threads: 2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms). Run on a real 4-core cloud machine, a non-production environment; the image and mask shapes are illustrative.</span></figcaption>
         </figure>
       </article>
 
@@ -428,30 +428,32 @@
     <div class="section-label"><span class="number">05</span><span>/ BUILT ON MY OWN TIME</span></div>
     <div class="section-intro">
       <h2 id="projects-heading"><span class="zh">工作之外，<br>也一直在做东西。</span><span class="en">Outside work,<br>still building.</span></h2>
-      <p><span class="zh">最近一年自己做、自己用的工具。它们都遵守同一套纪律：本地优先、写入可撤销、先测试再交付。</span><span class="en">Tools I built for myself over the past year, all under the same discipline: local first, undoable writes, tested before shipped.</span></p>
+      <p><span class="zh">最近一年业余做、自己每天在用的东西。模型只做它擅长的部分，能用确定性逻辑算的，就不交给模型。</span><span class="en">Things I built on my own time over the past year and use every day. Models do only what they are good at; anything that can be computed deterministically is.</span></p>
     </div>
-    <div class="project-grid">
-      <article class="card card-feature">
-        <p class="card-meta mono">VISION LLM · VANILLA JS · ZH / EN</p>
-        <h3><span class="zh">小票厨房</span><span class="en">Receipt Kitchen</span></h3>
-        <p><span class="zh">拍一下小票或订单截图，识别进食材库，按到期先后排出几天的菜谱，再给这一单打健康分。健康分按膳食指南公式在页面里确定性计算，模型只负责识别、点评和替换建议；识别结果自动对账，商品合计对不上小计就提示漏截。中英双语，中国与欧美两套营养口径。</span><span class="en">Snap a receipt or order screenshot; items land in a pantry, a few days of recipes are planned around what expires first, and the order gets a health score. The score is computed deterministically in the page from dietary-guideline formulas; the model only reads the receipt and writes commentary and swaps. Recognized items are reconciled against the subtotal, flagging missed screenshots. Bilingual, with Chinese and Western nutrition standards.</span></p>
+    <div class="project-grid project-shots">
+      <article class="card card-shot">
+        <figure class="shot"><img src="assets/projects/receipt-kitchen.png" width="800" height="908" loading="lazy" alt="Receipt Kitchen: a 7.0 / 10 health score for one grocery trip, with coverage bars for vegetables, fruit, protein, dairy, free sugar and ultra-processed food."></figure>
+        <div class="card-body">
+          <p class="card-meta mono">VISION LLM · VANILLA JS · ZH / EN</p>
+          <h3><span class="zh">小票厨房</span><span class="en">Receipt Kitchen</span></h3>
+          <p><span class="zh">拍一下小票或订单截图，识别进食材库，按到期先后排出几天的菜谱，再给这一单打健康分。健康分按膳食指南公式在页面里确定性计算，模型只负责识别、点评和替换建议；识别结果自动对账，商品合计对不上小计就提示漏截。中英双语，中国与欧美两套营养口径。</span><span class="en">Snap a receipt or order screenshot; items land in a pantry, a few days of recipes are planned around what expires first, and the order gets a health score. The score is computed deterministically in the page from dietary-guideline formulas; the model only reads the receipt and writes commentary and swaps. Recognized items are reconciled against the subtotal, flagging missed screenshots. Bilingual, with Chinese and Western nutrition standards.</span></p>
+          <p class="shot-note mono"><span class="zh">截图：演示模式，虚构订单</span><span class="en">Screenshot: demo mode, fictional order</span></p>
+        </div>
       </article>
-      <article class="card">
-        <p class="card-meta mono">ELECTRON · REACT · MACOS / WINDOWS</p>
-        <h3>Jarvis Workspace</h3>
-        <p><span class="zh">跨平台个人工作台：Markdown 计划、原子写入与版本冲突保护、一步撤销、跨日整理归档，本机资源 24 小时趋势。</span><span class="en">A cross-platform personal workspace: Markdown plans, atomic writes with conflict protection, one-step undo, daily rollover and archiving, and 24-hour trends for local resources.</span></p>
-      </article>
-      <article class="card">
-        <p class="card-meta mono">NODE · LOCAL-ONLY</p>
-        <h3><span class="zh">拾页 · 本地阅读器</span><span class="en">Shiye · local reader</span></h3>
-        <p><span class="zh">直接读取 Obsidian 阅读库，不导入不上云。原文按不可信内容清洗后显示，状态回写 Markdown 时遇到并发修改会拒绝覆盖。</span><span class="en">Reads an Obsidian library in place, no import, no cloud. Source HTML is sanitized as untrusted; status written back to Markdown refuses to overwrite concurrent edits.</span></p>
-      </article>
-      <article class="card">
-        <p class="card-meta mono">DOCKER · PGVECTOR · NGINX</p>
-        <h3><span class="zh">自托管 AI 工作台</span><span class="en">Self-hosted AI workbench</span></h3>
-        <p><span class="zh">个人云主机上的多服务组合：对话、检索、对象存储与向量库，Nginx 入口与自动证书，作为多智能体开发的试验田。</span><span class="en">A multi-service stack on my own cloud host: chat, search, object storage and a vector database behind Nginx with automated TLS, used as a proving ground for multi-agent development.</span></p>
+      <article class="card card-shot">
+        <figure class="shot"><img src="assets/projects/hola.png" width="560" height="786" loading="lazy" alt="Hola: day one of the Spanish course, a listening question asking what 'Hola.' means, with three answer choices."></figure>
+        <div class="card-body">
+          <p class="card-meta mono">REACT · TYPESCRIPT · PWA · FSRS</p>
+          <h3>Hola</h3>
+          <p><span class="zh">给零基础成年人的 30 天西班牙语入门课，每天约 20 分钟，以整句话为单位：听懂、跟读、遮住说、情境表达。复习按 FSRS 间隔重复算法排期；纯静态、可离线安装，没有账号和后端，学习记录只存在本机 IndexedDB。</span><span class="en">A 30-day Spanish course for adult beginners, about 20 minutes a day, taught in whole sentences: understand, shadow, say it with the text hidden, then use it in context. Reviews are scheduled with the FSRS spaced-repetition algorithm; it is fully static and installable offline, with no account or backend, and progress stays in the browser's IndexedDB.</span></p>
+        </div>
       </article>
     </div>
+    <ul class="project-list">
+      <li><p class="card-meta mono">ELECTRON · REACT</p><h3>Jarvis Workspace</h3><p><span class="zh">跨平台个人工作台：Markdown 计划、原子写入与版本冲突保护、一步撤销、本机资源 24 小时趋势。</span><span class="en">A cross-platform workspace: Markdown plans, atomic writes with conflict protection, one-step undo, 24-hour local resource trends.</span></p></li>
+      <li><p class="card-meta mono">NODE · LOCAL-ONLY</p><h3><span class="zh">拾页 · 本地阅读器</span><span class="en">Shiye · local reader</span></h3><p><span class="zh">直接读 Obsidian 阅读库，不导入不上云；原文按不可信内容清洗，回写时遇到并发修改会拒绝覆盖。</span><span class="en">Reads an Obsidian library in place; source HTML is sanitized as untrusted, and write-backs refuse to overwrite concurrent edits.</span></p></li>
+      <li><p class="card-meta mono">DOCKER · PGVECTOR · NGINX</p><h3><span class="zh">自托管 AI 工作台</span><span class="en">Self-hosted AI workbench</span></h3><p><span class="zh">个人云主机上的对话、检索、对象存储与向量库，Nginx 入口与自动证书，多智能体开发的试验田。</span><span class="en">Chat, search, object storage and a vector database on my own host behind Nginx with automated TLS; a proving ground for multi-agent work.</span></p></li>
+    </ul>
   </section>
 
   <!-- ============ 06 PRACTICE ============ -->
