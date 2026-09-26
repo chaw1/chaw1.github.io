@@ -48,9 +48,9 @@
   <div class="wrap nav-wrap">
     <a class="brand" href="#top" aria-label="Jiawei Zhang home">jiawei zhang<span>.</span></a>
     <nav id="site-nav" class="site-nav" aria-label="Main navigation">
-      <a href="#year" data-nav><span class="zh">这一年</span><span class="en">The year</span></a>
-      <a href="#platform" data-nav><span class="zh">平台</span><span class="en">Platform</span></a>
       <a href="#cases" data-nav><span class="zh">案例</span><span class="en">Cases</span></a>
+      <a href="#platform" data-nav><span class="zh">平台</span><span class="en">Platform</span></a>
+      <a href="#year" data-nav><span class="zh">这一年</span><span class="en">The year</span></a>
       <a href="#method" data-nav><span class="zh">方法</span><span class="en">Method</span></a>
       <a href="#projects" data-nav><span class="zh">项目</span><span class="en">Projects</span></a>
       <a href="#work" data-nav><span class="zh">经历</span><span class="en">Experience</span></a>
@@ -74,8 +74,9 @@
       <div class="hero-copy">
         <p class="eyebrow"><span class="zh">平台架构 / 数据与 AI 工程 / 研发负责人</span><span class="en">PLATFORM ARCHITECTURE / DATA &amp; AI / ENGINEERING LEAD</span></p>
         <h1 id="hero-heading"><span class="zh">用工程判断，<br>解决复杂问题<span class="period">。</span></span><span class="en">Engineering judgment.<br>Systems that ship<span class="period">.</span></span></h1>
-        <p class="identity"><span class="zh">张嘉玮 · 技术负责人 / 平台架构师</span><span class="en">Jiawei Zhang · Tech Lead / Platform Architect</span></p>
-        <p class="hero-lede"><span class="zh">过去一年，我从第一个 commit 开始搭起 SolarSense 数据工程与 AI 平台，带 20+ 人的平台组把它送上生产：万级任务、大包直传与数据版本、GitOps 发布、模型服务与 Agent。</span><span class="en">Over the past year I built the SolarSense data-engineering and AI platform from its first commit and, leading a 20+ person platform team, took it to production: 10k-task pipelines, large-archive ingest with data versioning, GitOps releases, model serving and agents.</span></p>
+        <p class="identity"><span class="zh">张嘉玮 · 技术负责人 / 平台架构师 · 杭州 / 上海</span><span class="en">Jiawei Zhang · Tech Lead / Platform Architect · Hangzhou / Shanghai</span></p>
+        <p class="hero-lede"><span class="zh">过去一年，我主导 SolarSense 数据工程与 AI 平台的架构、跨服务集成与交付验收，从第一个 commit 开始，带 20+ 人的平台组把它送上生产。</span><span class="en">Over the past year I led the architecture, cross-service integration and delivery acceptance of the SolarSense data-engineering and AI platform, from its first commit to production with a 20+ person platform team.</span></p>
+        <p class="hero-lede hero-lede-2"><span class="zh">交付的是：万级任务队列、大包直传与数据版本、GitOps 发布与可观测、模型服务与 Agent。</span><span class="en">What shipped: a 10k-task queue, large-archive ingest with data versioning, GitOps releases and observability, model serving and agents.</span></p>
         <div class="hero-actions">
           <a class="button" href="#cases"><span class="zh">看工程案例</span><span class="en">Read the cases</span><i class="icon i-right" aria-hidden="true"></i></a>
           <a class="text-link" href="#year"><span class="zh">这一年做了什么</span><span class="en">The year in numbers</span><i class="icon i-right" aria-hidden="true"></i></a>
@@ -96,48 +97,234 @@
       </figure>
     </div>
     <dl class="hero-ticker" aria-label="关键指标 / Key metrics">
-      <div><dt><span class="zh">15 天探针可用性</span><span class="en">Availability, 15-day probe</span></dt><dd>99.9975%</dd></div>
-      <div><dt><span class="zh">100 并发压测 p95</span><span class="en">p95, 100-user load test</span></dt><dd>50 ms</dd></div>
-      <div><dt><span class="zh">生产 7 天请求</span><span class="en">Requests in 7 days</span></dt><dd><span class="zh">331 万</span><span class="en">3.31 M</span></dd></div>
-      <div><dt><span class="zh">一年提交对象</span><span class="en">Commits in the year</span></dt><dd>5,839</dd></div>
+      <div><dt><span class="zh">15 天探针可用性</span><span class="en">Availability, 15-day probe</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></dt><dd>99.9975%</dd></div>
+      <div><dt><span class="zh">7 天真实请求</span><span class="en">Real requests in 7 days</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></dt><dd><span class="zh">331 万</span><span class="en">3.31 M</span></dd></div>
+      <div><dt><span class="zh">约 10 GB 大包直传</span><span class="en">~10 GB direct upload</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></dt><dd>41.8 MiB/s</dd></div>
+      <div><dt><span class="zh">100 并发 p95</span><span class="en">p95 at 100 users</span> <span class="tag lab"><span class="zh">压测</span><span class="en">LOAD TEST</span></span></dt><dd>50 ms</dd></div>
     </dl>
-    <p class="ticker-note mono"><span class="zh">可用性与请求量为 SolarSense 生产实测；p95 为与生产同机同配置的压测；提交数来自 git。2026-08</span><span class="en">Availability and requests measured in SolarSense production; p95 from a load test on the production host and configuration; commits from git. Aug 2026</span></p>
+    <p class="ticker-note mono"><span class="zh">SolarSense，2026-08。压测在与生产同机同配置的环境进行。</span><span class="en">SolarSense, Aug 2026. The load test ran on the production host and configuration.</span></p>
   </section>
 
-  <!-- ============ 01 THE YEAR ============ -->
-  <section class="section wrap" id="year" aria-labelledby="year-heading">
-    <div class="section-label"><span class="number">01</span><span>/ THE YEAR · 2025.09 — 2026.08</span></div>
+  <!-- ============ 03 CASES ============ -->
+  <section class="section wrap" id="cases" aria-labelledby="cases-heading">
+    <div class="section-label"><span class="number">01</span><span>/ CASE FILES</span></div>
     <div class="section-intro">
-      <h2 id="year-heading"><span class="zh">从 initial commit，<br>到生产环境。</span><span class="en">From the initial commit<br>to production.</span></h2>
-      <p><span class="zh">2025-09-19，我在同一天提交了前后端两个仓的第一个 commit。十二个月后，它是 11 个 Java 服务、Python Worker、模型服务、标注工具矩阵、桌面端和多套环境组成的产品体系。</span><span class="en">On 2025-09-19 I made the first commit to both the backend and frontend repositories. Twelve months later it had become a product: 11 Java services, Python workers, model serving, an annotation-tool suite, a desktop client and several environments.</span></p>
+      <h2 id="cases-heading"><span class="zh">约束、取舍、验证。</span><span class="en">Constraints. Trade-offs.<br>Proof.</span></h2>
+      <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。数字标注出处：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Every number is tagged: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
     </div>
 
-    <div class="stats" role="list">
-      <div class="stat" role="listitem"><strong data-count="5839">5,839</strong><span class="zh">署名提交对象 · 21 个仓</span><span class="en">authored commits · 21 repos</span></div>
-      <div class="stat" role="listitem"><strong data-count="243">243</strong><span class="zh">活跃提交日 / 365</span><span class="en">active days / 365</span></div>
-      <div class="stat" role="listitem"><strong data-count="400" data-suffix="+">400+</strong><span class="zh">批准他人 MR</span><span class="en">teammates' MRs approved</span></div>
-      <div class="stat" role="listitem"><strong data-count="20" data-suffix="+">20+</strong><span class="zh">人的平台组</span><span class="en">people on the platform team</span></div>
-      <div class="stat" role="listitem"><strong data-count="28" data-suffix="+">28+</strong><span class="zh">生产 Deployment 纳入 GitOps</span><span class="en">production Deployments under GitOps</span></div>
-      <div class="stat" role="listitem"><strong data-count="8">8</strong><span class="zh">个连续 baseline 版本，约 2–3 周一个</span><span class="en">consecutive baselines, one every 2–3 weeks</span></div>
-    </div>
-
-    <figure class="heatmap-card">
-      <div class="heatmap-head">
-        <figcaption><strong><span class="zh">每一格是一天</span><span class="en">Each cell is a day</span></strong><span class="mono" id="heat-readout"><span class="zh">悬停查看当天提交数</span><span class="en">Hover a day for its commit count</span></span></figcaption>
-        <div class="heat-legend mono" aria-hidden="true"><span class="zh">少</span><span class="en">less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i><span class="zh">多</span><span class="en">more</span></div>
-      </div>
-      <div class="heatmap-scroll"><div id="heatmap" class="heatmap" data-start="2025-09-01" data-days="0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1,0,0,5,0,0,0,2,0,1,7,0,0,0,4,0,0,1,0,0,0,0,0,0,0,1,0,2,0,13,17,9,0,0,0,0,7,10,2,0,0,0,2,0,2,6,0,0,12,19,4,5,6,0,0,5,2,20,6,10,0,0,0,3,4,11,0,0,0,3,19,18,14,17,0,9,11,13,7,9,0,0,0,30,7,7,14,6,0,0,5,10,0,12,6,0,0,10,18,5,11,9,0,0,3,13,6,0,0,0,2,14,32,15,34,8,0,0,31,29,11,18,13,0,0,0,24,8,7,5,0,18,7,5,8,21,26,8,1,7,32,59,23,15,3,2,20,20,10,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,2,23,10,7,27,19,0,0,60,74,70,28,38,0,22,72,57,70,35,22,0,0,21,32,72,21,22,6,5,37,18,18,48,8,12,0,0,28,40,0,36,11,0,1,1,25,24,15,0,0,23,13,22,5,9,0,0,29,0,0,2,0,0,0,0,0,34,5,0,0,5,0,2,3,0,0,0,0,0,1,7,13,42,30,66,72,67,70,43,53,0,0,12,23,3,25,31,0,0,0,3,12,14,52,9,7,28,16,11,20,24,4,0,25,28,25,69,32,5,10,17,15,10,33,5,24,42,24,5,71,66,45,49,70,56,110,75,26,28,7,33,113,45,61,81,56,28,41,22,25,55,42,6,19,21,12,25,21,26,27,6,0,6,10,1,5,16,7,19,23,92,84,88,186,54,36,38,70,87,54,25,25,60,15" role="group" aria-label="2025-09 至 2026-08 每日提交热力图，峰值月 2026-07；方向键逐日浏览 / Daily commit heatmap, Sep 2025 to Aug 2026, peaking in July 2026; use arrow keys to move between days"></div></div>
-      <p class="heat-note"><span class="zh">由本地 git 按作者日期重算、跨分支按 hash 去重。春节那两周是空的；3 月、7 月、8 月三个峰值对应 QApex 拆分独立部署、可观测与能力平台、具身数据线与信创交付。</span><span class="en">Recomputed from local git by author date, deduplicated by hash across branches. The empty fortnight is Chinese New Year; the March, July and August peaks line up with splitting out QApex, observability and the capability platform, and the embodied-data line plus on-prem ARM64 delivery.</span></p>
-    </figure>
-
-    <ol class="milestones" aria-label="里程碑 / Milestones">
-      <li><time>2025.09</time><strong><span class="zh">两仓同日 initial commit</span><span class="en">Day one, both repos</span></strong><p><span class="zh">选型并落地多模块后端与前端骨架；一周后 AI 与数据集模块在同一次提交中建起。</span><span class="en">Chose the stack and laid down the modular backend and the frontend skeleton; AI and dataset modules followed a week later.</span></p></li>
-      <li><time>2025.11</time><strong><span class="zh">存储、计算、部署三条底座</span><span class="en">Storage, compute, deploy</span></strong><p><span class="zh">接入 LakeFS 数据版本；高可用 Worker 与批量预处理；k3s 部署配置。</span><span class="en">LakeFS data versioning, highly available workers with batch preprocessing, and k3s deployment.</span></p></li>
-      <li><time>2026.03</time><strong><span class="zh">双平台边界</span><span class="en">Two platforms, one boundary</span></strong><p><span class="zh">把 QApex 业务平台从主仓拆出独立部署；统一能力注册，模型与脚本共用一套契约。</span><span class="en">Split the QApex business platform out for independent deployment; unified capability registration for models and scripts.</span></p></li>
-      <li><time>2026.06</time><strong><span class="zh">上云与 GitOps</span><span class="en">Cloud and GitOps</span></strong><p><span class="zh">腾讯云正式环境、CI/CD 与 Argo CD；引入 Flyway 管理迁移；多租户系统性审计。</span><span class="en">Production on Tencent Cloud with CI/CD and Argo CD; Flyway migrations; a systematic multi-tenant audit.</span></p></li>
-      <li><time>2026.07</time><strong><span class="zh">可观测与能力平台</span><span class="en">Observability, capability platform</span></strong><p><span class="zh">日志、告警、自愈三线上线；能力平台路线定稿。全年提交峰值月：1,357。</span><span class="en">Logging, alerting and self-healing went live; the capability-platform roadmap was finalized. Peak month: 1,357 commits.</span></p></li>
-      <li><time>2026.08</time><strong><span class="zh">合流与交付</span><span class="en">Merges and delivery</span></strong><p><span class="zh">两条 400+ 文件的长期分支合入主干；具身数据线预发全链路跑通；国产 ARM64 离线现场交付。</span><span class="en">Two long-lived branches of 400+ files each merged into main; the embodied-data line ran end to end in pre-production; ARM64 offline delivery on site.</span></p></li>
+    <ol class="case-dir" aria-label="案例目录 / Case index">
+      <li><a href="#case-queue" data-case="tab-queue"><span class="mono">A</span><strong><span class="zh">队列放进 MySQL，与任务状态同一事务</span><span class="en">Keep the queue in MySQL, in the same transaction as task state</span></strong><span class="dir-result"><span class="zh">万级任务提交 >2 min → 0.89 s；280 次重试只出 1 个版本</span><span class="en">10k-task submission >2 min → 0.89 s; 280 retries, one version</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></span></a></li>
+      <li><a href="#case-upload" data-case="tab-upload"><span class="mono">B</span><strong><span class="zh">浏览器按片直传，complete 自己列目录核对</span><span class="en">Browser uploads parts directly; completion lists and checks</span></strong><span class="dir-result"><span class="zh">约 10 GB · 237 s · 41.8 MiB/s，零中断</span><span class="en">~10 GB · 237 s · 41.8 MiB/s, no interruptions</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span></a></li>
+      <li><a href="#case-release" data-case="tab-release"><span class="mono">C</span><strong><span class="zh">CI 唯一出图口，回滚改一行 tag，验证不抽样</span><span class="en">CI as the only image source, one-line rollback, no sampling</span></strong><span class="dir-result"><span class="zh">access log 行数 −94.6%，告警覆盖 64 / 64</span><span class="en">access-log lines −94.6%, alert coverage 64 / 64</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span></a></li>
+      <li><a href="#case-seg" data-case="tab-seg"><span class="mono">D</span><strong><span class="zh">换 EfficientViT-SAM，否掉 INT8 与许可证陷阱</span><span class="en">Switch to EfficientViT-SAM; reject INT8 and a license trap</span></strong><span class="dir-result"><span class="zh">CPU 分割 6,000 → 640 ms，快 9.4 倍</span><span class="en">CPU segmentation 6,000 → 640 ms, 9.4× faster</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></span></a></li>
+      <li><a href="#case-arm" data-case="tab-arm"><span class="mono">E</span><strong><span class="zh">出包前在同规格实机真装，算力容器钉死线程</span><span class="en">Install on matching hardware before shipping; pin threads</span></strong><span class="dir-result"><span class="zh">出包前拦下 19 个问题，5 个致命</span><span class="en">19 issues caught before shipping, 5 fatal</span> <span class="tag lab"><span class="zh">验证机</span><span class="en">LAB</span></span></span></a></li>
+      <li><a href="#case-agent" data-case="tab-agent"><span class="mono">F</span><strong><span class="zh">只补三个 P0，重排 prompt 让缓存前缀变长</span><span class="en">Add only three P0s; reorder the prompt so the cache prefix grows</span></strong><span class="dir-result"><span class="zh">输入 token −43.6%，任务通过 5 → 7</span><span class="en">input tokens −43.6%, tasks passed 5 → 7</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></span></a></li>
     </ol>
+
+    <div class="casebook" id="casebook">
+      <div class="case-tabs" role="tablist" aria-label="工程案例 / Case files">
+        <button type="button" role="tab" id="tab-queue" aria-controls="case-queue" aria-selected="true"><span class="mono">A</span><span class="zh">万级任务 · 幂等</span><span class="en">10k tasks · idempotency</span></button>
+        <button type="button" role="tab" id="tab-upload" aria-controls="case-upload" aria-selected="false"><span class="mono">B</span><span class="zh">10 GB 大包直传</span><span class="en">10 GB direct upload</span></button>
+        <button type="button" role="tab" id="tab-release" aria-controls="case-release" aria-selected="false"><span class="mono">C</span><span class="zh">发布与可观测</span><span class="en">Release &amp; observability</span></button>
+        <button type="button" role="tab" id="tab-seg" aria-controls="case-seg" aria-selected="false"><span class="mono">D</span><span class="zh">CPU 分割选型</span><span class="en">CPU segmentation</span></button>
+        <button type="button" role="tab" id="tab-arm" aria-controls="case-arm" aria-selected="false"><span class="mono">E</span><span class="zh">ARM64 离线交付</span><span class="en">ARM64 offline delivery</span></button>
+        <button type="button" role="tab" id="tab-agent" aria-controls="case-agent" aria-selected="false"><span class="mono">F</span><span class="zh">Agent 调优</span><span class="en">Agent harness</span></button>
+      </div>
+
+      <!-- A -->
+      <article class="case" id="case-queue" role="tabpanel" aria-labelledby="tab-queue" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE A · BATCH PIPELINE</p>
+            <h3><span class="zh">万级任务提交，从超时到 0.89 秒；<br>重试 280 次，只产出 1 个版本。</span><span class="en">10k-task submission: from timing out to 0.89 s.<br>280 retries, exactly one version.</span></h3>
+          </div>
+          <div class="case-metric"><span class="before">&gt;2 min</span><i class="icon i-right" aria-hidden="true"></i><span class="after">0.89 s</span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
+        </header>
+        <figure class="fig machine" data-fig="queue" aria-labelledby="fig-a-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.A · <span class="zh">队列、租约与幂等</span><span class="en">QUEUE, LEASE, IDEMPOTENCY</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7.2;--ar-m:4/6.4"><canvas aria-hidden="true"></canvas></div>
+          <ol class="machine-rail" aria-label="状态 / States">
+            <li data-i="0">QUEUED</li><li data-i="1">RUNNING</li><li data-i="2">MATERIALIZING</li><li data-i="3">COMMITTING</li><li data-i="4">VERSIONING</li><li data-i="5">READY</li>
+          </ol>
+          <p class="machine-now mono" aria-live="off"></p>
+          <details class="machine-details"><summary><span class="zh">完整事件日志</span><span class="en">Full event log</span></summary><pre class="machine-log"></pre></details>
+          <figcaption class="fig-note" id="fig-a-cap"><span class="zh">一次交付的全过程：10,025 个文件切成 157 个 chunk，4 个 Worker 用 SKIP LOCKED 并发领取；worker-3 中途失联，租约到期后 worker-5 接手，已提交的文件按幂等键跳过，最后只产生 1 个数据集版本。流程示意，不是实时数据；文件数、状态名与恢复逻辑取自真实设计。</span><span class="en">One delivery end to end: 10,025 files become 157 chunks, claimed concurrently by four workers with SKIP LOCKED; worker-3 drops out mid-batch, worker-5 takes over when the lease expires, committed files are skipped by the idempotency key, and exactly one dataset version results. An illustration, not live data; the file count, state names and recovery logic come from the real design.</span></figcaption>
+        </figure>
+        <ol class="notes notes-main">
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 MySQL 队列：<code>FOR UPDATE SKIP LOCKED</code> 并发领取，Redis 做心跳与 GPU 限流，outbox 发事件。队列可查、可修，不会出现“消息发了、状态没写”的双写不一致。再把“执行完成 ≠ 交付完成”写成状态机：产物可读、版本落账、血缘闭合才算 READY。</span><span class="en">I kept it in MySQL: concurrent claiming with <code>FOR UPDATE SKIP LOCKED</code>, Redis for heartbeats and GPU throttling, an outbox for events. The queue stays queryable and repairable, with no dual-write gap between message and state. Then I made "executed ≠ delivered" a state machine: READY only when the artifact is readable, the version recorded and the lineage closed.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">验收坚持故障注入，不只看吞吐：以“任务 + 文件”为幂等键，280 次重试只产出 1 个数据集版本。GPU 限流 3 Worker 并跑，Redis 采样 1,383 次仅 1 次瞬时越限。</span><span class="en">Acceptance required fault injection, not just throughput: with task + file as the idempotency key, 280 retries produced exactly one dataset version. Under GPU throttling with three workers, 1,383 Redis samples showed a single momentary overshoot.</span></p></li>
+        </ol>
+        <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次提交上万文件，前端提交超过 2 分钟超时。更隐蔽的是“跑完了”和“能用了”之间有五个静默失败点：产物没保存、没登记、没建版本、没导入、前端看不见，都不报错。</span><span class="en">Customers submit 10k+ files at once, and submission timed out after two minutes. Worse, between "finished" and "usable" sat five silent failure points (not saved, not registered, not versioned, not imported, not visible), and none of them raised an error.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">引入独立 MQ（Kafka / RabbitMQ），或把队列放进 MySQL，与任务状态同一个事务。</span><span class="en">Add a dedicated broker (Kafka / RabbitMQ), or keep the queue in MySQL in the same transaction as task state.</span></p></li>
+        </ol>
+        </details>
+      </article>
+
+      <!-- B -->
+      <article class="case" id="case-upload" role="tabpanel" aria-labelledby="tab-upload" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE B · DATA INGEST</p>
+            <h3><span class="zh">客户的 9.9 GB 压缩包被网关砍断。<br>三次架构迭代后，生产零中断直传。</span><span class="en">A customer's 9.9 GB archive was cut off at the gateway.<br>Three iterations later: uninterrupted direct upload in production.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">41.8</span><span class="unit">MiB/s</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
+        </header>
+        <figure class="fig" data-fig="upload" aria-labelledby="fig-upload-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.B · <span class="zh">预签名分片直传</span><span class="en">PRESIGNED MULTIPART UPLOAD</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7.8;--ar-m:4/7"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-upload-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">代理上传在 60 秒处被网关掐断；预签名直传 310 片、237 秒、平均 41.8 MiB/s；complete 列目录核对片数与字节，故意少传一片时拒绝（309 / 310）。分片完成顺序为示意，片数、耗时、吞吐与缺片结果为 2026-06-23 生产验收实测。</span><span class="en">The proxied upload is cut at the gateway’s 60-second timeout; presigned direct upload moves 310 parts in 237 s at 41.8 MiB/s on average; completion lists the prefix to check parts and bytes, and refuses when one part is withheld (309 / 310). The order parts finish in is illustrative; part count, duration, throughput and the refusal come from the production acceptance run on 2026-06-23.</span></figcaption>
+        </figure>
+        <ol class="notes notes-main">
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 ③。每个分片签一个 URL，直传到固定编号的 staging key；直传失败可按片回退到后端代理，两条路写同一个 key。complete 不信会话记录，直接列目录核对片数与总字节，缺片就拒。解压侧给每次 staging 写入包上应用层退避重试，把瞬断当成可重试。</span><span class="en">Option 3. One presigned URL per part, written to a fixed, numbered staging key; a failed part can fall back to the proxy and both paths write the same key. Completion ignores session records and lists the prefix to check part count and total bytes, rejecting any gap. On extraction, every staging write gets application-level retry with backoff, so transient drops are retryable.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 10 GB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。生产血缘事件回填 18,370 条，六类对账全等。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~10 GB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. Backfilling lineage in production produced 18,370 events, with all six reconciliations exact. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
+        </ol>
+        <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次导入几 GB 到几百 GB 的图像、视频、点云压缩包，要求能进、失败能恢复、能追溯版本，且新版本不能破坏历史数据。经后端代理上传时，网关 60 秒超时直接掐断慢客户端。</span><span class="en">Customers import archives from a few GB to hundreds of GB. Uploads have to land, resume after failure, trace back to a version and never damage history. Proxied through the backend, slow clients were cut off by the gateway's 60-second timeout.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">① 网关代理上传：被超时掐断。② LakeFS 原生预签名：签名与地域绑定，跨环境不可用。③ 后端用对象存储原生 SDK 重签，浏览器直传。</span><span class="en">(1) Proxy through the gateway: cut off by timeouts. (2) LakeFS native presigning: signatures bound to a region, unusable across environments. (3) Re-sign with the object store's native SDK and upload straight from the browser.</span></p></li>
+        </ol>
+        </details>
+      </article>
+
+      <!-- C -->
+      <article class="case" id="case-release" role="tabpanel" aria-labelledby="tab-release" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE C · RELEASE &amp; OBSERVABILITY</p>
+            <h3><span class="zh">让发布可重复、可回滚，<br>让运维从查日志变成看告警。</span><span class="en">Releases you can repeat and roll back.<br>Operations run on alerts, not log-grepping.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">−94.6%</span><span class="unit"><span class="zh">access log 行数</span><span class="en">access-log lines</span></span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
+        </header>
+        <figure class="fig" data-fig="matrix" aria-labelledby="fig-matrix-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.C · <span class="zh">抽查通过不等于覆盖</span><span class="en">A PASSING SAMPLE IS NOT COVERAGE</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7.4;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-matrix-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">一次发版后的验证：第一轮每个 Pod 只查 1 个变量（11 / 77 格）就报了通过，漏掉的那一格让上传链路返回 503。之后改为注入全量、重启全量、77 格逐格核对。模块与 token 用编号代替真实名称。</span><span class="en">Verification after a release: the first pass read one variable per pod (11 of 77 cells) and reported success; the cell it skipped broke the upload path with a 503. Since then: inject everywhere, restart everything, check all 77 cells. Modules and tokens are numbered instead of named.</span></figcaption>
+        </figure>
+        <div class="bars" role="group" aria-label="优化前后 / Before and after">
+          <div class="bar-row"><span class="bar-label"><span class="zh">日志行数</span><span class="en">Log lines</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">13.13 M</span></div>
+          <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:5.4%"></i></span><span class="mono">0.71 M</span></div>
+          <div class="bar-row"><span class="bar-label"><span class="zh">吞吐</span><span class="en">Throughput</span> <span class="tag lab"><span class="zh">预发</span><span class="en">LAB</span></span></span><span class="bar"><i style="--w:41%"></i></span><span class="mono">84 req/s</span></div>
+          <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">205 req/s</span></div>
+        </div>
+        <ol class="notes notes-main">
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选单机 k3s，把单点风险写进方案而不是回避；Argo CD 先 apply-only 分批纳管，设五条硬停止条件。定下“CI 是唯一出图口”，回滚就是改一行镜像 tag。事故后固化：共享凭证一次性注入全量并重启全量，验证用 11 × 7 = 77 格全矩阵而不抽样。</span><span class="en">Single-node k3s, with the single point of failure written into the plan rather than hidden; Argo CD apply-only in batches behind five hard stop conditions. CI became the only source of images, so a rollback is a one-line tag change. After an incident I set two rules: when a shared credential changes, inject it everywhere and restart everything in one go; and verify the full 11 × 7 = 77-cell matrix instead of sampling.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">access log 从 1,313 万行降到 71.2 万行，告警有效覆盖 64/64。生产 15 天探针可用性 99.9975%，7 天 331 万真实请求；100 并发压测整体 p95 50 ms。在与生产同机同配置的预发环境做极限压测，定位 project 服务 CPU 打满，2 核扩到 6 核后 84 → 205 req/s，p95 2.6 s → 0.85 s。</span><span class="en">Access logs fell from 13.13 M to 0.712 M lines, with 64/64 effective alert coverage. In production: 99.9975% availability over a 15-day probe and 3.31 M real requests in 7 days; a 100-user load test ran at 50 ms p95. A stress test in pre-production, on the same host and configuration, found the project service CPU-bound; going from 2 to 6 cores took it from 84 to 205 req/s and p95 from 2.6 s to 0.85 s.</span></p></li>
+        </ol>
+        <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">2026-05 之前只有内网与客户线。要在云上建正式环境，同时维持离线交付、内网研发、云上生产三条线不漂移。</span><span class="en">Before May 2026 there were only internal and customer environments. I had to stand up production in the cloud while keeping offline delivery, internal development and cloud production from drifting apart.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">托管 Kubernetes（TKE），或单机 k3s 复用内网经验；Argo CD 全自动同步，或只 apply 不 prune 分批纳管。</span><span class="en">Managed Kubernetes (TKE), or single-node k3s reusing our internal experience; Argo CD with full auto-sync, or apply-only onboarding in batches.</span></p></li>
+        </ol>
+        </details>
+      </article>
+
+      <!-- D -->
+      <article class="case" id="case-seg" role="tabpanel" aria-labelledby="tab-seg" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE D · MODEL SELECTION</p>
+            <h3><span class="zh">云上没有 GPU 的分割服务：<br>快 9.4 倍，还避开了一个许可证陷阱。</span><span class="en">Segmentation without a GPU in the cloud:<br>9.4× faster, and a license trap avoided.</span></h3>
+          </div>
+          <div class="case-metric"><span class="before">6,000 ms</span><i class="icon i-right" aria-hidden="true"></i><span class="after">640 ms</span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
+        </header>
+        <figure class="fig" data-fig="seg" aria-labelledby="fig-seg-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.D · <span class="zh">为什么不选看起来更快的方案</span><span class="en">WHY NOT THE OPTION THAT LOOKS FASTER</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/9.2;--ar-m:4/9.4"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放）；INT8 与 fp32 掩码的实际 IoU；推理线程数与延迟（1 / 2 / 4 / 8 / 16 / 32 线程：2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms）。测试在云上 4 核真机上完成，环境标为内网非生产；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed); the actual IoU between INT8 and fp32 masks; and inference threads vs latency (1 / 2 / 4 / 8 / 16 / 32 threads: 2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms). Run on a real 4-core cloud machine, a non-production environment; the image and mask shapes are illustrative.</span></figcaption>
+        </figure>
+        <ol class="notes notes-main">
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">换 EfficientViT-SAM。三条理由：质量上 FastSAM 不是检测器，CLIP 只能重排；速度上 9.4 倍；许可证上 README 写 Apache、LICENSE 文件实为 AGPL，私有化分发会触发 copyleft。INT8 被否决：只快 1.7 倍，mask IoU 掉到 0.42，而模型自估 IoU 不变，坏了也察觉不到。命名也守纪律：CPU 版不借用 SAM 3 的名字，不做虚假能力声明。</span><span class="en">EfficientViT-SAM, for three reasons: quality, since FastSAM is not a detector and CLIP can only re-rank; speed, at 9.4×; and licensing, since the README says Apache but the LICENSE file is AGPL, so shipping it on-prem would trigger copyleft. INT8 was rejected: only 1.7× faster, mask IoU fell to 0.42 while the model's self-estimated IoU stayed the same, so failure would be invisible. Naming stays honest too: the CPU service does not borrow the SAM 3 name.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">云上 4 核真机：6,000 ms → 640 ms；ORT 换 OpenVINO 后编码器 470 → 93 ms；线程数 2 → 4 为最优。另修一次 OOM：4K 图峰值内存 4,078 MB → 1,907 MB。</span><span class="en">On a real 4-core cloud VM: 6,000 ms → 640 ms; ORT to OpenVINO took the encoder from 470 to 93 ms; four threads was the sweet spot. A related OOM fix cut 4K-image peak memory from 4,078 MB to 1,907 MB.</span></p></li>
+        </ol>
+        <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">云上环境只有 CPU，交互式标注需要亚秒级分割。现有 FastSAM 的“文字提示分割”自上线起就没生效过：输入 <code>person,rider,car</code> 和 <code>banana</code> 返回的框完全一样，根因是异常被静默吞掉。</span><span class="en">The cloud environment is CPU-only, and interactive labeling needs sub-second segmentation. The existing FastSAM text-prompt mode had never worked: <code>person,rider,car</code> and <code>banana</code> returned identical boxes, because an exception was silently swallowed.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">修 FastSAM + CLIP；做 INT8 量化；换 EfficientViT-SAM-L0。</span><span class="en">Fix FastSAM + CLIP, quantize to INT8, or switch to EfficientViT-SAM-L0.</span></p></li>
+        </ol>
+        </details>
+      </article>
+
+      <!-- E -->
+      <article class="case" id="case-arm" role="tabpanel" aria-labelledby="tab-arm" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE E · ON-PREM DELIVERY</p>
+            <h3><span class="zh">无外网、国产 CPU、国产 OS：<br>27 个镜像的整套平台离线交付。</span><span class="en">No internet, domestic CPU, domestic OS:<br>the whole 27-image platform, delivered offline.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">19</span><span class="unit"><span class="zh">个问题，5 个致命，都在出包前</span><span class="en">issues, 5 fatal, caught before shipping</span></span><span class="tag lab"><span class="zh">验证机</span><span class="en">LAB</span></span></div>
+        </header>
+        <figure class="fig" data-fig="cores" aria-labelledby="fig-cores-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.E · <span class="zh">核数、线程与 nproc</span><span class="en">CORES, THREADS AND NPROC</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/7;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
+          <p class="fig-code"><span class="fig-code-k"><span class="zh">修复：每个算力容器</span><span class="en">Fix, in every compute container:</span></span> <code>OPENBLAS_NUM_THREADS</code> <code>OMP_NUM_THREADS</code> <code>MKL_NUM_THREADS</code> <code>NUMEXPR_NUM_THREADS</code> <span class="zh">显式设置，</span><span class="en">set explicitly;</span> <code>ulimits.nproc</code> <span class="zh">放开</span><span class="en">raised</span></p>
+          <figcaption class="fig-note" id="fig-cores-cap"><span class="zh">同一套镜像，16 核验证机全绿；32 核现场机器上 OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。修复是给所有算力容器显式钉死线程数并放开 nproc。核数与重启次数取自现场记录，线程条与上限线的高度为示意。</span><span class="en">The same images: all green on a 16-core test machine; on the 32-core machine on site, OpenBLAS and OMP started a thread per core, hit the nproc limit, and three Python services restarted 60+ times. The fix pins thread counts in every compute container and raises nproc. Core counts and restarts come from the field record; thread-bar and limit heights are illustrative.</span></figcaption>
+        </figure>
+        <ol class="notes notes-main">
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">冻结六个仓的基线 SHA，先在与客户同款 OS 的鲲鹏实机上真装。验证机 16 核全绿，到了客户现场的 32 核机器上，三个 Python 服务重启 60+ 次：OpenBLAS / OMP 按核数起线程，撞上 nproc 上限。于是给所有算力容器钉死线程数，并把“验证机与客户机同规格，核数也要对齐”写进规范。我的判断规则是：同类组件里只有一个配了某参数，往往是过去事故的遗迹，应推广到全部。</span><span class="en">Froze the baseline SHA of six repositories and did a real install on a Kunpeng machine running the customer's OS. The 16-core test machine was all green; on the customer's 32-core machine three Python services restarted 60+ times, because OpenBLAS / OMP start a thread per core and hit the nproc limit. So every compute container got pinned thread counts, and "the test machine matches the customer's, core count included" became a team rule. My rule of thumb: when only one of a family of components sets a parameter, it is usually the scar of an old incident, and should be applied to all of them.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">两轮真装累计发现 19 个问题、5 个致命，例如 Docker 自身二进制是 x86、Redis 在 ARM64 上拒启、端口避让脚本把 9 个端口分到同一个。补丁复查时搭仿真环境真跑 21 条异常路径断言；验证脚本本身也被验证过。现场 5 条反馈逐一定性：1 条是真实缺陷，出补丁修复；其余主要是客户浏览器版本过低。</span><span class="en">Two real installs surfaced 19 issues, 5 of them fatal: the Docker binary itself was x86, Redis refused to start on ARM64, a port-avoidance script mapped nine ports to one. Patch review ran 21 failure-path assertions in a simulated environment, and the verification scripts were themselves verified. Five field reports were each triaged: one genuine defect, patched; the rest came mostly from an outdated customer browser.</span></p></li>
+        </ol>
+        <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户机房是鲲鹏 aarch64 + 麒麟 V10，完全离线。语法校验、架构核对、<code>compose config</code> 全部通过，也不代表能装起来。</span><span class="en">The customer's data center ran Kunpeng aarch64 on Kylin V10, fully air-gapped. Passing syntax checks, architecture checks and <code>compose config</code> doesn't mean it will install.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">按清单打包直接发往现场，或先在与客户同规格的实机上真装一遍。</span><span class="en">Package against a checklist and ship, or first install for real on a machine matching the customer's spec.</span></p></li>
+        </ol>
+        </details>
+      </article>
+
+      <!-- F -->
+      <article class="case" id="case-agent" role="tabpanel" aria-labelledby="tab-agent" tabindex="0">
+        <header class="case-head">
+          <div>
+            <p class="case-kicker mono">CASE F · AGENT ENGINEERING</p>
+            <h3><span class="zh">Agent 更便宜也更可靠：<br>输入 token 降 43.6%，任务通过 5 → 7。</span><span class="en">A cheaper and more reliable agent:<br>43.6% fewer input tokens, tasks passed 5 → 7.</span></h3>
+          </div>
+          <div class="case-metric"><span class="after">−43.6%</span><span class="unit"><span class="zh">输入 token</span><span class="en">input tokens</span></span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
+        </header>
+        <figure class="fig" data-fig="prompt" aria-labelledby="fig-prompt-cap">
+          <div class="fig-head">
+            <p class="fig-kicker mono">FIG.F · <span class="zh">prompt 布局与缓存前缀</span><span class="en">PROMPT LAYOUT AND THE CACHE PREFIX</span></p>
+            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
+          </div>
+          <p class="fig-say" aria-hidden="true"></p>
+          <div class="fig-stage" style="--ar:16/6.7;--ar-m:4/5.8"><canvas aria-hidden="true"></canvas></div>
+          <p class="fig-legend"><span class="lg"><i style="background:#5d6168"></i><span class="zh">系统</span><span class="en">system</span></span><span class="lg"><i style="background:#6f8fe8"></i><span class="zh">工具目录</span><span class="en">tool catalog</span></span><span class="lg"><i style="background:#8e959c"></i><span class="zh">Skill</span><span class="en">skills</span></span><span class="lg"><i style="background:#c9ccc6"></i><span class="zh">对话历史</span><span class="en">history</span></span><span class="lg"><i style="background:#e39a2d"></i><span class="zh">进行中任务（每轮变化）</span><span class="en">task state (changes every turn)</span></span></p>
+          <figcaption class="fig-note" id="fig-prompt-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">缓存只复用与上一轮完全相同的前缀。改前易变段排在前面，实测命中 51.0%；改后稳定段在前、易变段压缩后放末尾，工具目录 28 → 20。分段比例为示意（按单 prompt 均值 12,726 → 9,631 token 配平），结果数字为同一套 24 例回归实测。</span><span class="en">A cache reuses only the prefix identical to the previous turn. Before, volatile content came first and the measured hit rate was 51.0%; after, stable sections lead, the volatile block is trimmed and moved last, and the tool catalog drops from 28 to 20. Segment proportions are illustrative (balanced to the measured per-prompt means, 12,726 → 9,631 tokens); the results are measured on the same 24-case regression.</span></figcaption>
+        </figure>
+        <ol class="notes notes-main">
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">逐项对照开源标杆后只补三个 P0：确定性工作流、Agent 委派、MCP 标准。定位出多轮失败的头号原因是跨轮丢失工具可见性；缓存命中低的真凶是易变内容排在稳定段之前。工具目录 28 → 20，并加预算上限与打转检测。</span><span class="en">After a point-by-point comparison with leading open-source agents, I added only three P0s: deterministic workflows, agent delegation and the MCP standard. The top cause of multi-turn failure was tool visibility lost between turns; low cache hit rates came from volatile content placed before stable sections. The tool catalog went from 28 to 20, with budget caps and loop detection.</span></p></li>
+          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">输入 token 159 万 → 89.6 万，24 例回归失败 53 → 20，reflection 失败率 34.7% → 0。修复 MCP 服务注册指向过期 Pod IP 后，一个工具的平均耗时 72 s → 3.4 s。</span><span class="en">Input tokens 1.59 M → 0.896 M, regression failures across 24 cases 53 → 20, reflection failure rate 34.7% → 0. Fixing an MCP registration that pointed at a stale Pod IP took one tool's average latency from 72 s to 3.4 s.</span></p></li>
+        </ol>
+        <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
+        <ol class="notes">
+          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">平台 Agent 通过 MCP 网关接了 150+ 个工具，token 成本高，多轮对话容易失败。一次打转的运行消耗 26.5 万 token，比 9 次成功运行加起来还贵。</span><span class="en">The platform agent reached 150+ tools through an MCP gateway. Token cost was high and multi-turn runs failed often; one looping run burned 265k tokens, more than nine successful runs combined.</span></p></li>
+          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">接入开源 Agent 框架与技能市场，或保留主循环、只补缺口。</span><span class="en">Adopt an open-source agent framework and skill marketplace, or keep the main loop and fill the gaps.</span></p></li>
+        </ol>
+        </details>
+      </article>
+    </div>
   </section>
 
   <!-- ============ 02 PLATFORM ============ -->
@@ -146,6 +333,12 @@
     <div class="section-intro">
       <h2 id="platform-heading"><span class="zh">一张图看我负责的系统。</span><span class="en">The system I was<br>responsible for.</span></h2>
       <p><span class="zh">点选任一组件，查看它解决什么问题、我做了什么，以及对应的实测数字。</span><span class="en">Select any component to see what it solves, what I did, and the numbers behind it.</span></p>
+    </div>
+    <div class="arch-paths" role="group" aria-label="路径 / Paths">
+      <span class="mono"><span class="zh">看一条路径</span><span class="en">Follow a path</span></span>
+      <button type="button" data-path="deliver" aria-pressed="false"><span class="zh">任务交付</span><span class="en">Task delivery</span></button>
+      <button type="button" data-path="ingest" aria-pressed="false"><span class="zh">大包入库</span><span class="en">Archive ingest</span></button>
+      <p class="arch-path-note" aria-live="polite"></p>
     </div>
     <div class="arch" id="arch">
       <div class="arch-map" role="group" aria-label="SolarSense 架构组件 / SolarSense components">
@@ -190,193 +383,40 @@
     </div>
   </section>
 
-  <!-- ============ 03 CASES ============ -->
-  <section class="section wrap" id="cases" aria-labelledby="cases-heading">
-    <div class="section-label"><span class="number">03</span><span>/ CASE FILES</span></div>
+  <!-- ============ 01 THE YEAR ============ -->
+  <section class="section wrap" id="year" aria-labelledby="year-heading">
+    <div class="section-label"><span class="number">03</span><span>/ THE YEAR · 2025.09 — 2026.08</span></div>
     <div class="section-intro">
-      <h2 id="cases-heading"><span class="zh">约束、取舍、验证。</span><span class="en">Constraints. Trade-offs.<br>Proof.</span></h2>
-      <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。数字标注出处：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Every number is tagged: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
+      <h2 id="year-heading"><span class="zh">从 initial commit，<br>到生产环境。</span><span class="en">From the initial commit<br>to production.</span></h2>
+      <p><span class="zh">2025-09-19，我在同一天提交了前后端两个仓的第一个 commit。十二个月后，它是 11 个 Java 服务、Python Worker、模型服务、标注工具矩阵、桌面端和多套环境组成的产品体系。</span><span class="en">On 2025-09-19 I made the first commit to both the backend and frontend repositories. Twelve months later it had become a product: 11 Java services, Python workers, model serving, an annotation-tool suite, a desktop client and several environments.</span></p>
     </div>
 
-    <div class="casebook" id="casebook">
-      <div class="case-tabs" role="tablist" aria-label="工程案例 / Case files">
-        <button type="button" role="tab" id="tab-queue" aria-controls="case-queue" aria-selected="true"><span class="mono">A</span><span class="zh">万级任务 · 幂等</span><span class="en">10k tasks · idempotency</span></button>
-        <button type="button" role="tab" id="tab-upload" aria-controls="case-upload" aria-selected="false"><span class="mono">B</span><span class="zh">10 GB 大包直传</span><span class="en">10 GB direct upload</span></button>
-        <button type="button" role="tab" id="tab-release" aria-controls="case-release" aria-selected="false"><span class="mono">C</span><span class="zh">发布与可观测</span><span class="en">Release &amp; observability</span></button>
-        <button type="button" role="tab" id="tab-seg" aria-controls="case-seg" aria-selected="false"><span class="mono">D</span><span class="zh">CPU 分割选型</span><span class="en">CPU segmentation</span></button>
-        <button type="button" role="tab" id="tab-arm" aria-controls="case-arm" aria-selected="false"><span class="mono">E</span><span class="zh">ARM64 离线交付</span><span class="en">ARM64 offline delivery</span></button>
-        <button type="button" role="tab" id="tab-agent" aria-controls="case-agent" aria-selected="false"><span class="mono">F</span><span class="zh">Agent 调优</span><span class="en">Agent harness</span></button>
+    <div class="stats" role="list">
+      <div class="stat" role="listitem"><strong data-count="5839">5,839</strong><span class="zh">署名提交对象 · 21 个仓</span><span class="en">authored commits · 21 repos</span></div>
+      <div class="stat" role="listitem"><strong data-count="243">243</strong><span class="zh">活跃提交日 / 365</span><span class="en">active days / 365</span></div>
+      <div class="stat" role="listitem"><strong data-count="400" data-suffix="+">400+</strong><span class="zh">批准他人 MR</span><span class="en">teammates' MRs approved</span></div>
+      <div class="stat" role="listitem"><strong data-count="20" data-suffix="+">20+</strong><span class="zh">人的平台组</span><span class="en">people on the platform team</span></div>
+      <div class="stat" role="listitem"><strong data-count="28" data-suffix="+">28+</strong><span class="zh">生产 Deployment 纳入 GitOps</span><span class="en">production Deployments under GitOps</span></div>
+      <div class="stat" role="listitem"><strong data-count="8">8</strong><span class="zh">个连续 baseline 版本，约 2–3 周一个</span><span class="en">consecutive baselines, one every 2–3 weeks</span></div>
+    </div>
+
+    <figure class="heatmap-card">
+      <div class="heatmap-head">
+        <figcaption><strong><span class="zh">每一格是一天</span><span class="en">Each cell is a day</span></strong><span class="mono" id="heat-readout"><span class="zh">悬停查看当天提交数</span><span class="en">Hover a day for its commit count</span></span></figcaption>
+        <div class="heat-legend mono" aria-hidden="true"><span class="zh">少</span><span class="en">less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i><span class="zh">多</span><span class="en">more</span></div>
       </div>
+      <div class="heatmap-scroll"><div id="heatmap" class="heatmap" data-start="2025-09-01" data-days="0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1,0,0,5,0,0,0,2,0,1,7,0,0,0,4,0,0,1,0,0,0,0,0,0,0,1,0,2,0,13,17,9,0,0,0,0,7,10,2,0,0,0,2,0,2,6,0,0,12,19,4,5,6,0,0,5,2,20,6,10,0,0,0,3,4,11,0,0,0,3,19,18,14,17,0,9,11,13,7,9,0,0,0,30,7,7,14,6,0,0,5,10,0,12,6,0,0,10,18,5,11,9,0,0,3,13,6,0,0,0,2,14,32,15,34,8,0,0,31,29,11,18,13,0,0,0,24,8,7,5,0,18,7,5,8,21,26,8,1,7,32,59,23,15,3,2,20,20,10,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,2,23,10,7,27,19,0,0,60,74,70,28,38,0,22,72,57,70,35,22,0,0,21,32,72,21,22,6,5,37,18,18,48,8,12,0,0,28,40,0,36,11,0,1,1,25,24,15,0,0,23,13,22,5,9,0,0,29,0,0,2,0,0,0,0,0,34,5,0,0,5,0,2,3,0,0,0,0,0,1,7,13,42,30,66,72,67,70,43,53,0,0,12,23,3,25,31,0,0,0,3,12,14,52,9,7,28,16,11,20,24,4,0,25,28,25,69,32,5,10,17,15,10,33,5,24,42,24,5,71,66,45,49,70,56,110,75,26,28,7,33,113,45,61,81,56,28,41,22,25,55,42,6,19,21,12,25,21,26,27,6,0,6,10,1,5,16,7,19,23,92,84,88,186,54,36,38,70,87,54,25,25,60,15" role="group" aria-label="2025-09 至 2026-08 每日提交热力图，峰值月 2026-07；方向键逐日浏览 / Daily commit heatmap, Sep 2025 to Aug 2026, peaking in July 2026; use arrow keys to move between days"></div></div>
+      <p class="heat-note"><span class="zh">由本地 git 按作者日期重算、跨分支按 hash 去重。春节那两周是空的；3 月、7 月、8 月三个峰值对应 QApex 拆分独立部署、可观测与能力平台、具身数据线与信创交付。</span><span class="en">Recomputed from local git by author date, deduplicated by hash across branches. The empty fortnight is Chinese New Year; the March, July and August peaks line up with splitting out QApex, observability and the capability platform, and the embodied-data line plus on-prem ARM64 delivery.</span></p>
+    </figure>
 
-      <!-- A -->
-      <article class="case" id="case-queue" role="tabpanel" aria-labelledby="tab-queue" tabindex="0">
-        <header class="case-head">
-          <div>
-            <p class="case-kicker mono">CASE A · BATCH PIPELINE</p>
-            <h3><span class="zh">万级任务提交，从超时到 0.89 秒；<br>重试 280 次，只产出 1 个版本。</span><span class="en">10k-task submission: from timing out to 0.89 s.<br>280 retries, exactly one version.</span></h3>
-          </div>
-          <div class="case-metric"><span class="before">&gt;2 min</span><i class="icon i-right" aria-hidden="true"></i><span class="after">0.89 s</span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
-        </header>
-        <ol class="notes">
-          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次提交上万文件，前端提交超过 2 分钟超时。更隐蔽的是“跑完了”和“能用了”之间有五个静默失败点：产物没保存、没登记、没建版本、没导入、前端看不见，都不报错。</span><span class="en">Customers submit 10k+ files at once, and submission timed out after two minutes. Worse, between "finished" and "usable" sat five silent failure points (not saved, not registered, not versioned, not imported, not visible), and none of them raised an error.</span></p></li>
-          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">引入独立 MQ（Kafka / RabbitMQ），或把队列放进 MySQL，与任务状态同一个事务。</span><span class="en">Add a dedicated broker (Kafka / RabbitMQ), or keep the queue in MySQL in the same transaction as task state.</span></p></li>
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 MySQL 队列：<code>FOR UPDATE SKIP LOCKED</code> 并发领取，Redis 做心跳与 GPU 限流，outbox 发事件。队列可查、可修，不会出现“消息发了、状态没写”的双写不一致。再把“执行完成 ≠ 交付完成”写成状态机：产物可读、版本落账、血缘闭合才算 READY。</span><span class="en">I kept it in MySQL: concurrent claiming with <code>FOR UPDATE SKIP LOCKED</code>, Redis for heartbeats and GPU throttling, an outbox for events. The queue stays queryable and repairable, with no dual-write gap between message and state. Then I made "executed ≠ delivered" a state machine: READY only when the artifact is readable, the version recorded and the lineage closed.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">验收坚持故障注入，不只看吞吐：以“任务 + 文件”为幂等键，280 次重试只产出 1 个数据集版本。GPU 限流 3 Worker 并跑，Redis 采样 1,383 次仅 1 次瞬时越限。</span><span class="en">Acceptance required fault injection, not just throughput: with task + file as the idempotency key, 280 retries produced exactly one dataset version. Under GPU throttling with three workers, 1,383 Redis samples showed a single momentary overshoot.</span></p></li>
-        </ol>
-        <figure class="fig machine" data-fig="queue" aria-labelledby="fig-a-cap">
-          <div class="fig-head">
-            <p class="fig-kicker mono">FIG.A · <span class="zh">队列、租约与幂等</span><span class="en">QUEUE, LEASE, IDEMPOTENCY</span></p>
-            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
-          </div>
-          <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/7.2;--ar-m:4/6.4"><canvas aria-hidden="true"></canvas></div>
-          <ol class="machine-rail" aria-label="状态 / States">
-            <li data-i="0">QUEUED</li><li data-i="1">RUNNING</li><li data-i="2">MATERIALIZING</li><li data-i="3">COMMITTING</li><li data-i="4">VERSIONING</li><li data-i="5">READY</li>
-          </ol>
-          <p class="machine-now mono" aria-live="off"></p>
-          <details class="machine-details"><summary><span class="zh">完整事件日志</span><span class="en">Full event log</span></summary><pre class="machine-log"></pre></details>
-          <figcaption class="fig-note" id="fig-a-cap"><span class="zh">一次交付的全过程：10,025 个文件切成 157 个 chunk，4 个 Worker 用 SKIP LOCKED 并发领取；worker-3 中途失联，租约到期后 worker-5 接手，已提交的文件按幂等键跳过，最后只产生 1 个数据集版本。流程示意，不是实时数据；文件数、状态名与恢复逻辑取自真实设计。</span><span class="en">One delivery end to end: 10,025 files become 157 chunks, claimed concurrently by four workers with SKIP LOCKED; worker-3 drops out mid-batch, worker-5 takes over when the lease expires, committed files are skipped by the idempotency key, and exactly one dataset version results. An illustration, not live data; the file count, state names and recovery logic come from the real design.</span></figcaption>
-        </figure>
-      </article>
-
-      <!-- B -->
-      <article class="case" id="case-upload" role="tabpanel" aria-labelledby="tab-upload" tabindex="0">
-        <header class="case-head">
-          <div>
-            <p class="case-kicker mono">CASE B · DATA INGEST</p>
-            <h3><span class="zh">客户的 9.9 GB 压缩包被网关砍断。<br>三次架构迭代后，生产零中断直传。</span><span class="en">A customer's 9.9 GB archive was cut off at the gateway.<br>Three iterations later: uninterrupted direct upload in production.</span></h3>
-          </div>
-          <div class="case-metric"><span class="after">41.8</span><span class="unit">MiB/s</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
-        </header>
-        <ol class="notes">
-          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户一次导入几 GB 到几百 GB 的图像、视频、点云压缩包，要求能进、失败能恢复、能追溯版本，且新版本不能破坏历史数据。经后端代理上传时，网关 60 秒超时直接掐断慢客户端。</span><span class="en">Customers import archives from a few GB to hundreds of GB. Uploads have to land, resume after failure, trace back to a version and never damage history. Proxied through the backend, slow clients were cut off by the gateway's 60-second timeout.</span></p></li>
-          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">① 网关代理上传：被超时掐断。② LakeFS 原生预签名：签名与地域绑定，跨环境不可用。③ 后端用对象存储原生 SDK 重签，浏览器直传。</span><span class="en">(1) Proxy through the gateway: cut off by timeouts. (2) LakeFS native presigning: signatures bound to a region, unusable across environments. (3) Re-sign with the object store's native SDK and upload straight from the browser.</span></p></li>
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 ③。每个分片签一个 URL，直传到固定编号的 staging key；直传失败可按片回退到后端代理，两条路写同一个 key。complete 不信会话记录，直接列目录核对片数与总字节，缺片就拒。解压侧给每次 staging 写入包上应用层退避重试，把瞬断当成可重试。</span><span class="en">Option 3. One presigned URL per part, written to a fixed, numbered staging key; a failed part can fall back to the proxy and both paths write the same key. Completion ignores session records and lists the prefix to check part count and total bytes, rejecting any gap. On extraction, every staging write gets application-level retry with backoff, so transient drops are retryable.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 10 GB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。生产血缘事件回填 18,370 条，六类对账全等。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~10 GB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. Backfilling lineage in production produced 18,370 events, with all six reconciliations exact. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
-        </ol>
-        <figure class="fig" data-fig="upload" aria-labelledby="fig-upload-cap">
-          <div class="fig-head">
-            <p class="fig-kicker mono">FIG.B · <span class="zh">预签名分片直传</span><span class="en">PRESIGNED MULTIPART UPLOAD</span></p>
-            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
-          </div>
-          <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/7.8;--ar-m:4/7"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-upload-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">代理上传在 60 秒处被网关掐断；预签名直传 310 片、237 秒、平均 41.8 MiB/s；complete 列目录核对片数与字节，故意少传一片时拒绝（309 / 310）。分片完成顺序为示意，片数、耗时、吞吐与缺片结果为 2026-06-23 生产验收实测。</span><span class="en">The proxied upload is cut at the gateway’s 60-second timeout; presigned direct upload moves 310 parts in 237 s at 41.8 MiB/s on average; completion lists the prefix to check parts and bytes, and refuses when one part is withheld (309 / 310). The order parts finish in is illustrative; part count, duration, throughput and the refusal come from the production acceptance run on 2026-06-23.</span></figcaption>
-        </figure>
-      </article>
-
-      <!-- C -->
-      <article class="case" id="case-release" role="tabpanel" aria-labelledby="tab-release" tabindex="0">
-        <header class="case-head">
-          <div>
-            <p class="case-kicker mono">CASE C · RELEASE &amp; OBSERVABILITY</p>
-            <h3><span class="zh">让发布可重复、可回滚，<br>让运维从查日志变成看告警。</span><span class="en">Releases you can repeat and roll back.<br>Operations run on alerts, not log-grepping.</span></h3>
-          </div>
-          <div class="case-metric"><span class="after">−94.6%</span><span class="unit"><span class="zh">access log 行数</span><span class="en">access-log lines</span></span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></div>
-        </header>
-        <ol class="notes">
-          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">2026-05 之前只有内网与客户线。要在云上建正式环境，同时维持离线交付、内网研发、云上生产三条线不漂移。</span><span class="en">Before May 2026 there were only internal and customer environments. I had to stand up production in the cloud while keeping offline delivery, internal development and cloud production from drifting apart.</span></p></li>
-          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">托管 Kubernetes（TKE），或单机 k3s 复用内网经验；Argo CD 全自动同步，或只 apply 不 prune 分批纳管。</span><span class="en">Managed Kubernetes (TKE), or single-node k3s reusing our internal experience; Argo CD with full auto-sync, or apply-only onboarding in batches.</span></p></li>
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选单机 k3s，把单点风险写进方案而不是回避；Argo CD 先 apply-only 分批纳管，设五条硬停止条件。定下“CI 是唯一出图口”，回滚就是改一行镜像 tag。事故后固化：共享凭证一次性注入全量并重启全量，验证用 11 × 7 = 77 格全矩阵而不抽样。</span><span class="en">Single-node k3s, with the single point of failure written into the plan rather than hidden; Argo CD apply-only in batches behind five hard stop conditions. CI became the only source of images, so a rollback is a one-line tag change. After an incident I set two rules: when a shared credential changes, inject it everywhere and restart everything in one go; and verify the full 11 × 7 = 77-cell matrix instead of sampling.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">access log 从 1,313 万行降到 71.2 万行，告警有效覆盖 64/64。生产 15 天探针可用性 99.9975%，7 天 331 万真实请求；100 并发压测整体 p95 50 ms。在与生产同机同配置的预发环境做极限压测，定位 project 服务 CPU 打满，2 核扩到 6 核后 84 → 205 req/s，p95 2.6 s → 0.85 s。</span><span class="en">Access logs fell from 13.13 M to 0.712 M lines, with 64/64 effective alert coverage. In production: 99.9975% availability over a 15-day probe and 3.31 M real requests in 7 days; a 100-user load test ran at 50 ms p95. A stress test in pre-production, on the same host and configuration, found the project service CPU-bound; going from 2 to 6 cores took it from 84 to 205 req/s and p95 from 2.6 s to 0.85 s.</span></p></li>
-        </ol>
-        <figure class="fig" data-fig="matrix" aria-labelledby="fig-matrix-cap">
-          <div class="fig-head">
-            <p class="fig-kicker mono">FIG.C · <span class="zh">抽查通过不等于覆盖</span><span class="en">A PASSING SAMPLE IS NOT COVERAGE</span></p>
-            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
-          </div>
-          <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/7.4;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-matrix-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">一次发版后的验证：第一轮每个 Pod 只查 1 个变量（11 / 77 格）就报了通过，漏掉的那一格让上传链路返回 503。之后改为注入全量、重启全量、77 格逐格核对。模块与 token 用编号代替真实名称。</span><span class="en">Verification after a release: the first pass read one variable per pod (11 of 77 cells) and reported success; the cell it skipped broke the upload path with a 503. Since then: inject everywhere, restart everything, check all 77 cells. Modules and tokens are numbered instead of named.</span></figcaption>
-        </figure>
-        <div class="bars" role="group" aria-label="优化前后 / Before and after">
-          <div class="bar-row"><span class="bar-label"><span class="zh">日志行数</span><span class="en">Log lines</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">13.13 M</span></div>
-          <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:5.4%"></i></span><span class="mono">0.71 M</span></div>
-          <div class="bar-row"><span class="bar-label"><span class="zh">吞吐</span><span class="en">Throughput</span> <span class="tag lab"><span class="zh">预发</span><span class="en">LAB</span></span></span><span class="bar"><i style="--w:41%"></i></span><span class="mono">84 req/s</span></div>
-          <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">205 req/s</span></div>
-        </div>
-      </article>
-
-      <!-- D -->
-      <article class="case" id="case-seg" role="tabpanel" aria-labelledby="tab-seg" tabindex="0">
-        <header class="case-head">
-          <div>
-            <p class="case-kicker mono">CASE D · MODEL SELECTION</p>
-            <h3><span class="zh">云上没有 GPU 的分割服务：<br>快 9.4 倍，还避开了一个许可证陷阱。</span><span class="en">Segmentation without a GPU in the cloud:<br>9.4× faster, and a license trap avoided.</span></h3>
-          </div>
-          <div class="case-metric"><span class="before">6,000 ms</span><i class="icon i-right" aria-hidden="true"></i><span class="after">640 ms</span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
-        </header>
-        <ol class="notes">
-          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">云上环境只有 CPU，交互式标注需要亚秒级分割。现有 FastSAM 的“文字提示分割”自上线起就没生效过：输入 <code>person,rider,car</code> 和 <code>banana</code> 返回的框完全一样，根因是异常被静默吞掉。</span><span class="en">The cloud environment is CPU-only, and interactive labeling needs sub-second segmentation. The existing FastSAM text-prompt mode had never worked: <code>person,rider,car</code> and <code>banana</code> returned identical boxes, because an exception was silently swallowed.</span></p></li>
-          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">修 FastSAM + CLIP；做 INT8 量化；换 EfficientViT-SAM-L0。</span><span class="en">Fix FastSAM + CLIP, quantize to INT8, or switch to EfficientViT-SAM-L0.</span></p></li>
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">换 EfficientViT-SAM。三条理由：质量上 FastSAM 不是检测器，CLIP 只能重排；速度上 9.4 倍；许可证上 README 写 Apache、LICENSE 文件实为 AGPL，私有化分发会触发 copyleft。INT8 被否决：只快 1.7 倍，mask IoU 掉到 0.42，而模型自估 IoU 不变，坏了也察觉不到。命名也守纪律：CPU 版不借用 SAM 3 的名字，不做虚假能力声明。</span><span class="en">EfficientViT-SAM, for three reasons: quality, since FastSAM is not a detector and CLIP can only re-rank; speed, at 9.4×; and licensing, since the README says Apache but the LICENSE file is AGPL, so shipping it on-prem would trigger copyleft. INT8 was rejected: only 1.7× faster, mask IoU fell to 0.42 while the model's self-estimated IoU stayed the same, so failure would be invisible. Naming stays honest too: the CPU service does not borrow the SAM 3 name.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">云上 4 核真机：6,000 ms → 640 ms；ORT 换 OpenVINO 后编码器 470 → 93 ms；线程数 2 → 4 为最优。另修一次 OOM：4K 图峰值内存 4,078 MB → 1,907 MB。</span><span class="en">On a real 4-core cloud VM: 6,000 ms → 640 ms; ORT to OpenVINO took the encoder from 470 to 93 ms; four threads was the sweet spot. A related OOM fix cut 4K-image peak memory from 4,078 MB to 1,907 MB.</span></p></li>
-        </ol>
-        <figure class="fig" data-fig="seg" aria-labelledby="fig-seg-cap">
-          <div class="fig-head">
-            <p class="fig-kicker mono">FIG.D · <span class="zh">为什么不选看起来更快的方案</span><span class="en">WHY NOT THE OPTION THAT LOOKS FASTER</span></p>
-            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
-          </div>
-          <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/9.2;--ar-m:4/9.4"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放）；INT8 与 fp32 掩码的实际 IoU；推理线程数与延迟（1 / 2 / 4 / 8 / 16 / 32 线程：2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms）。测试在云上 4 核真机上完成，环境标为内网非生产；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed); the actual IoU between INT8 and fp32 masks; and inference threads vs latency (1 / 2 / 4 / 8 / 16 / 32 threads: 2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms). Run on a real 4-core cloud machine, a non-production environment; the image and mask shapes are illustrative.</span></figcaption>
-        </figure>
-      </article>
-
-      <!-- E -->
-      <article class="case" id="case-arm" role="tabpanel" aria-labelledby="tab-arm" tabindex="0">
-        <header class="case-head">
-          <div>
-            <p class="case-kicker mono">CASE E · ON-PREM DELIVERY</p>
-            <h3><span class="zh">无外网、国产 CPU、国产 OS：<br>27 个镜像的整套平台离线交付。</span><span class="en">No internet, domestic CPU, domestic OS:<br>the whole 27-image platform, delivered offline.</span></h3>
-          </div>
-          <div class="case-metric"><span class="after">19</span><span class="unit"><span class="zh">个问题，5 个致命，都在出包前</span><span class="en">issues, 5 fatal, caught before shipping</span></span><span class="tag lab"><span class="zh">验证机</span><span class="en">LAB</span></span></div>
-        </header>
-        <ol class="notes">
-          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">客户机房是鲲鹏 aarch64 + 麒麟 V10，完全离线。语法校验、架构核对、<code>compose config</code> 全部通过，也不代表能装起来。</span><span class="en">The customer's data center ran Kunpeng aarch64 on Kylin V10, fully air-gapped. Passing syntax checks, architecture checks and <code>compose config</code> doesn't mean it will install.</span></p></li>
-          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">按清单打包直接发往现场，或先在与客户同规格的实机上真装一遍。</span><span class="en">Package against a checklist and ship, or first install for real on a machine matching the customer's spec.</span></p></li>
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">冻结六个仓的基线 SHA，先在与客户同款 OS 的鲲鹏实机上真装。验证机 16 核全绿，到了客户现场的 32 核机器上，三个 Python 服务重启 60+ 次：OpenBLAS / OMP 按核数起线程，撞上 nproc 上限。于是给所有算力容器钉死线程数，并把“验证机与客户机同规格，核数也要对齐”写进规范。我的判断规则是：同类组件里只有一个配了某参数，往往是过去事故的遗迹，应推广到全部。</span><span class="en">Froze the baseline SHA of six repositories and did a real install on a Kunpeng machine running the customer's OS. The 16-core test machine was all green; on the customer's 32-core machine three Python services restarted 60+ times, because OpenBLAS / OMP start a thread per core and hit the nproc limit. So every compute container got pinned thread counts, and "the test machine matches the customer's, core count included" became a team rule. My rule of thumb: when only one of a family of components sets a parameter, it is usually the scar of an old incident, and should be applied to all of them.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">两轮真装累计发现 19 个问题、5 个致命，例如 Docker 自身二进制是 x86、Redis 在 ARM64 上拒启、端口避让脚本把 9 个端口分到同一个。补丁复查时搭仿真环境真跑 21 条异常路径断言；验证脚本本身也被验证过。现场 5 条反馈逐一定性：1 条是真实缺陷，出补丁修复；其余主要是客户浏览器版本过低。</span><span class="en">Two real installs surfaced 19 issues, 5 of them fatal: the Docker binary itself was x86, Redis refused to start on ARM64, a port-avoidance script mapped nine ports to one. Patch review ran 21 failure-path assertions in a simulated environment, and the verification scripts were themselves verified. Five field reports were each triaged: one genuine defect, patched; the rest came mostly from an outdated customer browser.</span></p></li>
-        </ol>
-        <figure class="fig" data-fig="cores" aria-labelledby="fig-cores-cap">
-          <div class="fig-head">
-            <p class="fig-kicker mono">FIG.E · <span class="zh">核数、线程与 nproc</span><span class="en">CORES, THREADS AND NPROC</span></p>
-            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
-          </div>
-          <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/7;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
-          <p class="fig-code"><span class="fig-code-k"><span class="zh">修复：每个算力容器</span><span class="en">Fix, in every compute container:</span></span> <code>OPENBLAS_NUM_THREADS</code> <code>OMP_NUM_THREADS</code> <code>MKL_NUM_THREADS</code> <code>NUMEXPR_NUM_THREADS</code> <span class="zh">显式设置，</span><span class="en">set explicitly;</span> <code>ulimits.nproc</code> <span class="zh">放开</span><span class="en">raised</span></p>
-          <figcaption class="fig-note" id="fig-cores-cap"><span class="zh">同一套镜像，16 核验证机全绿；32 核现场机器上 OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。修复是给所有算力容器显式钉死线程数并放开 nproc。核数与重启次数取自现场记录，线程条与上限线的高度为示意。</span><span class="en">The same images: all green on a 16-core test machine; on the 32-core machine on site, OpenBLAS and OMP started a thread per core, hit the nproc limit, and three Python services restarted 60+ times. The fix pins thread counts in every compute container and raises nproc. Core counts and restarts come from the field record; thread-bar and limit heights are illustrative.</span></figcaption>
-        </figure>
-      </article>
-
-      <!-- F -->
-      <article class="case" id="case-agent" role="tabpanel" aria-labelledby="tab-agent" tabindex="0">
-        <header class="case-head">
-          <div>
-            <p class="case-kicker mono">CASE F · AGENT ENGINEERING</p>
-            <h3><span class="zh">Agent 更便宜也更可靠：<br>输入 token 降 43.6%，任务通过 5 → 7。</span><span class="en">A cheaper and more reliable agent:<br>43.6% fewer input tokens, tasks passed 5 → 7.</span></h3>
-          </div>
-          <div class="case-metric"><span class="after">−43.6%</span><span class="unit"><span class="zh">输入 token</span><span class="en">input tokens</span></span><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></div>
-        </header>
-        <ol class="notes">
-          <li><b><span class="zh">约束</span><span class="en">Constraint</span></b><p><span class="zh">平台 Agent 通过 MCP 网关接了 150+ 个工具，token 成本高，多轮对话容易失败。一次打转的运行消耗 26.5 万 token，比 9 次成功运行加起来还贵。</span><span class="en">The platform agent reached 150+ tools through an MCP gateway. Token cost was high and multi-turn runs failed often; one looping run burned 265k tokens, more than nine successful runs combined.</span></p></li>
-          <li><b><span class="zh">方案</span><span class="en">Options</span></b><p><span class="zh">接入开源 Agent 框架与技能市场，或保留主循环、只补缺口。</span><span class="en">Adopt an open-source agent framework and skill marketplace, or keep the main loop and fill the gaps.</span></p></li>
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">逐项对照开源标杆后只补三个 P0：确定性工作流、Agent 委派、MCP 标准。定位出多轮失败的头号原因是跨轮丢失工具可见性；缓存命中低的真凶是易变内容排在稳定段之前。工具目录 28 → 20，并加预算上限与打转检测。</span><span class="en">After a point-by-point comparison with leading open-source agents, I added only three P0s: deterministic workflows, agent delegation and the MCP standard. The top cause of multi-turn failure was tool visibility lost between turns; low cache hit rates came from volatile content placed before stable sections. The tool catalog went from 28 to 20, with budget caps and loop detection.</span></p></li>
-          <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">输入 token 159 万 → 89.6 万，24 例回归失败 53 → 20，reflection 失败率 34.7% → 0。修复 MCP 服务注册指向过期 Pod IP 后，一个工具的平均耗时 72 s → 3.4 s。</span><span class="en">Input tokens 1.59 M → 0.896 M, regression failures across 24 cases 53 → 20, reflection failure rate 34.7% → 0. Fixing an MCP registration that pointed at a stale Pod IP took one tool's average latency from 72 s to 3.4 s.</span></p></li>
-        </ol>
-        <figure class="fig" data-fig="prompt" aria-labelledby="fig-prompt-cap">
-          <div class="fig-head">
-            <p class="fig-kicker mono">FIG.F · <span class="zh">prompt 布局与缓存前缀</span><span class="en">PROMPT LAYOUT AND THE CACHE PREFIX</span></p>
-            <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
-          </div>
-          <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/6.7;--ar-m:4/5.8"><canvas aria-hidden="true"></canvas></div>
-          <p class="fig-legend"><span class="lg"><i style="background:#5d6168"></i><span class="zh">系统</span><span class="en">system</span></span><span class="lg"><i style="background:#6f8fe8"></i><span class="zh">工具目录</span><span class="en">tool catalog</span></span><span class="lg"><i style="background:#8e959c"></i><span class="zh">Skill</span><span class="en">skills</span></span><span class="lg"><i style="background:#c9ccc6"></i><span class="zh">对话历史</span><span class="en">history</span></span><span class="lg"><i style="background:#e39a2d"></i><span class="zh">进行中任务（每轮变化）</span><span class="en">task state (changes every turn)</span></span></p>
-          <figcaption class="fig-note" id="fig-prompt-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">缓存只复用与上一轮完全相同的前缀。改前易变段排在前面，实测命中 51.0%；改后稳定段在前、易变段压缩后放末尾，工具目录 28 → 20。分段比例为示意（按单 prompt 均值 12,726 → 9,631 token 配平），结果数字为同一套 24 例回归实测。</span><span class="en">A cache reuses only the prefix identical to the previous turn. Before, volatile content came first and the measured hit rate was 51.0%; after, stable sections lead, the volatile block is trimmed and moved last, and the tool catalog drops from 28 to 20. Segment proportions are illustrative (balanced to the measured per-prompt means, 12,726 → 9,631 tokens); the results are measured on the same 24-case regression.</span></figcaption>
-        </figure>
-      </article>
-    </div>
+    <ol class="milestones" aria-label="里程碑 / Milestones">
+      <li><time>2025.09</time><strong><span class="zh">两仓同日 initial commit</span><span class="en">Day one, both repos</span></strong><p><span class="zh">选型并落地多模块后端与前端骨架；一周后 AI 与数据集模块在同一次提交中建起。</span><span class="en">Chose the stack and laid down the modular backend and the frontend skeleton; AI and dataset modules followed a week later.</span></p></li>
+      <li><time>2025.11</time><strong><span class="zh">存储、计算、部署三条底座</span><span class="en">Storage, compute, deploy</span></strong><p><span class="zh">接入 LakeFS 数据版本；高可用 Worker 与批量预处理；k3s 部署配置。</span><span class="en">LakeFS data versioning, highly available workers with batch preprocessing, and k3s deployment.</span></p></li>
+      <li><time>2026.03</time><strong><span class="zh">双平台边界</span><span class="en">Two platforms, one boundary</span></strong><p><span class="zh">把 QApex 业务平台从主仓拆出独立部署；统一能力注册，模型与脚本共用一套契约。</span><span class="en">Split the QApex business platform out for independent deployment; unified capability registration for models and scripts.</span></p></li>
+      <li><time>2026.06</time><strong><span class="zh">上云与 GitOps</span><span class="en">Cloud and GitOps</span></strong><p><span class="zh">腾讯云正式环境、CI/CD 与 Argo CD；引入 Flyway 管理迁移；多租户系统性审计。</span><span class="en">Production on Tencent Cloud with CI/CD and Argo CD; Flyway migrations; a systematic multi-tenant audit.</span></p></li>
+      <li><time>2026.07</time><strong><span class="zh">可观测与能力平台</span><span class="en">Observability, capability platform</span></strong><p><span class="zh">日志、告警、自愈三线上线；能力平台路线定稿。全年提交峰值月：1,357。</span><span class="en">Logging, alerting and self-healing went live; the capability-platform roadmap was finalized. Peak month: 1,357 commits.</span></p></li>
+      <li><time>2026.08</time><strong><span class="zh">合流与交付</span><span class="en">Merges and delivery</span></strong><p><span class="zh">两条 400+ 文件的长期分支合入主干；具身数据线预发全链路跑通；国产 ARM64 离线现场交付。</span><span class="en">Two long-lived branches of 400+ files each merged into main; the embodied-data line ran end to end in pre-production; ARM64 offline delivery on site.</span></p></li>
+    </ol>
   </section>
 
   <!-- ============ 04 METHOD ============ -->
@@ -384,7 +424,7 @@
     <div class="wrap">
       <div class="section-label"><span class="number">04</span><span>/ HOW I WORK</span></div>
       <div class="section-intro">
-        <h2 id="method-heading"><span class="zh">用 AI 放大产出，<br>但不采信任何自报结果。</span><span class="en">AI multiplies the output.<br>Nothing self-reported is trusted.</span></h2>
+        <h2 id="method-heading"><span class="zh">用 AI 放大产出，<br>验收覆盖真实交付。</span><span class="en">AI multiplies the output.<br>Acceptance covers real delivery.</span></h2>
         <p><span class="zh">我写规格与验收清单，让 Codex 实现，再独立复算、实测。这套方式支撑了能力平台、可观测、桌面端等多条线同时推进，而验收始终由我自己把关。</span><span class="en">I write the spec and the acceptance checklist, Codex implements, and I verify independently by recomputing and running it. This let several lines move at once, from the capability platform to observability and the desktop client, while acceptance stayed with me.</span></p>
       </div>
 
@@ -398,25 +438,23 @@
       <div class="method-grid">
         <div class="ledger">
           <div class="ledger-head">
-            <p class="mono">ACCEPTANCE LEDGER · SOLARSENSE</p>
-            <h3><span class="zh">独立验收抓到的，都是“看起来已经好了”的东西。</span><span class="en">What independent acceptance caught was always something that looked done.</span></h3>
-            <p><span class="zh">这些结论都在上线前或上线后被我用另一条路径复核过：真机点击、二进制对比、真实网关计时、逐条回读。</span><span class="en">Each claim below was re-checked by another path, before or after release: a real click, a byte-level comparison, a timed call through the real gateway, a read-back of every record.</span></p>
+            <p class="mono">ACCEPTANCE · SOLARSENSE</p>
+            <h3><span class="zh">把“看起来已经好了”的信号，变成团队的验收要求。</span><span class="en">Turning "looks done" signals into team acceptance requirements.</span></h3>
+            <p><span class="zh">每一行都经过另一条路径复核：真机点击、真实网关计时、逐条回读。复核的结果写进验收要求，下一次不靠记性。</span><span class="en">Each row was re-checked by another path: a real click, a timed call through the real gateway, a read-back of every record. What it found became an acceptance requirement, so the next release does not rely on memory.</span></p>
           </div>
           <table>
-            <thead><tr><th><span class="zh">自报 / 表象</span><span class="en">Claim</span></th><th><span class="zh">复核发现</span><span class="en">What verification found</span></th><th><span class="zh">处置</span><span class="en">Outcome</span></th></tr></thead>
+            <thead><tr><th><span class="zh">风险信号</span><span class="en">Signal</span></th><th><span class="zh">复核方法与发现</span><span class="en">How it was checked, what it found</span></th><th><span class="zh">由此形成的验收要求</span><span class="en">Requirement since</span></th></tr></thead>
             <tbody>
-              <tr><td><span class="zh">具身数据线：CI 全绿、25 个 Pod Running、API 端到端全通</span><span class="en">Embodied-data line: CI green, 25 pods Running, APIs pass end to end</span></td><td><span class="zh">真机点“开始作业”页面不动：前端合流分支从未真正合入主干</span><span class="en">Clicking "Start" in a real browser did nothing: the frontend branch had never actually been merged</span></td><td><span class="verdict no"><span class="zh">驳回</span><span class="en">Rejected</span></span></td></tr>
-              <tr><td><span class="zh">FastSAM 文字提示分割已上线</span><span class="en">FastSAM text-prompt segmentation is live</span></td><td><span class="zh"><code>person,rider,car</code> 与 <code>banana</code> 返回的框 md5 完全一致，自上线起从未生效</span><span class="en"><code>person,rider,car</code> and <code>banana</code> returned boxes with identical md5: it had never worked</span></td><td><span class="verdict no"><span class="zh">证伪</span><span class="en">Falsified</span></span></td></tr>
-              <tr><td><span class="zh">AI 代码审查已接入 MR，历史运行 596 次</span><span class="en">AI code review wired into MRs, 596 runs</span></td><td><span class="zh">git 版本不兼容让代码检索 100% 失败，596 次全是“盲审”</span><span class="en">A git incompatibility made code search fail every time: all 596 were blind reviews</span></td><td><span class="verdict weak"><span class="zh">已修复</span><span class="en">Fixed</span></span></td></tr>
-              <tr><td><span class="zh">模型状态：31 个模型全部 ERROR</span><span class="en">Model status: all 31 models in ERROR</span></td><td><span class="zh">实际 12 个在跑；失败一次就永久 ERROR，状态位与真实脱节</span><span class="en">12 were actually running; one failure left a model in ERROR forever</span></td><td><span class="verdict weak"><span class="zh">改实时探活</span><span class="en">Live probes</span></span></td></tr>
-              <tr><td><span class="zh">AI 客服真环境测试全绿</span><span class="en">AI support passes in a real environment</span></td><td><span class="zh">写死的 15 s 超时低于网关真实 19 s，降级兜底把“完全不工作”伪装成“正常”</span><span class="en">Hard-coded 15 s timeouts were below the gateway's real 19 s; the fallback disguised total failure as normal</span></td><td><span class="verdict no"><span class="zh">阻断上线</span><span class="en">Blocked</span></span></td></tr>
+              <tr><td><span class="zh">具身数据线：CI 全绿、25 个 Pod Running、API 端到端通过</span><span class="en">Embodied-data line: CI green, 25 pods Running, APIs pass end to end</span></td><td><span class="zh">在真实浏览器里点“开始作业”，页面不动：前端合流分支从未真正合入</span><span class="en">Clicked "Start" in a real browser; nothing happened: the frontend branch had never been merged</span></td><td><span class="zh">规格写明前端接线状态，验收含真机点击</span><span class="en">Specs state frontend wiring; acceptance includes a real click</span></td></tr>
+              <tr><td><span class="zh">AI 代码审查已接入 MR，历史运行 596 次</span><span class="en">AI code review wired into MRs, 596 runs</span></td><td><span class="zh">核对检索日志：git 版本不兼容，代码检索 100% 失败，596 次都没有读到代码</span><span class="en">Read the retrieval logs: a git incompatibility failed every code search; none of the 596 runs saw the code</span></td><td><span class="zh">验收看检索是否命中，不看运行次数</span><span class="en">Accept on retrieval hits, not run counts</span></td></tr>
+              <tr><td><span class="zh">模型状态：31 个模型全部 ERROR</span><span class="en">Model status: all 31 models in ERROR</span></td><td><span class="zh">逐个探活：实际 12 个在跑；失败一次就永久 ERROR，状态位与真实脱节</span><span class="en">Probed each: 12 were running; one failure left a model in ERROR forever</span></td><td><span class="zh">健康状态来自实时探活，不读状态位</span><span class="en">Health comes from live probes, not a status column</span></td></tr>
+              <tr><td><span class="zh">AI 客服真环境测试全绿</span><span class="en">AI support passes in a real environment</span></td><td><span class="zh">经真实网关计时：写死的 15 s 超时低于网关真实 19 s，降级兜底把“完全不工作”伪装成“正常”</span><span class="en">Timed through the real gateway: hard-coded 15 s timeouts were below the real 19 s; the fallback disguised total failure as normal</span></td><td><span class="zh">带降级链的功能，验收含一次真实网关计时，超时设为实测的 2 倍以上</span><span class="en">Features with a fallback chain are accepted only after a timed call through the real gateway, with timeouts above 2× the measured time</span></td></tr>
             </tbody>
           </table>
-          <p class="ledger-foot mono"><span class="zh">规则：凡是调外部模型、带降级链的功能，验收必须含一次真实网关计时</span><span class="en">Rule: any feature that calls an external model through a fallback chain is accepted only after a timed call through the real gateway</span></p>
         </div>
 
         <div class="principles">
-          <div class="principle"><p class="mono">RULE 01</p><h4><span class="zh">“代码存在”“内部通过”“生产可用”分开说</span><span class="en">"Code exists", "passes internally", "works in production" are three different claims</span></h4><p><span class="zh">这页上的每个数字都带环境标签。</span><span class="en">Every number on this page carries its environment.</span></p></div>
+          <div class="principle"><p class="mono">RULE 01</p><h4><span class="zh">“代码存在”“内部通过”“生产可用”分开说</span><span class="en">"Code exists", "passes internally", "works in production" are three different claims</span></h4><p><span class="zh">这页上的性能与交付数字都注明环境。</span><span class="en">Every performance and delivery number on this page states its environment.</span></p></div>
           <div class="principle"><p class="mono">RULE 02</p><h4><span class="zh">验达成效果，不验做了动作</span><span class="en">Verify outcomes, not actions</span></h4><p><span class="zh">单测断言消息发出 ≠ 有人收到；端点上线 ≠ 能力交付；镜像 tag 变了 ≠ 部署完成，要自己用一次。</span><span class="en">A test asserting a message was sent is not someone receiving it; an endpoint is not a delivered capability; a changed tag is not a deployment until someone uses it.</span></p></div>
           <div class="principle"><p class="mono">RULE 03</p><h4><span class="zh">不用管理员账号验收</span><span class="en">Never accept as admin</span></h4><p><span class="zh">管理员会越过全部权限校验。新接口的自测必须用项目经理、标注员等真实角色各走一遍，并随交付带上权限码与授权 seed。</span><span class="en">Admins bypass every permission check. New endpoints are tested with real roles such as project manager and annotator, and ship with their permission codes and grant seeds.</span></p></div>
           <div class="principle"><p class="mono">RULE 04</p><h4><span class="zh">主动写下对自己不利的结论</span><span class="en">Write down what counts against me</span></h4><p><span class="zh">未完成的 1 TiB 验证、没清零的安全红账、被推翻的判断，都写进交付文档。</span><span class="en">The unfinished 1 TiB validation, the security debt not yet cleared, the calls I got wrong: all in the delivery documents.</span></p></div>
@@ -458,20 +496,9 @@
     </ul>
   </section>
 
-  <!-- ============ 06 PRACTICE ============ -->
-  <section class="section wrap" id="skills" aria-labelledby="practice-heading">
-    <div class="section-label"><span class="number">06</span><span>/ ENGINEERING PRACTICE</span></div>
-    <div class="section-intro"><h2 id="practice-heading"><span class="zh">能力，直接对应证据。</span><span class="en">Every capability,<br>linked to evidence.</span></h2></div>
-    <div class="capabilities">
-      <article class="capability"><span class="mono">01 / ARCHITECTURE</span><h3><span class="zh">平台与分布式系统</span><span class="en">Platforms &amp; distributed systems</span></h3><p><span class="zh">服务边界、任务队列与幂等、多租户、大文件与数据版本。</span><span class="en">Service boundaries, queues and idempotency, multi-tenancy, large files and data versioning.</span></p><p class="stack">Java · Spring Cloud · MySQL · Redis<br>Kafka · RabbitMQ · LakeFS · Go</p><div class="evidence"><a href="#case-queue" data-case="tab-queue"><span class="zh">万级任务与幂等</span><span class="en">10k tasks &amp; idempotency</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-upload" data-case="tab-upload"><span class="zh">10 GB 直传</span><span class="en">10 GB direct upload</span><i class="icon i-right" aria-hidden="true"></i></a></div></article>
-      <article class="capability"><span class="mono">02 / APPLIED AI</span><h3><span class="zh">AI 与数据工程</span><span class="en">AI &amp; data engineering</span></h3><p><span class="zh">模型服务治理、选型与许可证判断、Agent 工程与 token 成本。</span><span class="en">Model-serving governance, selection and licensing, agent engineering and token cost.</span></p><p class="stack">Python · FastAPI · PyTorch · OpenVINO<br>MCP · LangChain · pgvector</p><div class="evidence"><a href="#case-seg" data-case="tab-seg"><span class="zh">CPU 分割选型</span><span class="en">CPU segmentation</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-agent" data-case="tab-agent"><span class="zh">Agent 调优</span><span class="en">Agent harness</span><i class="icon i-right" aria-hidden="true"></i></a></div></article>
-      <article class="capability"><span class="mono">03 / DELIVERY</span><h3><span class="zh">工程交付与团队</span><span class="en">Delivery &amp; teams</span></h3><p><span class="zh">GitOps 发布与回滚、可观测、离线私有化、门禁与评审。</span><span class="en">GitOps release and rollback, observability, offline on-prem delivery, gates and review.</span></p><p class="stack">Kubernetes · k3s · Argo CD · ARM64<br>Loki · Prometheus · GitLab CI</p><div class="evidence"><a href="#case-release" data-case="tab-release"><span class="zh">发布与可观测</span><span class="en">Release &amp; observability</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-arm" data-case="tab-arm"><span class="zh">ARM64 离线交付</span><span class="en">ARM64 delivery</span><i class="icon i-right" aria-hidden="true"></i></a></div></article>
-    </div>
-  </section>
-
   <!-- ============ 07 EXPERIENCE ============ -->
   <section class="section wrap" id="work" aria-labelledby="experience-heading">
-    <div class="section-label"><span class="number">07</span><span>/ EXPERIENCE &amp; EDUCATION</span></div>
+    <div class="section-label"><span class="number">06</span><span>/ EXPERIENCE &amp; EDUCATION</span></div>
     <div class="experience">
       <div class="experience-aside"><h2 id="experience-heading"><span class="zh">在真实约束下，<br>把系统做成。</span><span class="en">Real constraints.<br>Working systems.</span></h2><p><span class="zh">从交易系统、企业服务到 AI 数据平台，承担设计、开发与交付责任。</span><span class="en">Designing, building and delivering across trading systems, enterprise services and AI data platforms.</span></p></div>
       <div class="timeline">
@@ -498,9 +525,10 @@
 
   <!-- ============ CONTACT ============ -->
   <section class="contact wrap" id="contact" aria-labelledby="contact-heading">
-    <div><div class="section-label"><span class="number">08</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">正在关注杭州、上海的技术机会。<br>平台架构、数据与 AI 工程、研发负责人，或者只是聊聊技术。</span><span class="en">Open to opportunities in Hangzhou and Shanghai.<br>Platform architecture, data &amp; AI engineering, engineering leadership — or just talking shop.</span></p></div>
+    <div><div class="section-label"><span class="number">07</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">正在关注杭州、上海的技术机会。<br>平台架构、数据与 AI 工程、研发负责人，或者只是聊聊技术。</span><span class="en">Open to opportunities in Hangzhou and Shanghai.<br>Platform architecture, data &amp; AI engineering, engineering leadership — or just talking shop.</span></p></div>
     <div class="contact-actions"><a class="email-link" href="mailto:zchaw127@gmail.com">zchaw127@gmail.com<i class="icon i-up" aria-hidden="true"></i></a><div class="contact-secondary"><button type="button" id="copy-email" class="copy-email" data-email="zchaw127@gmail.com"><i class="icon i-copy" aria-hidden="true"></i><span class="zh">复制邮箱</span><span class="en">Copy email</span></button><a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a></div><p class="copy-status" id="copy-status" role="status" aria-live="polite"></p></div>
   </section>
+
 </main>
 <footer class="site-footer"><div class="wrap footer-wrap"><span>© <span id="year-now">2026</span> Jiawei Zhang</span><span class="mono"><span class="zh">手写 HTML / CSS / WebGL，无框架、无依赖、无追踪</span><span class="en">Hand-written HTML / CSS / WebGL. No framework, no dependencies, no tracking.</span></span><a href="#top"><span class="zh">回到顶部</span><span class="en">Back to top</span><i class="icon i-up" aria-hidden="true"></i></a></div></footer>
 </body>

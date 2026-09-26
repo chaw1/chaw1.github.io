@@ -80,7 +80,7 @@
   updateCurrent();
 
   /* ---------------- reveal + count-up ---------------- */
-  const revealTargets = $$('.section-intro, .stats, .heatmap-card, .milestones, .arch, .casebook, .loop, .ledger, .principles, .project-grid, .capabilities, .experience, .contact > div');
+  const revealTargets = $$('.section-intro, .case-dir, .stats, .heatmap-card, .milestones, .arch, .casebook, .loop, .ledger, .principles, .project-grid, .project-list, .experience, .contact > div');
   const countTargets = $$('[data-count]');
   function formatNumber(n) { return n.toLocaleString('en-US'); }
   function countUp(el) {
@@ -294,7 +294,7 @@
   };
   const archNodes = $$('.arch-node');
   const archDetail = $('#arch-detail');
-  let archActive = 'gateway';
+  let archActive = 'queue';
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function renderArch(animate) {
     const item = archData[archActive];
@@ -324,6 +324,32 @@
   }));
   languageListeners.push(() => renderArch(false));
 
+  // Paths through the map: highlight the nodes a request actually crosses.
+  const archPaths = {
+    deliver: { nodes: ['web', 'gateway', 'modules', 'queue', 'worker', 'models', 'storage'], focus: 'queue',
+      zh: '任务交付：提交在一个事务里写入任务与队列 → Worker 用 SKIP LOCKED 领取 → 调模型服务 → 产物校验后一次提交版本与血缘。', en: 'Task delivery: submission writes task and queue in one transaction → workers claim with SKIP LOCKED → call model serving → artifacts verified, then one commit of version and lineage.' },
+    ingest: { nodes: ['web', 'gateway', 'modules', 'storage'], focus: 'storage',
+      zh: '大包入库：浏览器只向后端要签名，分片直传对象存储；后端自己列目录核对后合并，再建数据版本。', en: 'Archive ingest: the browser asks the backend only for signatures and uploads parts straight to object storage; the backend lists and checks before merging, then versions the data.' }
+  };
+  const pathButtons = $$('[data-path]');
+  const pathNote = $('.arch-path-note');
+  let activePath = null;
+  function renderPath() {
+    const path = activePath ? archPaths[activePath] : null;
+    archNodes.forEach((n) => {
+      n.classList.toggle('on-path', Boolean(path && path.nodes.includes(n.dataset.node)));
+      n.classList.toggle('off-path', Boolean(path && !path.nodes.includes(n.dataset.node)));
+    });
+    pathButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.path === activePath)));
+    if (pathNote) pathNote.textContent = path ? t(path.zh, path.en) : '';
+  }
+  pathButtons.forEach((b) => b.addEventListener('click', () => {
+    activePath = activePath === b.dataset.path ? null : b.dataset.path;
+    if (activePath) { archActive = archPaths[activePath].focus; renderArch(true); }
+    renderPath();
+  }));
+  languageListeners.push(renderPath);
+
   /* ---------------- case tabs ---------------- */
   const tabs = $$('.case-tabs [role="tab"]');
   const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
@@ -336,6 +362,7 @@
       panels[i].classList.toggle('is-active', selected);
     });
     if (focus) tab.focus();
+    if (selectTab.ready) history.replaceState(null, '', `#${tab.getAttribute('aria-controls')}`);
     if (tab.scrollIntoView && window.innerWidth <= 980) {
       tab.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
     }
@@ -359,6 +386,7 @@
   if (tabs.length) {
     const fromHash = tabs.find((tab) => `#${tab.getAttribute('aria-controls')}` === window.location.hash);
     selectTab(fromHash || tabs[0]);
+    selectTab.ready = true;
   }
   // Capability evidence links open the matching case.
   $$('[data-case]').forEach((link) => link.addEventListener('click', (e) => {

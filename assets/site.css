@@ -57,6 +57,8 @@ h1 .zh{display:block;white-space:nowrap}h1 .en{display:block;line-height:1.06;le
 .period{color:var(--blue)}
 .identity{font-size:21px;font-weight:650;margin-top:22px;letter-spacing:-.02em}
 .hero-lede{font-size:16px;line-height:1.85;color:var(--muted);max-width:540px;margin-top:14px}
+.hero-lede-2{margin-top:6px}
+.hero-ticker dt .tag{margin-left:4px;vertical-align:.05em}
 .hero-actions{display:flex;align-items:center;gap:28px;margin-top:28px;flex-wrap:wrap}
 .button{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:12px 22px;background:var(--blue);color:#fff;border:1px solid var(--blue);font-size:14px;font-weight:600;transition:background .18s,transform .18s var(--ease),box-shadow .18s}
 .button:hover{background:var(--blue-hover);border-color:var(--blue-hover);transform:translateY(-2px);box-shadow:0 10px 24px -12px rgba(34,85,238,.7)}
@@ -142,11 +144,19 @@ html:not(.js) .scan-fallback{display:grid}
 .milestones p{font-size:13px;line-height:1.75;color:var(--muted);margin-top:6px}
 
 /* ---------- 02 architecture ---------- */
+.arch-paths{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-bottom:12px}
+.arch-paths .mono{font-size:11px;letter-spacing:.08em;color:var(--quiet);margin-right:4px}
+.arch-paths button{border:1px solid var(--line);background:#fff;padding:6px 12px;font-size:13px;color:var(--ink);transition:border-color .2s,background .2s}
+.arch-paths button:hover{border-color:var(--blue)}
+.arch-paths button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.arch-path-note{flex:1 0 100%;font-size:13.5px;line-height:1.7;color:var(--muted);min-height:0}
+.arch-node.on-path{border-color:var(--blue);background:#fff}
+.arch-node.off-path{opacity:.38}
 .arch{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:0;background:#fff;color:var(--ink);border:1px solid var(--line)}
 .arch-map{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 150px;grid-template-rows:repeat(5,auto);gap:18px 18px;padding:28px}
 .arch-layer{grid-column:1;display:flex;gap:12px;align-items:stretch;position:relative}
 .arch-layer+.arch-layer:before{content:"";position:absolute;left:calc(50% + 44px);top:-18px;height:18px;width:1px;background:linear-gradient(var(--line),var(--line)) center/1px 100% no-repeat}
-.arch-layer+.arch-layer:after{content:"";position:absolute;left:calc(50% + 42px);top:-18px;width:5px;height:5px;border-radius:50%;background:var(--blue);box-shadow:0 0 8px rgba(34,85,238,.5);animation:drop 2.4s linear infinite;animation-delay:var(--d,0s)}
+.arch-layer+.arch-layer:after{display:none}
 .arch-layer:nth-child(3){--d:.5s}.arch-layer:nth-child(4){--d:1s}.arch-layer:nth-child(5){--d:1.5s}
 @keyframes drop{0%{transform:translateY(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(14px);opacity:0}}
 .arch-rail{grid-column:2;grid-row:1/6;display:flex;flex-direction:column;gap:12px;padding-left:18px;border-left:1px dashed var(--line)}
@@ -174,7 +184,18 @@ html:not(.js) .scan-fallback{display:grid}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* ---------- 03 cases ---------- */
-.casebook{display:grid;grid-template-columns:230px minmax(0,1fr);gap:0;border-top:1px solid var(--ink)}
+.case-dir{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--ink);border-left:1px solid var(--line);margin-bottom:44px}
+.case-dir li{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.case-dir a{display:flex;flex-direction:column;gap:8px;height:100%;padding:18px 20px 20px;transition:background .2s}
+.case-dir a:hover{background:#fff}
+.case-dir .mono{font-size:12px;color:var(--blue);font-weight:600}
+.case-dir strong{font-size:15.5px;font-weight:680;line-height:1.5;letter-spacing:-.01em}
+.case-dir a:hover strong{color:var(--blue)}
+.dir-result{font-size:13px;line-height:1.6;color:var(--muted);margin-top:auto}
+.casebook{display:block;border-top:1px solid var(--ink)}
+.js .casebook{display:grid;grid-template-columns:230px minmax(0,1fr);gap:0}
+html:not(.js) .case-tabs{display:none}
+html:not(.js) .case{padding-left:0;border-bottom:1px solid var(--line)}
 .case-tabs{display:flex;flex-direction:column;border-right:1px solid var(--line);padding-top:8px;position:sticky;top:80px;align-self:start}
 .case-tabs button{display:flex;align-items:baseline;gap:12px;text-align:left;border:0;background:none;padding:14px 18px 14px 0;font-size:14.5px;font-weight:560;color:var(--muted);border-bottom:1px solid var(--line-2);position:relative;transition:color .2s}
 .case-tabs button .mono{font-size:12px;color:var(--quiet);width:14px}
@@ -194,12 +215,23 @@ html:not(.js) .scan-fallback{display:grid}
 .case-metric .unit{font-size:13px;font-weight:500;letter-spacing:0;color:var(--muted);white-space:normal;max-width:180px;text-align:left;line-height:1.4}
 .case-metric .tag{align-self:center}
 .notes{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;counter-reset:n}
+.notes-main{margin-top:6px;counter-reset:n 2}
+.case-more{margin-top:4px;border-bottom:1px solid var(--line-2)}
+.case-more summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:14px 0;font:12px var(--mono);letter-spacing:.06em;color:var(--quiet)}
+.case-more summary::-webkit-details-marker{display:none}
+.case-more summary:before{content:"+";display:inline-grid;place-items:center;width:18px;height:18px;border:1px solid var(--line);font-size:13px;color:var(--ink);transition:transform .2s}
+.case-more[open] summary:before{content:"−"}
+.case-more summary:hover{color:var(--ink)}
+.case-more .notes li:first-child b:before{background:var(--ink)}
+.case-more .notes{counter-reset:n}
 .notes li{counter-increment:n;padding:24px 28px 24px 0;border-bottom:1px solid var(--line-2)}
 .notes li:nth-child(even){padding-left:28px;padding-right:0;border-left:1px solid var(--line-2)}
 .notes b{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.08em;color:var(--ink);text-transform:uppercase}
 .notes b:before{content:counter(n,decimal-leading-zero);font:600 11px var(--mono);color:#fff;background:var(--ink);padding:3px 5px;border-radius:2px}
 .notes li:nth-child(3) b:before{background:var(--blue)}
 .notes li:nth-child(4) b:before{background:var(--green)}
+.notes-main li:nth-child(1) b:before{background:var(--blue)}
+.notes-main li:nth-child(2) b:before{background:var(--green)}
 .notes p{font-size:14.5px;line-height:1.9;color:#3d4148;margin-top:10px}
 .figure-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:22px;border:1px solid var(--line);background:#fff}
 .mini-stat{padding:18px 20px}.mini-stat+.mini-stat{border-left:1px solid var(--line-2)}
@@ -295,7 +327,7 @@ html:not(.js) .scan-fallback{display:grid}
 .ledger th+th,.ledger td+td{padding-left:0}
 .ledger td{padding:14px 28px;vertical-align:top;border-bottom:1px solid var(--line);line-height:1.7;color:var(--muted)}
 .ledger td:first-child{color:var(--ink);font-weight:560;width:31%}
-.ledger td:last-child{white-space:nowrap;width:1%}
+.ledger td:last-child{width:30%;color:var(--ink)}
 .ledger tr{transition:background .2s}.ledger tbody tr:hover{background:rgba(34,85,238,.03)}
 .verdict{display:inline-block;font:600 11px/1 var(--mono);padding:5px 8px;border-radius:3px;letter-spacing:.04em}
 .verdict.no{background:var(--red-soft);color:var(--red)}
@@ -417,7 +449,8 @@ html:not(.js) .scan-fallback{display:grid}
   .hero-ticker{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hero-ticker>div:nth-child(3){padding-left:0;border-left:0}
   .section-intro{grid-template-columns:1fr;gap:18px;align-items:start}
-  .casebook{grid-template-columns:1fr}
+  .casebook,.js .casebook{grid-template-columns:1fr}
+  .case-dir{grid-template-columns:repeat(2,minmax(0,1fr))}
   .case-tabs{position:static;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding-top:0;scrollbar-width:none}
   .case-tabs::-webkit-scrollbar{display:none}
   .case-tabs button{flex:none;padding:14px 18px 14px 0;margin-right:18px;border-bottom:0;white-space:nowrap}
@@ -501,6 +534,7 @@ html:not(.js) .scan-fallback{display:grid}
   .ledger td+td{margin-top:6px}
   .ledger-foot{padding:14px 18px 18px}
   .project-grid{grid-template-columns:1fr}
+  .case-dir{grid-template-columns:1fr}
   .project-list{grid-template-columns:1fr}
   .shot{height:300px;padding:20px 20px 0}
   .job-summary-copy{grid-template-columns:1fr}
