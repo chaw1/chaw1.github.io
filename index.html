@@ -13,14 +13,14 @@
 <meta property="og:site_name" content="Jiawei Zhang">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:locale:alternate" content="en_US">
-<meta property="og:image" content="https://hire.jiawis.com/assets/og.png?v=2">
+<meta property="og:image" content="https://hire.jiawis.com/assets/og.png?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="张嘉玮 Jiawei Zhang：用工程判断，解决复杂问题。三个生产指标：15 天可用性 99.9975%，7 天真实请求 331 万，约 10 GB 直传 41.8 MiB/s；右侧是一段 WebGL 激光雷达点云与 3D 标注框。">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="张嘉玮 Jiawei Zhang — 技术负责人 / 平台架构师">
 <meta name="twitter:description" content="一年把数据工程与 AI 平台从第一个 commit 送上生产：六个工程案例、架构与验收方法。Built an AI data platform from the first commit to production in one year.">
-<meta name="twitter:image" content="https://hire.jiawis.com/assets/og.png?v=2">
+<meta name="twitter:image" content="https://hire.jiawis.com/assets/og.png?v=3">
 <link rel="canonical" href="https://hire.jiawis.com/">
 <script type="application/ld+json">
 {
@@ -31,16 +31,16 @@
   "jobTitle": "Tech Lead / Platform Architect",
   "url": "https://hire.jiawis.com/",
   "email": "mailto:zchaw127@gmail.com",
-  "image": "https://hire.jiawis.com/assets/og.png?v=2",
+  "image": "https://hire.jiawis.com/assets/og.png?v=3",
   "sameAs": ["https://github.com/chaw1"]
 }
 </script>
 <link rel="icon" href="assets/icons/stack.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260925-v9">
+<link rel="stylesheet" href="assets/site.css?v=20260926-v10">
 <script>(function(d){d.classList.add('js');try{var l=localStorage.getItem('jiawis-lang');if(l==='en'||l==='zh'){d.dataset.lang=l;d.lang=l==='zh'?'zh-CN':'en'}}catch(e){}})(document.documentElement)</script>
-<script src="assets/site.js?v=20260925-v9" defer></script>
-<script src="assets/pointcloud.js?v=20260925-v9" defer></script>
-<script src="assets/figures.js?v=20260925-v9" defer></script>
+<script src="assets/site.js?v=20260926-v10" defer></script>
+<script src="assets/pointcloud.js?v=20260926-v10" defer></script>
+<script src="assets/figures.js?v=20260926-v10" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到主要内容</span><span class="en">Skip to content</span></a>
@@ -86,6 +86,7 @@
       <figure class="scan" id="scan" aria-labelledby="scan-caption">
         <canvas id="scan-canvas" aria-hidden="true"></canvas>
         <div class="scan-label" id="scan-label" aria-hidden="true"><span>car · 4.5 × 1.9 × 1.5 m</span></div>
+        <button type="button" class="scan-toggle" id="scan-toggle" aria-pressed="false"><i class="icon i-pause" aria-hidden="true"></i><i class="icon i-play" aria-hidden="true"></i><span class="when-on"><span class="zh">暂停旋转</span><span class="en">Pause rotation</span></span><span class="when-off"><span class="zh">继续旋转</span><span class="en">Resume rotation</span></span></button>
         <div class="scan-hud" aria-hidden="true">
           <span class="hud-dot"></span><span id="scan-points">—</span><span class="zh">点</span><span class="en">pts</span><span class="hud-sep">/</span><span id="scan-fps">—</span> fps
         </div>
@@ -110,7 +111,7 @@
     <div class="section-label"><span class="number">01</span><span>/ CASE FILES</span></div>
     <div class="section-intro">
       <h2 id="cases-heading"><span class="zh">约束、取舍、验证。</span><span class="en">Constraints. Trade-offs.<br>Proof.</span></h2>
-      <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。数字标注出处：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Every number is tagged: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
+      <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。性能与交付数字都注明环境：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Performance and delivery numbers state their environment: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
     </div>
 
     <ol class="case-dir" aria-label="案例目录 / Case index">
@@ -153,7 +154,7 @@
           </ol>
           <p class="machine-now mono" aria-live="off"></p>
           <details class="machine-details"><summary><span class="zh">完整事件日志</span><span class="en">Full event log</span></summary><pre class="machine-log"></pre></details>
-          <figcaption class="fig-note" id="fig-a-cap"><span class="zh">一次交付的全过程：10,025 个文件切成 157 个 chunk，4 个 Worker 用 SKIP LOCKED 并发领取；worker-3 中途失联，租约到期后 worker-5 接手，已提交的文件按幂等键跳过，最后只产生 1 个数据集版本。流程示意，不是实时数据；文件数、状态名与恢复逻辑取自真实设计。</span><span class="en">One delivery end to end: 10,025 files become 157 chunks, claimed concurrently by four workers with SKIP LOCKED; worker-3 drops out mid-batch, worker-5 takes over when the lease expires, committed files are skipped by the idempotency key, and exactly one dataset version results. An illustration, not live data; the file count, state names and recovery logic come from the real design.</span></figcaption>
+          <figcaption class="fig-note" id="fig-a-cap"><span class="zh">一次交付的全过程：10,025 个文件切成 157 个 chunk，4 个 Worker 用 SKIP LOCKED 并发领取；worker-3 中途失联，租约到期后 worker-5 接手，已写入 staging 的文件按幂等键跳过，最后只产生 1 个数据集版本。流程示意，不是实时数据；文件数、状态名与恢复逻辑取自真实设计。</span><span class="en">One delivery end to end: 10,025 files become 157 chunks, claimed concurrently by four workers with SKIP LOCKED; worker-3 drops out mid-batch, worker-5 takes over when the lease expires, files already in staging are skipped by the idempotency key, and exactly one dataset version results. An illustration, not live data; the file count, state names and recovery logic come from the real design.</span></figcaption>
         </figure>
         <ol class="notes notes-main">
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 MySQL 队列：<code>FOR UPDATE SKIP LOCKED</code> 并发领取，Redis 做心跳与 GPU 限流，outbox 发事件。队列可查、可修，不会出现“消息发了、状态没写”的双写不一致。再把“执行完成 ≠ 交付完成”写成状态机：产物可读、版本落账、血缘闭合才算 READY。</span><span class="en">I kept it in MySQL: concurrent claiming with <code>FOR UPDATE SKIP LOCKED</code>, Redis for heartbeats and GPU throttling, an outbox for events. The queue stays queryable and repairable, with no dual-write gap between message and state. Then I made "executed ≠ delivered" a state machine: READY only when the artifact is readable, the version recorded and the lineage closed.</span></p></li>
@@ -186,7 +187,7 @@
           <figcaption class="fig-note" id="fig-upload-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">代理上传在 60 秒处被网关掐断；预签名直传 310 片、237 秒、平均 41.8 MiB/s；complete 列目录核对片数与字节，故意少传一片时拒绝（309 / 310）。分片完成顺序为示意，片数、耗时、吞吐与缺片结果为 2026-06-23 生产验收实测。</span><span class="en">The proxied upload is cut at the gateway’s 60-second timeout; presigned direct upload moves 310 parts in 237 s at 41.8 MiB/s on average; completion lists the prefix to check parts and bytes, and refuses when one part is withheld (309 / 310). The order parts finish in is illustrative; part count, duration, throughput and the refusal come from the production acceptance run on 2026-06-23.</span></figcaption>
         </figure>
         <ol class="notes notes-main">
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选 ③。每个分片签一个 URL，直传到固定编号的 staging key；直传失败可按片回退到后端代理，两条路写同一个 key。complete 不信会话记录，直接列目录核对片数与总字节，缺片就拒。解压侧给每次 staging 写入包上应用层退避重试，把瞬断当成可重试。</span><span class="en">Option 3. One presigned URL per part, written to a fixed, numbered staging key; a failed part can fall back to the proxy and both paths write the same key. Completion ignores session records and lists the prefix to check part count and total bytes, rejecting any gap. On extraction, every staging write gets application-level retry with backoff, so transient drops are retryable.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">采用对象存储原生 SDK 重签、浏览器直传。每个分片签一个 URL，直传到固定编号的 staging key；直传失败可按片回退到后端代理，两条路写同一个 key。complete 不信会话记录，直接列目录核对片数与总字节，缺片就拒。解压侧给每次 staging 写入包上应用层退避重试，把瞬断当成可重试。</span><span class="en">Re-sign with the object store's native SDK and upload straight from the browser. One presigned URL per part, written to a fixed, numbered staging key; a failed part can fall back to the proxy and both paths write the same key. Completion ignores session records and lists the prefix to check part count and total bytes, rejecting any gap. On extraction, every staging write gets application-level retry with backoff, so transient drops are retryable.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">生产验收：约 10 GB 测试包，310 个分片，237 秒，41.8 MiB/s，零中断；故意缺一片（309/310）时服务端拒绝。30 GB 合成包 480/480 文件、内存峰值 1.5 GB。生产血缘事件回填 18,370 条，六类对账全等。真实 1 TiB 与完整故障组合未跑完，方案里如实写明。</span><span class="en">Production acceptance: a ~10 GB package, 310 parts, 237 s, 41.8 MiB/s, no interruptions; with one part deliberately missing (309/310) the server refused. A 30 GB synthetic package landed 480/480 files at 1.5 GB peak memory. Backfilling lineage in production produced 18,370 events, with all six reconciliations exact. A real 1 TiB run and the full fault matrix were not finished, and the design document says so.</span></p></li>
         </ol>
         <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
@@ -212,8 +213,8 @@
             <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
           </div>
           <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/7.4;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
-          <figcaption class="fig-note" id="fig-matrix-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">一次发版后的验证：第一轮每个 Pod 只查 1 个变量（11 / 77 格）就报了通过，漏掉的那一格让上传链路返回 503。之后改为注入全量、重启全量、77 格逐格核对。模块与 token 用编号代替真实名称。</span><span class="en">Verification after a release: the first pass read one variable per pod (11 of 77 cells) and reported success; the cell it skipped broke the upload path with a 503. Since then: inject everywhere, restart everything, check all 77 cells. Modules and tokens are numbered instead of named.</span></figcaption>
+          <div class="fig-stage" style="--ar:16/7.4;--ar-m:4/6.6"><canvas aria-hidden="true"></canvas></div>
+          <figcaption class="fig-note" id="fig-matrix-cap"><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span> <span class="zh">一次发版后的验证：第一轮每个 Pod 只查 1 个变量（11 / 77 格）就报了通过，漏掉的那一格让上传链路返回 503。之后的规则：改共享凭证时，一次性注入并重启依赖它的全部模块，再把 77 格逐格核对。模块与 token 用编号代替真实名称。</span><span class="en">Verification after a release: the first pass read one variable per pod (11 of 77 cells) and reported success; the cell it skipped broke the upload path with a 503. Since then: when a shared credential changes, inject it into and restart every module that depends on it at once, then check all 77 cells. Modules and tokens are numbered instead of named.</span></figcaption>
         </figure>
         <div class="bars" role="group" aria-label="优化前后 / Before and after">
           <div class="bar-row"><span class="bar-label"><span class="zh">日志行数</span><span class="en">Log lines</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">13.13 M</span></div>
@@ -222,7 +223,7 @@
           <div class="bar-row after"><span class="bar-label"></span><span class="bar"><i style="--w:100%"></i></span><span class="mono">205 req/s</span></div>
         </div>
         <ol class="notes notes-main">
-          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选单机 k3s，把单点风险写进方案而不是回避；Argo CD 先 apply-only 分批纳管，设五条硬停止条件。定下“CI 是唯一出图口”，回滚就是改一行镜像 tag。事故后固化：共享凭证一次性注入全量并重启全量，验证用 11 × 7 = 77 格全矩阵而不抽样。</span><span class="en">Single-node k3s, with the single point of failure written into the plan rather than hidden; Argo CD apply-only in batches behind five hard stop conditions. CI became the only source of images, so a rollback is a one-line tag change. After an incident I set two rules: when a shared credential changes, inject it everywhere and restart everything in one go; and verify the full 11 × 7 = 77-cell matrix instead of sampling.</span></p></li>
+          <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">选单机 k3s，把单点风险写进方案而不是回避；Argo CD 先 apply-only 分批纳管，设五条硬停止条件。定下“CI 是唯一出图口”，回滚就是改一行镜像 tag。事故后固化：改共享凭证时，一次性注入并重启依赖它的全部模块；验证用 11 × 7 = 77 格全矩阵而不抽样。</span><span class="en">Single-node k3s, with the single point of failure written into the plan rather than hidden; Argo CD apply-only in batches behind five hard stop conditions. CI became the only source of images, so a rollback is a one-line tag change. After an incident I set two rules: when a shared credential changes, inject it into and restart every module that depends on it in one go; and verify the full 11 × 7 = 77-cell matrix instead of sampling.</span></p></li>
           <li><b><span class="zh">验证</span><span class="en">Proof</span></b><p><span class="zh">access log 从 1,313 万行降到 71.2 万行，告警有效覆盖 64/64。生产 15 天探针可用性 99.9975%，7 天 331 万真实请求；100 并发压测整体 p95 50 ms。在与生产同机同配置的预发环境做极限压测，定位 project 服务 CPU 打满，2 核扩到 6 核后 84 → 205 req/s，p95 2.6 s → 0.85 s。</span><span class="en">Access logs fell from 13.13 M to 0.712 M lines, with 64/64 effective alert coverage. In production: 99.9975% availability over a 15-day probe and 3.31 M real requests in 7 days; a 100-user load test ran at 50 ms p95. A stress test in pre-production, on the same host and configuration, found the project service CPU-bound; going from 2 to 6 cores took it from 84 to 205 req/s and p95 from 2.6 s to 0.85 s.</span></p></li>
         </ol>
         <details class="case-more"><summary><span class="zh">约束与考虑过的方案</span><span class="en">Constraint and the options considered</span></summary>
@@ -280,7 +281,7 @@
           <p class="fig-say" aria-hidden="true"></p>
           <div class="fig-stage" style="--ar:16/7;--ar-m:4/5.4"><canvas aria-hidden="true"></canvas></div>
           <p class="fig-code"><span class="fig-code-k"><span class="zh">修复：每个算力容器</span><span class="en">Fix, in every compute container:</span></span> <code>OPENBLAS_NUM_THREADS</code> <code>OMP_NUM_THREADS</code> <code>MKL_NUM_THREADS</code> <code>NUMEXPR_NUM_THREADS</code> <span class="zh">显式设置，</span><span class="en">set explicitly;</span> <code>ulimits.nproc</code> <span class="zh">放开</span><span class="en">raised</span></p>
-          <figcaption class="fig-note" id="fig-cores-cap"><span class="zh">同一套镜像，16 核验证机全绿；32 核现场机器上 OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。修复是给所有算力容器显式钉死线程数并放开 nproc。核数与重启次数取自现场记录，线程条与上限线的高度为示意。</span><span class="en">The same images: all green on a 16-core test machine; on the 32-core machine on site, OpenBLAS and OMP started a thread per core, hit the nproc limit, and three Python services restarted 60+ times. The fix pins thread counts in every compute container and raises nproc. Core counts and restarts come from the field record; thread-bar and limit heights are illustrative.</span></figcaption>
+          <figcaption class="fig-note" id="fig-cores-cap"><span class="zh">同一套镜像，16 核验证机全绿；32 核现场机器上 OpenBLAS / OMP 按核数起线程，撞上 nproc 上限，三个 Python 服务重启 60+ 次。这次的修复是给所有算力容器显式钉死线程数，并放开该部署的 nproc 限制。核数与重启次数取自现场记录，线程条与上限线的高度为示意。</span><span class="en">The same images: all green on a 16-core test machine; on the 32-core machine on site, OpenBLAS and OMP started a thread per core, hit the nproc limit, and three Python services restarted 60+ times. This case's fix pinned thread counts in every compute container and raised the nproc limit for that deployment. Core counts and restarts come from the field record; thread-bar and limit heights are illustrative.</span></figcaption>
         </figure>
         <ol class="notes notes-main">
           <li><b><span class="zh">取舍</span><span class="en">Decision</span></b><p><span class="zh">冻结六个仓的基线 SHA，先在与客户同款 OS 的鲲鹏实机上真装。验证机 16 核全绿，到了客户现场的 32 核机器上，三个 Python 服务重启 60+ 次：OpenBLAS / OMP 按核数起线程，撞上 nproc 上限。于是给所有算力容器钉死线程数，并把“验证机与客户机同规格，核数也要对齐”写进规范。我的判断规则是：同类组件里只有一个配了某参数，往往是过去事故的遗迹，应推广到全部。</span><span class="en">Froze the baseline SHA of six repositories and did a real install on a Kunpeng machine running the customer's OS. The 16-core test machine was all green; on the customer's 32-core machine three Python services restarted 60+ times, because OpenBLAS / OMP start a thread per core and hit the nproc limit. So every compute container got pinned thread counts, and "the test machine matches the customer's, core count included" became a team rule. My rule of thumb: when only one of a family of components sets a parameter, it is usually the scar of an old incident, and should be applied to all of them.</span></p></li>
@@ -345,7 +346,7 @@
         <div class="arch-layer" data-layer="CLIENTS">
           <span class="layer-name mono"><span class="zh">入口</span><span class="en">CLIENTS</span></span>
           <button type="button" class="arch-node" data-node="web"><b><span class="zh">Web 主前端</span><span class="en">Web app</span></b><small>Vue 3&nbsp;· TS</small></button>
-          <button type="button" class="arch-node" data-node="tools"><b><span class="zh">标注工具矩阵</span><span class="en">Annotation tools</span></b><small>21 tools&nbsp;· 10 modalities</small></button>
+          <button type="button" class="arch-node" data-node="tools"><b><span class="zh">标注工具矩阵</span><span class="en">Annotation tools</span></b><small>21 entries&nbsp;· 10 modalities</small></button>
           <button type="button" class="arch-node" data-node="desktop"><b><span class="zh">桌面端</span><span class="en">Desktop</span></b><small>Electron&nbsp;· Rust</small></button>
         </div>
         <div class="arch-layer" data-layer="EDGE">
@@ -406,7 +407,7 @@
         <div class="heat-legend mono" aria-hidden="true"><span class="zh">少</span><span class="en">less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><i class="l5"></i><span class="zh">多</span><span class="en">more</span></div>
       </div>
       <div class="heatmap-scroll"><div id="heatmap" class="heatmap" data-start="2025-09-01" data-days="0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,1,0,0,5,0,0,0,2,0,1,7,0,0,0,4,0,0,1,0,0,0,0,0,0,0,1,0,2,0,13,17,9,0,0,0,0,7,10,2,0,0,0,2,0,2,6,0,0,12,19,4,5,6,0,0,5,2,20,6,10,0,0,0,3,4,11,0,0,0,3,19,18,14,17,0,9,11,13,7,9,0,0,0,30,7,7,14,6,0,0,5,10,0,12,6,0,0,10,18,5,11,9,0,0,3,13,6,0,0,0,2,14,32,15,34,8,0,0,31,29,11,18,13,0,0,0,24,8,7,5,0,18,7,5,8,21,26,8,1,7,32,59,23,15,3,2,20,20,10,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,2,23,10,7,27,19,0,0,60,74,70,28,38,0,22,72,57,70,35,22,0,0,21,32,72,21,22,6,5,37,18,18,48,8,12,0,0,28,40,0,36,11,0,1,1,25,24,15,0,0,23,13,22,5,9,0,0,29,0,0,2,0,0,0,0,0,34,5,0,0,5,0,2,3,0,0,0,0,0,1,7,13,42,30,66,72,67,70,43,53,0,0,12,23,3,25,31,0,0,0,3,12,14,52,9,7,28,16,11,20,24,4,0,25,28,25,69,32,5,10,17,15,10,33,5,24,42,24,5,71,66,45,49,70,56,110,75,26,28,7,33,113,45,61,81,56,28,41,22,25,55,42,6,19,21,12,25,21,26,27,6,0,6,10,1,5,16,7,19,23,92,84,88,186,54,36,38,70,87,54,25,25,60,15" role="group" aria-label="2025-09 至 2026-08 每日提交热力图，峰值月 2026-07；方向键逐日浏览 / Daily commit heatmap, Sep 2025 to Aug 2026, peaking in July 2026; use arrow keys to move between days"></div></div>
-      <p class="heat-note"><span class="zh">由本地 git 按作者日期重算、跨分支按 hash 去重。春节那两周是空的；3 月、7 月、8 月三个峰值对应 QApex 拆分独立部署、可观测与能力平台、具身数据线与信创交付。</span><span class="en">Recomputed from local git by author date, deduplicated by hash across branches. The empty fortnight is Chinese New Year; the March, July and August peaks line up with splitting out QApex, observability and the capability platform, and the embodied-data line plus on-prem ARM64 delivery.</span></p>
+      <p class="heat-note"><span class="zh">每格为本地 git 按作者日期的逐日重算，用来看节奏；全年总数以上方统计为准。春节那两周是空的；3 月、7 月、8 月三个峰值对应 QApex 拆分独立部署、可观测与能力平台、具身数据线与信创交付。</span><span class="en">Each cell is a per-day recount from local git by author date, shown for rhythm; the yearly total above is the reference figure. The empty fortnight is Chinese New Year; the March, July and August peaks line up with splitting out QApex, observability and the capability platform, and the embodied-data line plus on-prem ARM64 delivery.</span></p>
     </figure>
 
     <ol class="milestones" aria-label="里程碑 / Milestones">

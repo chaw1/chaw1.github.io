@@ -229,7 +229,7 @@
       kicker: 'CLIENTS / ANNOTATION',
       title: ['标注工具矩阵', 'Annotation tool suite'],
       body: ['图像、文本、音频、视频、点云、医学、时序、具身等 10 类模态的标注工具，以微前端方式挂载，React 与 Vue 双栈各自独立部署。点云工具在生产真机上承载百万级点。', 'Annotation tools for ten modalities, from images and text to point clouds, medical imaging, time series and embodied data, mounted as micro-frontends with React and Vue shipped independently. In production, the point-cloud tool handles frames of over a million points.'],
-      facts: [[['标注工具 / 模态', 'Tools / modalities'], '21 / 10'], [['118 万点首帧', 'First frame, 1.18 M points'], '≤ 1.4 s', P], [['拖动帧率', 'Orbit frame rate'], '119–120 FPS', P]]
+      facts: [[['工具入口 / 模态（含占位入口）', 'Tool entries / modalities (incl. placeholders)'], '21 / 10'], [['118 万点首帧', 'First frame, 1.18 M points'], '≤ 1.4 s', P], [['拖动帧率', 'Orbit frame rate'], '119–120 FPS', P]]
     },
     desktop: {
       kicker: 'CLIENTS / DESKTOP',
@@ -387,6 +387,11 @@
     const fromHash = tabs.find((tab) => `#${tab.getAttribute('aria-controls')}` === window.location.hash);
     selectTab(fromHash || tabs[0]);
     selectTab.ready = true;
+    // Back / forward and pasted links: keep the open case in step with the URL.
+    window.addEventListener('hashchange', () => {
+      const tab = tabs.find((x) => `#${x.getAttribute('aria-controls')}` === window.location.hash);
+      if (tab && tab.getAttribute('aria-selected') !== 'true') selectTab(tab);
+    });
   }
   // Capability evidence links open the matching case.
   $$('[data-case]').forEach((link) => link.addEventListener('click', (e) => {

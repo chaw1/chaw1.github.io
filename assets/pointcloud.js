@@ -426,8 +426,9 @@
     draw(now);
     raf = requestAnimationFrame(loop);
   }
+  let userPaused = false;
   function start() {
-    if (running || reduced()) { draw(performance.now()); return; }
+    if (running || reduced() || userPaused) { draw(performance.now()); return; }
     running = true; last = 0; frames = 0; fpsStart = 0;
     raf = requestAnimationFrame(loop);
   }
@@ -437,6 +438,16 @@
     if (fpsEl) fpsEl.textContent = reduced() ? '—' : fpsEl.textContent;
   }
 
+  // A visible pause control; dragging still works while paused.
+  const toggle = document.getElementById('scan-toggle');
+  function syncToggle() {
+    if (!toggle) return;
+    toggle.hidden = reduced();
+    toggle.setAttribute('aria-pressed', String(userPaused));
+    toggle.classList.toggle('is-paused', userPaused);
+  }
+  if (toggle) toggle.addEventListener('click', () => { userPaused = !userPaused; if (userPaused) stop(); else if (visible) start(); syncToggle(); });
+
   let visible = true;
   if ('IntersectionObserver' in window) {
     new IntersectionObserver((entries) => {
@@ -445,12 +456,13 @@
     }, { threshold: 0.05 }).observe(figure);
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else if (visible) start(); });
-  if (motionQuery && motionQuery.addEventListener) motionQuery.addEventListener('change', () => { stop(); start(); });
+  if (motionQuery && motionQuery.addEventListener) motionQuery.addEventListener('change', () => { stop(); start(); syncToggle(); });
   canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); stop(); figure.classList.add('no-webgl'); });
 
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
   else window.addEventListener('resize', resize);
   resize();
+  syncToggle();
   start();
   requestScan((points) => {
     if (gl.isContextLost()) return;

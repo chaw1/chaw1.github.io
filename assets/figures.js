@@ -55,6 +55,20 @@
     if (o.alpha != null) ctx.globalAlpha = 1;
     return ctx.measureText(s).width;
   }
+  // Wrap a string to maxW (CJK breaks anywhere, Latin at spaces); returns the y below the last line.
+  function wrapText(ctx, str, x, y, maxW, lineH, o = {}) {
+    ctx.font = `${o.weight || 400} ${o.size || 11}px ${o.font || MONO}`;
+    const lines = []; let line = '';
+    const tokens = str.match(/[\u2E80-\u9FFF\uFF00-\uFFEF]|[^\s\u2E80-\u9FFF\uFF00-\uFFEF]+|\s+/g) || [];
+    tokens.forEach((tk) => {
+      const next = line + tk;
+      if (line && ctx.measureText(next.trimEnd()).width > maxW) { lines.push(line.trimEnd()); line = tk.trimStart(); }
+      else line = next;
+    });
+    if (line.trim()) lines.push(line.trimEnd());
+    lines.forEach((ln, i) => text(ctx, ln, x, y + i * lineH, o));
+    return y + lines.length * lineH;
+  }
   function chip(ctx, s, x, y, fg, bg, o = {}) {
     ctx.font = `600 ${o.size || 10.5}px ${MONO}`;
     const w = ctx.measureText(s).width + 12;
@@ -158,7 +172,7 @@
     function syncToggle() {
       if (!toggle) return;
       const done = t >= spec.duration;
-      toggle.hidden = reduced();
+      toggle.hidden = reduced() || (!playing && t >= spec.duration);
       toggle.innerHTML = playing
         ? `<i class="icon i-pause" aria-hidden="true"></i><span class="zh">暂停</span><span class="en">Pause</span>`
         : `<i class="icon i-play" aria-hidden="true"></i><span class="zh">${done ? '从头播放' : '继续'}</span><span class="en">${done ? 'Play again' : 'Continue'}</span>`;
@@ -183,14 +197,20 @@
       if (reduced()) { t = spec.duration; pause(); render(); return; }
       t = from; run();
     }
+    function reveal() {
+      const r = stage.getBoundingClientRect();
+      const vis = Math.max(0, Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 72));
+      if (vis < Math.min(r.height, window.innerHeight) * 0.5) stage.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' });
+    }
     function seek(i) {
+      reveal();
       // Play just that chapter and hold on its last, settled frame.
       const end = i + 1 < chapters.length ? chapters[i + 1].at - 1 : spec.duration;
       started = true;
       if (reduced()) { t = end; pause(); render(); return; }
       t = chapters[i].at; stopAt = end; run();
     }
-    if (replay) replay.addEventListener('click', () => play(0));
+    if (replay) replay.addEventListener('click', () => { reveal(); play(0); });
     if (motionQuery && motionQuery.addEventListener) {
       motionQuery.addEventListener('change', () => { if (reduced()) { pause(); t = spec.duration; render(); } syncToggle(); });
     }
@@ -215,7 +235,7 @@
           if (!started) play(0);
           else if (playing && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
         });
-      }, { threshold: 0.35 }).observe(stage);
+      }, { threshold: 0.15 }).observe(stage);
     } else { t = spec.duration; started = true; }
     if (reduced()) { t = spec.duration; started = true; }
 
@@ -682,7 +702,7 @@
       const cell = Math.min(colW / gcols, gridH / grows); const gap = Math.max(1, cell * 0.16); const s = cell - gap;
       const runs = [
         { x: pad, y: gy0, zh: '验收一 · 生产', en: 'Acceptance 1 · production', hole: -1, sweep0: C0, show: D0 },
-        { x: wide ? pad * 2 + colW : pad, y: wide ? gy0 : gy0 + gridH + 46, zh: '验收二 · 故意少传一片（位置示意）', en: 'Acceptance 2 · one part withheld (position illustrative)', hole: HOLE, sweep0: G0, show: G0 - 200 }
+        { x: wide ? pad * 2 + colW : pad, y: wide ? gy0 : gy0 + gridH + 46, zh: wide ? '验收二 · 故意少传一片（位置示意）' : '验收二 · 少传一片（示意）', en: wide ? 'Acceptance 2 · one part withheld (position illustrative)' : 'Acceptance 2 · one part withheld', hole: HOLE, sweep0: G0, show: G0 - 200 }
       ];
       runs.forEach((run, ri) => {
         const vis = win(t, run.show, run.show + 300);
@@ -747,7 +767,7 @@
       const labW = wide ? 62 : 44;
       const sideW = wide ? Math.min(300, w * 0.36) : 0;
       const gw = w - pad * 2 - labW - sideW - (wide ? 28 : 0);
-      const gh = h - pad - 34 - (wide ? 26 : 70);
+      const gh = h - pad - 34 - (wide ? 26 : 190);
       const cell = Math.min(gw / Q, gh / R, 40); const gap = Math.max(2, cell * 0.14); const s = cell - gap;
       const gx = pad + labW; const gy = pad + 30;
       for (let c = 0; c < Q; c += 1) text(ctx, `T${c + 1}`, gx + c * cell + s / 2, gy - 10, { size: 10, align: 'center', color: c === 0 && t < V0 ? C.blue : C.quiet, weight: c === 0 && t < V0 ? 600 : 400 });
@@ -791,10 +811,10 @@
         text(ctx, L('当时抽查的范围', 'what was sampled'), gx + s / 2, gy + R * cell + 14, { size: 10, color: C.blue, align: 'center' });
       }
       // Side panel.
-      const sx = wide ? Math.min(w - pad - sideW, gx + Q * cell + 56) : pad; let sy = wide ? gy + 4 : gy + R * cell + 18;
+      const sx = wide ? Math.min(w - pad - sideW, gx + Q * cell + 56) : pad; let sy = wide ? gy + 4 : gy + R * cell + 40;
       const line = (k2, v, color, big) => {
         if (wide) { text(ctx, k2, sx, sy, { size: 10.5 }); text(ctx, v, sx, sy + 24, { size: big ? 22 : 14, color, weight: 650, font: SANS }); sy += big ? 52 : 44; }
-        else { const a = text(ctx, `${k2} `, sx, sy, { size: 10 }); text(ctx, v, sx + a, sy, { size: 11, color, weight: 600 }); sy += 18; }
+        else { text(ctx, k2, sx, sy, { size: 10 }); sy = wrapText(ctx, v, sx, sy + 16, w - pad * 2, 16, { size: 11.5, color, weight: 600, font: SANS }) + 8; }
       };
       if (t < V0) {
         line(L('第一轮验证', 'First check'), L('1 个变量 × 11 个 Pod', '1 variable × 11 pods'), C.ink);
@@ -811,12 +831,12 @@
             text(ctx, L('而抽查恰好没看这一列。', 'in a column the sample never read.'), sx, cym + 40, { size: 10.5, color: C.muted });
             void ty;
           } else {
-            text(ctx, L('上传链路 503：抽查没看到的那一格', 'upload path 503: the cell the sample skipped'), sx, sy + 4, { size: 10.5, color: C.red, weight: 600 });
+            wrapText(ctx, L('上传链路 503：抽查没看到的那一格', 'upload path 503: the cell the sample skipped'), sx, sy + 4, w - pad * 2, 16, { size: 11, color: C.red, weight: 600, font: SANS });
           }
         }
       } else {
         line(L('当时', 'Then'), L('抽查 11 / 77 格报绿，漏掉的一格导致上传 503', 'sampled 11 / 77 cells, green; the missed cell broke upload with a 503'), C.red);
-        line(L('之后的规则', 'The rule since'), L('注入全量 · 重启全量 · 逐格核对', 'inject all · restart all · check every cell'), C.ink);
+        line(L('之后的规则', 'The rule since'), L('依赖它的模块一次性注入、重启 · 逐格核对', 'inject and restart every dependent at once · check every cell'), C.ink);
         line(L('已核对', 'Cells checked'), `${checked} / 77`, checked === 77 ? C.green : C.blue, true);
       }
     }
@@ -826,7 +846,7 @@
       chapters: [
         { at: 0, zh: '抽查', en: 'Sample', sayZh: '发版后第一轮验证：每个 Pod 只查了 1 个变量，11 格全绿，就报了通过。', sayEn: 'The first post-release check read one variable per pod: 11 green cells, reported as a pass.' },
         { at: F0, zh: '漏掉的一格', en: 'The gap', sayZh: '用户侧上传报 503：一个模块少了一个 token。它在 77 格里，不在抽查的 11 格里。', sayEn: 'Users hit a 503 on upload: one module was missing one token. It sat in the 77, not in the 11 that were sampled.' },
-        { at: V0, zh: '全矩阵', en: 'Full matrix', sayZh: '之后的规则：共享凭证一次性注入全部、重启全部，11 × 7 = 77 格逐格核对，不抽样。', sayEn: 'The rule since: inject a shared credential everywhere, restart everything, and check all 11 × 7 = 77 cells. No sampling.' }
+        { at: V0, zh: '全矩阵', en: 'Full matrix', sayZh: '之后的规则：改共享凭证时，一次性注入并重启依赖它的全部模块，11 × 7 = 77 格逐格核对，不抽样。', sayEn: 'The rule since: when a shared credential changes, inject it into and restart every module that depends on it at once, and check all 11 × 7 = 77 cells. No sampling.' }
       ]
     });
   }
@@ -1055,7 +1075,7 @@
       chapters: [
         { at: 0, zh: '验证机 16 核', en: '16-core test box', sayZh: '与客户同款 OS 的验证机，16 核：每个库按核数起线程，总数还在 nproc 上限以内，整套平台全绿。', sayEn: 'A test machine on the customer’s OS, 16 cores: each library starts a thread per core, the total stays under the nproc limit, and the platform is green.' },
         { at: B0, zh: '现场 32 核', en: '32 cores on site', sayZh: '同一套镜像到了 32 核的客户机器，线程数跟着翻倍，越过 nproc 上限，三个 Python 服务重启 60+ 次。', sayEn: 'The same images on the customer’s 32-core machine: thread counts double, cross the nproc limit, and three Python services restart 60+ times.' },
-        { at: F0, zh: '钉死线程数', en: 'Pin the threads', sayZh: '所有算力容器显式设置线程数、放开 nproc。从此验证机必须与客户机同规格，核数也要对齐。', sayEn: 'Every compute container gets explicit thread counts and a raised nproc. Test machines must now match the customer’s, core count included.' }
+        { at: F0, zh: '钉死线程数', en: 'Pin the threads', sayZh: '这次的修复：所有算力容器显式设置线程数，并放开该部署的 nproc 限制。从此验证机必须与客户机同规格，核数也要对齐。', sayEn: 'This case\u2019s fix: explicit thread counts in every compute container and a raised nproc limit for that deployment. Test machines must now match the customer\u2019s, core count included.' }
       ]
     });
   }
@@ -1126,7 +1146,8 @@
       bar(ctx, X, y1, W, bh, PB, 28, L('改前', 'Before'), wide ? L('命中 51.0%', 'hit 51.0%') : null, C.amberInk, t >= 1500 ? PB.V.x : null, (PB.S.w + PB.T.w) * gb);
       if (t >= 1500) {
         const cx = X + PB.V.x * (W / MAX);
-        text(ctx, L('每轮都变，缓存在这里断开', 'changes every turn: the cache breaks here'), cx + 8, y1 - 10, { size: wide ? 10.5 : 9, color: C.red, weight: 600, alpha: win(t, 1500, 1800) });
+        if (wide) text(ctx, L('每轮都变，缓存在这里断开', 'changes every turn: the cache breaks here'), cx + 8, y1 - 10, { size: 10.5, color: C.red, weight: 600, alpha: win(t, 1500, 1800) });
+        else text(ctx, L('缓存在这里断开', 'cache breaks here'), Math.min(cx, w - pad), y1 - 8, { size: 9.5, color: C.red, weight: 600, align: 'right', alpha: win(t, 1500, 1800) });
       }
 
       // After: morphs out of the before layout during the reorder chapter.
