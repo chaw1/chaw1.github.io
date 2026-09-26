@@ -239,6 +239,7 @@ html:not(.js) .scan-fallback{display:grid}
 .fig-replay{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:6px 14px;background:transparent;border:1px solid #c6c9ce;color:var(--ink);font-size:12.5px;transition:border-color .2s,background .2s}
 .fig-replay:hover{border-color:var(--blue);background:rgba(34,85,238,.06)}
 .fig-replay .icon{width:14px;height:14px}
+.fig-replay{white-space:nowrap}
 .fig-say{font-size:14.5px;line-height:1.75;color:var(--ink);margin-top:10px;min-height:3.5em;max-width:880px}
 .fig-readout{font-size:11px;color:var(--quiet);margin-top:8px;min-height:1.7em}
 .fig-stage{position:relative;aspect-ratio:var(--ar,16/8);margin-top:10px}
@@ -477,6 +478,9 @@ html:not(.js) .scan-fallback{display:grid}
   .fig-chapters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px}
   .fig-chapters button{padding-top:8px}
   .fig-kicker{font-size:10px;letter-spacing:.1em}
+  .fig-head{flex-wrap:wrap}
+  .fig-head .fig-kicker{flex:1 0 100%;margin-bottom:4px}
+  .fig-replay{min-height:34px;padding:5px 12px;font-size:12px}
   .machine-rail{grid-template-columns:repeat(3,minmax(0,1fr))}
   .machine-log{font-size:11px;min-height:172px;max-height:172px}
   .loop{grid-template-columns:1fr}

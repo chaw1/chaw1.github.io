@@ -551,7 +551,11 @@
   }
 
   /* =====================================================================
-   * FIG.B — 310 presigned parts, a proxy that times out, and the completion guard.
+   * FIG.B — control flow and data flow, separated.
+   * Browser, backend and object storage. The old path pushes bytes through the
+   * backend and dies at the gateway's 60 s timeout. The new path asks the backend
+   * only for signatures; the bytes go straight to storage. Completion lists the
+   * prefix itself: 310 / 310 merges, 309 / 310 is refused. Both results stay.
    * ===================================================================== */
   function figUpload(el) {
     const PARTS = 310; const K = 6; const TOTAL = 237; const HOLE = 196;
@@ -563,116 +567,170 @@
     }
     const scale = TOTAL / Math.max(...slots);
     parts.forEach((p) => { p.start *= scale; p.end *= scale; });
-    const A0 = 200; const A1 = 1500; const D0 = 2100; const D1 = 6900; const S0 = 7100; const S1 = 8100; const M0 = 8900; const M1 = 9900;
-    const duration = 11000;
-    const AXIS = 250;
+    // Timeline (ms).
+    const P0 = 200; const P1 = 2600;            // old proxy path, cut at 60 s
+    const S0 = 2900; const S1 = 4100;           // signing round trip
+    const D0 = 4300; const D1 = 8900;           // direct upload, 237 s compressed
+    const C0 = 9100; const C1 = 10500;          // complete: list + verify, merge
+    const G0 = 10800; const G1 = 12400;         // second acceptance with a gap
+    const duration = 13400;
+    const simAt = (t) => win(t, D0, D1) * TOTAL;
 
     function draw(ctx, w, h, t) {
-      const wide = w >= 640;
-      const pad = wide ? 20 : 14;
-      // Lanes: proxy vs direct, on one time axis.
-      const labW = wide ? 132 : 62;
-      const lx = pad + labW; const lw = w - pad - lx - (wide ? 40 : 18);
-      const X = (sec) => lx + (sec / AXIS) * lw;
-      const laneY = [pad + 22, pad + 54];
-      const bh = 12;
-      text(ctx, wide ? L('① 经后端代理', '① Via the proxy') : L('① 代理', '① Proxy'), pad, laneY[0] + 4, { size: wide ? 11 : 10, color: C.ink });
-      text(ctx, wide ? L('③ 预签名直传', '③ Presigned direct') : L('③ 直传', '③ Direct'), pad, laneY[1] + 4, { size: wide ? 11 : 10, color: C.ink });
-      [0, 60, 120, 180, 240].forEach((sec) => {
-        ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X(sec) + 0.5, laneY[0] - 12); ctx.lineTo(X(sec) + 0.5, laneY[1] + 12); ctx.stroke();
-        text(ctx, `${sec} s`, X(sec), laneY[1] + 26, { size: 9.5, align: sec === 0 ? 'left' : 'center', color: C.faint });
-      });
-      [0, 1].forEach((j) => { ctx.fillStyle = C.line2; ctx.fillRect(lx, laneY[j] - bh / 2, lw, bh); });
-      const proxyS = easeOut(win(t, A0, A1)) * 60;
-      const cut = t >= A1;
-      ctx.fillStyle = cut ? alpha(C.red, 0.28) : C.faint; ctx.fillRect(lx, laneY[0] - bh / 2, X(proxyS) - lx, bh);
-      if (cut) {
-        cross(ctx, X(60), laneY[0], 5, C.red, 2);
-        text(ctx, wide ? L('网关 60 s 超时，连接被掐断', 'gateway timeout at 60 s, connection cut') : L('60 s 超时', '60 s timeout'), X(60) + 12, laneY[0] + 4, { size: 10.5, color: C.red, alpha: win(t, A1, A1 + 300) });
-      }
-      const simS = win(t, D0, D1) * TOTAL;
-      ctx.fillStyle = C.blue; ctx.fillRect(lx, laneY[1] - bh / 2, X(simS) - lx, bh);
-      if (simS >= TOTAL) text(ctx, '237 s', X(TOTAL) + 6, laneY[1] + 4, { size: 10.5, color: C.blue, weight: 600 });
+      const wide = w >= 700; const pad = wide ? 22 : 14;
+      /* --- actors --- */
+      const topH = wide ? h * 0.5 : h * 0.46;
+      const ax = wide ? [pad + 80, w / 2, w - pad - 90] : [pad + 44, w / 2, w - pad - 46];
+      const ay = wide ? 58 : 50;
+      const boxW = wide ? 150 : 84; const boxH = wide ? 50 : 44;
+      const actor = (x, zh, en, subZh, subEn, color) => {
+        ctx.fillStyle = '#fff'; rr(ctx, x - boxW / 2, ay - boxH / 2, boxW, boxH, 4); ctx.fill();
+        ctx.strokeStyle = color || C.line; ctx.lineWidth = 1.2; rr(ctx, x - boxW / 2 + 0.5, ay - boxH / 2 + 0.5, boxW - 1, boxH - 1, 4); ctx.stroke();
+        text(ctx, L(zh, en), x, ay - 2, { size: wide ? 12.5 : 11, color: C.ink, weight: 650, align: 'center', font: SANS });
+        text(ctx, L(subZh, subEn), x, ay + 14, { size: wide ? 10 : 9, color: C.quiet, align: 'center' });
+      };
+      actor(ax[0], '浏览器', 'Browser', '约 10 GB 压缩包', '~10 GB archive');
+      actor(ax[1], '后端', 'Backend', '签名 · 校验', 'sign · verify', t >= P1 - 200 && t < S0 ? C.red : null);
+      actor(ax[2], '对象存储', 'Object storage', 'staging/part-*', 'staging/part-*');
+      const edge = (i, side) => ({ x: ax[i] + side * boxW / 2, y: ay });
 
-      // Part grid.
-      const gy0 = laneY[1] + 62;
-      const cols = wide ? 31 : 20; const rows = Math.ceil(PARTS / cols);
-      const sideW = wide ? 190 : 0;
-      const gw = w - pad * 2 - sideW - (wide ? 24 : 0); const gh = h - gy0 - (wide ? 34 : 66);
-      const cell = Math.min(gw / cols, gh / rows); const gap = Math.max(1.5, cell * 0.16); const s = cell - gap;
-      const gx0 = pad;
-      text(ctx, L('分片 · 每片 32 MiB · 固定编号的 staging key', 'parts · 32 MiB each · fixed, numbered staging keys'), gx0, gy0 - 10, { size: 10.5 });
-      const second = t >= M0 - 500;
-      const fadeSecond = win(t, M0 - 500, M0 - 100);
-      const sweepA = Math.floor(win(t, S0, S1) * PARTS);
-      const sweepB = Math.floor(win(t, M0, M1) * PARTS);
-      let doneN = 0;
-      for (let i = 0; i < PARTS; i += 1) {
-        const x = gx0 + (i % cols) * cell; const y = gy0 + Math.floor(i / cols) * cell;
-        const p = parts[i];
-        if (second) {
-          const isHole = i === HOLE;
-          if (isHole) {
-            const hit = t >= M0 && sweepB >= HOLE;
-            ctx.fillStyle = hit ? C.redSoft : '#fff'; rr(ctx, x, y, s, s, 1.5); ctx.fill();
-            ctx.strokeStyle = hit ? C.red : C.faint; ctx.lineWidth = hit ? 1.6 : 1; ctx.setLineDash(hit ? [] : [2, 2]); rr(ctx, x + 0.5, y + 0.5, s - 1, s - 1, 1.5); ctx.stroke(); ctx.setLineDash([]);
+      // Paths: proxy (through the backend, above), direct (below, bypassing it), signing (between browser and backend).
+      const proxyA = [edge(0, 1), edge(1, -1)]; const proxyB = [edge(1, 1), edge(2, -1)];
+      const directY = ay + (wide ? 92 : 78);
+      const directPath = (u) => {
+        // browser bottom → down → across → up into storage bottom
+        const x0 = ax[0]; const x1 = ax[2]; const yb = ay + boxH / 2;
+        const segs = [[x0, yb, x0, directY], [x0, directY, x1, directY], [x1, directY, x1, yb]];
+        const lens = segs.map(([a, b, c, d]) => Math.hypot(c - a, d - b)); const tot = lens.reduce((s, v) => s + v, 0);
+        let dist = u * tot;
+        for (let i = 0; i < 3; i += 1) { if (dist <= lens[i]) { const [a, b, c, d] = segs[i]; const q = dist / lens[i]; return { x: lerp(a, c, q), y: lerp(b, d, q) }; } dist -= lens[i]; }
+        return { x: x1, y: yb };
+      };
+      // static rails
+      const proxyCut = t >= P1;
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = proxyCut ? alpha(C.red, 0.35) : C.line; ctx.setLineDash(proxyCut ? [3, 3] : []);
+      ctx.beginPath(); ctx.moveTo(proxyA[0].x, ay); ctx.lineTo(proxyA[1].x, ay); ctx.moveTo(proxyB[0].x, ay); ctx.lineTo(proxyB[1].x, ay); ctx.stroke(); ctx.setLineDash([]);
+      if (wide) text(ctx, L('① 旧路径：字节经后端转发', '① old path: bytes relayed by the backend'), (ax[1] + ax[2]) / 2, ay - 12, { size: wide ? 10.5 : 9, color: proxyCut ? C.red : C.muted, align: 'center' });
+      const directOn = t >= D0 - 200;
+      ctx.strokeStyle = directOn ? alpha(C.blue, 0.35) : C.line2; ctx.lineWidth = directOn ? 2 : 1.2;
+      ctx.beginPath(); ctx.moveTo(ax[0], ay + boxH / 2); ctx.lineTo(ax[0], directY); ctx.lineTo(ax[2], directY); ctx.lineTo(ax[2], ay + boxH / 2); ctx.stroke();
+      text(ctx, wide ? L('③ 新路径：浏览器按片直传，不经后端', '③ new path: parts go straight from the browser, not through the backend') : L('③ 直传，不经后端', '③ direct, bypassing the backend'), w / 2, directY + 16, { size: wide ? 10.5 : 9, color: directOn ? C.blue : C.quiet, align: 'center' });
+
+      // ① proxy packets, then the cut.
+      if (t >= P0 && t < P1 + 600) {
+        const n = 14;
+        for (let k = 0; k < n; k += 1) {
+          const u = ((t - P0) / 900 + k / n) % 1;
+          if (t >= P1) break;
+          const total = (proxyA[1].x - proxyA[0].x) + (proxyB[1].x - proxyB[0].x);
+          let d = u * total; let x;
+          if (d < proxyA[1].x - proxyA[0].x) x = proxyA[0].x + d; else { d -= proxyA[1].x - proxyA[0].x; x = proxyB[0].x + d; if (x > ax[1] + boxW / 2 && x < ax[1] - boxW / 2) continue; }
+          ctx.fillStyle = C.faint; ctx.beginPath(); ctx.arc(x, ay, 2, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      if (t >= P0 && t < S0) {
+        const secs = Math.min(60, Math.round(win(t, P0, P1) * 60));
+        text(ctx, `${secs} s`, ax[1], ay - boxH / 2 - 10, { size: 12, color: secs >= 60 ? C.red : C.muted, weight: 650, align: 'center' });
+      }
+      if (proxyCut) {
+        const cx = (ax[1] + boxW / 2 + ax[2] - boxW / 2) / 2;
+        cross(ctx, cx, ay, 5, C.red, 2);
+        text(ctx, wide ? L('网关 60 s 超时，连接被掐断', 'gateway timeout at 60 s: connection cut') : L('60 s 超时', '60 s timeout'), cx, wide ? ay + 18 : ay - boxH / 2 - 8, { size: wide ? 10.5 : 9, color: C.red, align: 'center', alpha: win(t, P1, P1 + 300) });
+      }
+      // ② signing round trip: a thin dashed request and a response carrying 310 URLs.
+      if (t >= S0) {
+        const q = easeInOut(win(t, S0, S0 + 500)); const r = easeInOut(win(t, S0 + 600, S1));
+        const yq = ay + 12; const x0 = ax[0] + boxW / 2; const x1 = ax[1] - boxW / 2;
+        ctx.setLineDash([3, 3]); ctx.lineWidth = 1; ctx.strokeStyle = C.ink;
+        ctx.beginPath(); ctx.moveTo(x0, yq); ctx.lineTo(lerp(x0, x1, q), yq); ctx.stroke();
+        if (r > 0) { ctx.strokeStyle = C.green; ctx.beginPath(); ctx.moveTo(x1, yq + 8); ctx.lineTo(lerp(x1, x0, r), yq + 8); ctx.stroke(); }
+        ctx.setLineDash([]);
+        text(ctx, wide ? L('② 只要签名：每片一个预签名 URL', '② signatures only: one presigned URL per part') : L('② 只要签名', '② sign only'), (x0 + x1) / 2, yq + 24, { size: wide ? 10 : 9, color: C.muted, align: 'center', alpha: q });
+      }
+      // ③ direct upload packets.
+      const sim = simAt(t);
+      if (t >= D0 && t < D1 + 400) {
+        parts.forEach((p) => {
+          if (sim < p.start || sim > p.end + 6) return;
+          const u = clamp((sim - p.start) / (p.end - p.start + 6));
+          const a = directPath(u); const b = directPath(Math.max(0, u - 0.035));
+          ctx.strokeStyle = C.blue; ctx.lineWidth = 3; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(a.x, a.y); ctx.stroke();
+        });
+      }
+      if (t >= D0) {
+        text(ctx, `${Math.round(sim)} s`, ax[0] - (wide ? 0 : 0), directY + (wide ? 34 : 30), { size: wide ? 16 : 13, color: C.ink, weight: 650, font: SANS, align: 'center' });
+        text(ctx, L('时间压缩示意', 'time compressed'), ax[0], directY + (wide ? 50 : 44), { size: 9.5, color: C.quiet, align: 'center' });
+        if (sim >= TOTAL) text(ctx, '41.8 MiB/s', ax[2], directY + (wide ? 34 : 30), { size: wide ? 16 : 13, color: C.blue, weight: 650, font: SANS, align: 'center' });
+      }
+      // ④ complete: the backend lists the prefix itself — its own lane, below the old path.
+      if (t >= C0) {
+        const q = win(t, C0, C0 + 400);
+        const x0 = ax[1]; const x1 = ax[2]; const y0 = ay + boxH / 2; const yl = ay + (wide ? 50 : 44);
+        ctx.setLineDash([3, 3]); ctx.strokeStyle = alpha(C.green, q); ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, yl); ctx.lineTo(x1 - boxW / 2 - 8, yl); ctx.lineTo(x1 - boxW / 2 - 8, y0 - 6); ctx.stroke(); ctx.setLineDash([]);
+        text(ctx, wide ? L('④ complete：后端自己列目录，核对片数与字节', '④ complete: the backend lists the prefix, checks parts and bytes') : L('④ 列目录核对', '④ list & check'), (x0 + x1) / 2 - boxW / 4, yl + 14, { size: wide ? 10 : 9, color: C.green, align: 'center', alpha: q });
+      }
+
+      /* --- two acceptance runs, side by side, both kept --- */
+      const gy0 = directY + (wide ? 84 : 78);
+      void topH;
+      const colW = wide ? (w - pad * 3) / 2 : w - pad * 2;
+      const gcols = wide ? 31 : 31; const grows = Math.ceil(PARTS / gcols);
+      const gridH = wide ? h - gy0 - 40 : (h - gy0 - 90) / 2;
+      const cell = Math.min(colW / gcols, gridH / grows); const gap = Math.max(1, cell * 0.16); const s = cell - gap;
+      const runs = [
+        { x: pad, y: gy0, zh: '验收一 · 生产', en: 'Acceptance 1 · production', hole: -1, sweep0: C0, show: D0 },
+        { x: wide ? pad * 2 + colW : pad, y: wide ? gy0 : gy0 + gridH + 46, zh: '验收二 · 故意少传一片（位置示意）', en: 'Acceptance 2 · one part withheld (position illustrative)', hole: HOLE, sweep0: G0, show: G0 - 200 }
+      ];
+      runs.forEach((run, ri) => {
+        const vis = win(t, run.show, run.show + 300);
+        ctx.globalAlpha = ri === 0 ? 1 : Math.max(0.35, vis);
+        text(ctx, L(run.zh, run.en), run.x, run.y - 8, { size: wide ? 10.5 : 9.5, color: C.muted });
+        const sweepEnd = run.sweep0 + 1000;
+        const swept = Math.floor(win(t, run.sweep0, sweepEnd) * PARTS);
+        for (let i = 0; i < PARTS; i += 1) {
+          const x = run.x + (i % gcols) * cell; const y = run.y + Math.floor(i / gcols) * cell;
+          let col = C.line2; let hole = false;
+          if (ri === 0) {
+            if (sim >= parts[i].end) col = C.blue; else if (sim >= parts[i].start && t >= D0) col = C.blueMid;
+            if (t >= run.sweep0 && i < swept) col = C.green;
+          } else if (t >= run.show) {
+            if (i === run.hole) hole = true; else col = t >= run.sweep0 && i < swept ? C.green : C.blue;
+          }
+          if (hole) {
+            const hit = t >= run.sweep0 && swept >= HOLE;
+            ctx.strokeStyle = hit ? C.red : C.faint; ctx.lineWidth = hit ? 1.5 : 1; ctx.setLineDash(hit ? [] : [2, 2]);
+            ctx.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1); ctx.setLineDash([]);
+            if (hit) { ctx.fillStyle = C.redSoft; ctx.fillRect(x + 1, y + 1, s - 2, s - 2); }
             continue;
           }
-          const checked = t >= M0 && i <= Math.min(sweepB, HOLE - 1);
-          ctx.fillStyle = checked ? C.greenMid : mix(C.blue, C.blueMid, fadeSecond); rr(ctx, x, y, s, s, 1.5); ctx.fill();
-          continue;
+          ctx.fillStyle = col; ctx.fillRect(x, y, s, s);
         }
-        if (simS >= p.end) {
-          doneN += 1;
-          const checked = t >= S0 && i <= sweepA;
-          ctx.fillStyle = checked ? mix(C.blue, C.green, clamp((t - S0 - (i / PARTS) * (S1 - S0)) / 180)) : C.blue;
-          rr(ctx, x, y, s, s, 1.5); ctx.fill();
-        } else if (simS >= p.start && t >= D0) {
-          const q = (simS - p.start) / (p.end - p.start);
-          ctx.fillStyle = C.blueSoft; rr(ctx, x, y, s, s, 1.5); ctx.fill();
-          ctx.save(); rr(ctx, x, y, s, s, 1.5); ctx.clip(); ctx.fillStyle = C.blue; ctx.fillRect(x, y, s * q, s); ctx.restore();
-        } else { ctx.fillStyle = C.line2; rr(ctx, x, y, s, s, 1.5); ctx.fill(); }
-      }
-      // Sweep cursor.
-      const sweeping = (t >= S0 && t < S1 + 100) ? sweepA : (t >= M0 && t < M1 && sweepB <= HOLE) ? sweepB : -1;
-      if (sweeping >= 0 && sweeping < PARTS) {
-        const x = gx0 + (sweeping % cols) * cell; const y = gy0 + Math.floor(sweeping / cols) * cell;
-        ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; rr(ctx, x - 1.5, y - 1.5, s + 3, s + 3, 2); ctx.stroke();
-      }
-
-      // Readouts.
-      const rx = wide ? w - pad - sideW : pad; const ry = wide ? gy0 + 4 : gy0 + rows * cell + 22;
-      const rows2 = [];
-      if (!second) {
-        rows2.push([L('已到分片', 'parts landed'), `${doneN} / ${PARTS}`, C.ink]);
-        rows2.push([L('耗时', 'elapsed'), t >= D0 ? `${Math.round(simS)} s` : '—', C.ink]);
-        rows2.push([L('平均吞吐', 'mean throughput'), simS >= TOTAL ? '41.8 MiB/s' : '—', C.blue]);
-      } else {
-        rows2.push([L('验收二', 'Acceptance 2'), L('故意少传一片（位置示意）', 'one part withheld (position illustrative)'), C.ink]);
-        rows2.push([L('列目录核对', 'prefix listing'), `${Math.min(sweepB + (sweepB >= HOLE ? 0 : 1), 309)} / ${PARTS}`, C.ink]);
-      }
-      if (wide) {
-        rows2.forEach(([k2, v, c2], j) => {
-          text(ctx, k2, rx, ry + j * 44, { size: 10.5 });
-          text(ctx, v, rx, ry + j * 44 + 22, { size: 18, color: c2, weight: 650, font: SANS });
-        });
-      } else {
-        let bx = rx;
-        rows2.forEach(([k2, v, c2]) => { bx += text(ctx, `${k2} `, bx, ry, { size: 10 }); bx += text(ctx, v, bx, ry, { size: 11, color: c2, weight: 600 }) + 12; });
-      }
-      const stampY = wide ? ry + rows2.length * 44 + 14 : ry + 26;
-      if (!second && t >= S1) chip(ctx, L('complete 通过 · 310 / 310', 'complete accepted · 310 / 310'), rx, stampY, C.green, C.greenSoft, { alpha: win(t, S1, S1 + 250) });
-      if (second && t >= M0 && sweepB >= HOLE) chip(ctx, L('拒绝 · 309 / 310，缺片', 'rejected · 309 / 310, gap'), rx, stampY, C.red, C.redSoft, { alpha: win(t, M0 + (HOLE / PARTS) * (M1 - M0), M0 + (HOLE / PARTS) * (M1 - M0) + 250) });
+        ctx.globalAlpha = 1;
+        // verdict chips
+        const cy = run.y + grows * cell + 18;
+        if (ri === 0) {
+          text(ctx, `${parts.filter((p) => sim >= p.end).length} / 310`, run.x, cy + 4, { size: wide ? 13 : 11.5, color: C.ink, weight: 650, font: SANS });
+          if (t >= C0 + 1000) chip(ctx, L('片数与字节一致 → 合并', 'parts and bytes match → merged'), run.x + colW, cy, C.green, C.greenSoft, { align: 'right', alpha: win(t, C0 + 1000, C0 + 1300) });
+        } else if (t >= run.show) {
+          const hit = t >= run.sweep0 + (HOLE / PARTS) * 1000;
+          text(ctx, hit ? '309 / 310' : `${Math.min(swept, 309)} / 310`, run.x, cy + 4, { size: wide ? 13 : 11.5, color: hit ? C.red : C.ink, weight: 650, font: SANS });
+          if (hit) chip(ctx, L('缺片 → 拒绝合并', 'gap → merge refused'), run.x + colW, cy, C.red, C.redSoft, { align: 'right', alpha: win(t, run.sweep0 + 400, run.sweep0 + 700) });
+        }
+      });
     }
 
     mount(el, {
       duration,
       draw,
       chapters: [
-        { at: 0, zh: '代理上传', en: 'Proxy', sayZh: '经后端代理上传时，网关 60 秒超时会直接掐断慢客户端。', sayEn: 'Uploading through the backend proxy, the gateway cuts slow clients off at its 60-second timeout.' },
-        { at: D0 - 100, zh: '分片直传', en: 'Direct', sayZh: '每片签一个 URL，浏览器直传对象存储：310 片 × 32 MiB，237 秒，零中断。', sayEn: 'One presigned URL per part, straight from the browser to object storage: 310 × 32 MiB parts in 237 s, no interruptions.' },
-        { at: S0, zh: 'complete 核对', en: 'Complete', sayZh: 'complete 不信会话记录，直接列目录，核对片数与总字节，全对才合并。', sayEn: 'Completion ignores session records: it lists the prefix and checks part count and total bytes before merging.' },
-        { at: M0 - 500, zh: '缺片守卫', en: 'Gap guard', sayZh: '第二次验收故意少传一片。列到缺口，服务端拒绝：309 / 310。', sayEn: 'The second acceptance run withholds one part. The listing finds the gap and the server refuses: 309 / 310.' }
+        { at: 0, zh: '旧路径', en: 'Old path', sayZh: '字节经后端转发，慢客户端撞上网关 60 秒超时，连接被掐断。', sayEn: 'Bytes relayed by the backend: slow clients hit the gateway’s 60-second timeout and are cut off.' },
+        { at: S0 - 100, zh: '只要签名', en: 'Sign', sayZh: '浏览器只向后端要签名：每片一个预签名 URL。后端不再经手文件字节。', sayEn: 'The browser asks the backend only for signatures, one presigned URL per part. The backend no longer touches the bytes.' },
+        { at: D0 - 100, zh: '直传', en: 'Direct', sayZh: '310 片 × 32 MiB 从浏览器直传对象存储：237 秒、平均 41.8 MiB/s、零中断。', sayEn: '310 × 32 MiB parts go straight from the browser to object storage: 237 s, 41.8 MiB/s on average, no interruptions.' },
+        { at: C0 - 100, zh: 'complete 核对', en: 'Complete', sayZh: 'complete 不信会话记录：后端自己列目录，片数和总字节都对上才合并。', sayEn: 'Completion ignores session records: the backend lists the prefix itself and merges only when part count and total bytes match.' },
+        { at: G0 - 300, zh: '缺片守卫', en: 'Gap guard', sayZh: '第二次验收故意少传一片：列目录发现缺口，服务端拒绝合并（309 / 310）。两次结果都留在图上。', sayEn: 'The second acceptance run withholds one part: the listing finds the gap and the server refuses to merge (309 / 310). Both results stay on the figure.' }
       ]
     });
   }
