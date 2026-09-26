@@ -371,7 +371,8 @@
             <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
           </div>
           <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/7.3;--ar-m:4/6.6"><canvas aria-hidden="true"></canvas></div>
+          <div class="fig-stage" style="--ar:16/6.7;--ar-m:4/5.8"><canvas aria-hidden="true"></canvas></div>
+          <p class="fig-legend"><span class="lg"><i style="background:#5d6168"></i><span class="zh">系统</span><span class="en">system</span></span><span class="lg"><i style="background:#6f8fe8"></i><span class="zh">工具目录</span><span class="en">tool catalog</span></span><span class="lg"><i style="background:#8e959c"></i><span class="zh">Skill</span><span class="en">skills</span></span><span class="lg"><i style="background:#c9ccc6"></i><span class="zh">对话历史</span><span class="en">history</span></span><span class="lg"><i style="background:#e39a2d"></i><span class="zh">进行中任务（每轮变化）</span><span class="en">task state (changes every turn)</span></span></p>
           <figcaption class="fig-note" id="fig-prompt-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">缓存只复用与上一轮完全相同的前缀。改前易变段排在前面，实测命中 51.0%；改后稳定段在前、易变段压缩后放末尾，工具目录 28 → 20。分段比例为示意（按单 prompt 均值 12,726 → 9,631 token 配平），结果数字为同一套 24 例回归实测。</span><span class="en">A cache reuses only the prefix identical to the previous turn. Before, volatile content came first and the measured hit rate was 51.0%; after, stable sections lead, the volatile block is trimmed and moved last, and the tool catalog drops from 28 to 20. Segment proportions are illustrative (balanced to the measured per-prompt means, 12,726 → 9,631 tokens); the results are measured on the same 24-case regression.</span></figcaption>
         </figure>
       </article>

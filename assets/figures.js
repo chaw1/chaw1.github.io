@@ -1100,105 +1100,117 @@
   }
 
   /* =====================================================================
-   * FIG.F — prompt layout and the cache prefix, before and after.
+   * FIG.F — why the cache stopped where it did.
+   * A prompt cache reuses only the prefix that matches the previous turn.
+   * Before: a block that changes every turn sat near the front, so the prefix
+   * broke there. After: stable sections first, the volatile block trimmed and
+   * moved last. Segment widths are illustrative, balanced to the measured
+   * per-prompt means (12,726 → 9,631 tokens); results are measured.
    * ===================================================================== */
   function figPrompt(el) {
-    const M0 = 3400; const M1 = 5200; const R0 = 6600; const duration = 10200;
-    // Illustrative segment sizes (tokens), chosen so the per-prompt means match 12,726 → 9,631.
-    const H = [1061, 1661, 2261, 2861];
-    const seg = {
-      S: { zh: '系统', en: 'system', b: 1500, a: 1500, c: '#5d6168' },
-      T: { zh: '工具目录', en: 'tool catalog', b: 7280, a: 5200, c: '#6f8fe8' },
-      V: { zh: '进行中任务', en: 'task state', b: 1085, a: 70, c: C.amber },
-      K: { zh: 'Skill', en: 'skills', b: 900, a: 900, c: '#8e959c' }
+    const R0 = 3000; const R1 = 5200; const X0 = 6200; const duration = 9400;
+    const SEG = {
+      S: { c: '#5d6168', zh: '系统', en: 'system' },
+      T: { c: '#6f8fe8', zh: '工具目录', en: 'tools' },
+      K: { c: '#8e959c', zh: 'Skill', en: 'skills' },
+      H: { c: '#c9ccc6', zh: '对话历史', en: 'history' },
+      V: { c: C.amber, zh: '进行中任务', en: 'task state' }
     };
-    const orderB = ['S', 'T', 'V', 'K', 'H']; const orderA = ['S', 'T', 'K', 'H', 'V'];
-    function layout(turn, p) {
-      // Positions for each segment, blending the before/after order and sizes.
-      const sizes = { S: lerp(seg.S.b, seg.S.a, p), T: lerp(seg.T.b, seg.T.a, p), V: lerp(seg.V.b, seg.V.a, p), K: seg.K.b, H: H[turn] };
-      const at = (order) => { let x = 0; const o = {}; order.forEach((k) => { o[k] = x; x += sizes[k]; }); return o; };
-      const xb = at(orderB); const xa = at(orderA);
-      const pos = {}; Object.keys(sizes).forEach((k) => { pos[k] = lerp(xb[k], xa[k], easeInOut(p)); });
-      const total = Object.values(sizes).reduce((a, b) => a + b, 0);
-      // Cached prefix: identical to the previous turn up to the first volatile token.
-      let cached = 0;
-      if (turn > 0) cached = p < 0.5 ? xb.V : sizes.S + sizes.T + sizes.K + H[turn - 1];
-      return { sizes, pos, total, cached };
-    }
-    function draw(ctx, w, h, t) {
-      const wide = w >= 640; const pad = wide ? 20 : 14;
-      const p = win(t, M0, M1);
-      const resP = win(t, R0, R0 + 500);
-      const labW = wide ? 64 : 44;
-      const X = pad + labW; const Wd = w - X - pad - (wide ? 150 : 8);
-      const maxTok = 13626; const sc = Wd / maxTok;
-      const top = pad + 26;
-      const rowH = wide ? Math.min(46, (h * (resP > 0 ? 0.52 : 0.8) - top) / 4) : Math.min(34, (h * (resP > 0 ? 0.46 : 0.7) - top) / 4);
-      const bh = Math.min(20, rowH * 0.46);
-      text(ctx, p < 0.5 ? (wide ? L('改前：易变段排在稳定段之前', 'Before: volatile content ahead of stable sections') : L('改前：易变段在前', 'Before: volatile first')) : (wide ? L('改后：稳定段在前，易变段压缩后放末尾', 'After: stable first, volatile content trimmed and moved last') : L('改后：稳定段在前', 'After: stable first')), pad, pad + 8, { size: wide ? 11 : 10.5, color: C.ink, weight: 600 });
-      let cachedSum = 0; let totalSum = 0;
-      for (let k = 0; k < 4; k += 1) {
-        const y = top + k * rowH + 10;
-        const lt = layout(k, p);
-        cachedSum += lt.cached; totalSum += lt.total;
-        text(ctx, L(`第 ${k + 1} 轮`, `turn ${k + 1}`), X - 10, y + bh / 2 + 4, { size: 10, align: 'right' });
-        ['S', 'T', 'K', 'H', 'V'].forEach((key) => {
-          const x = X + lt.pos[key] * sc; const wd = lt.sizes[key] * sc;
-          const color = key === 'H' ? '#c9ccc6' : seg[key].c;
-          ctx.fillStyle = color; ctx.fillRect(x, y, Math.max(0, wd - 1), bh);
-          if (key === 'T') {
-            const n = Math.round(lerp(28, 20, p)); ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1; ctx.beginPath();
-            for (let j = 1; j < n; j += 1) { const tx = x + (wd / n) * j; ctx.moveTo(tx + 0.5, y + 3); ctx.lineTo(tx + 0.5, y + bh - 3); }
-            ctx.stroke();
-          }
-        });
-        // Cache underline: green for the reusable prefix, amber for the rest.
-        const uy = y + bh + 4;
-        ctx.fillStyle = alpha(C.amber, 0.8); ctx.fillRect(X, uy, lt.total * sc, 3);
-        if (lt.cached) { ctx.fillStyle = C.green; ctx.fillRect(X, uy, lt.cached * sc, 3); }
-        if (wide) text(ctx, fmt(lt.total), X + lt.total * sc + 8, y + bh / 2 + 4, { size: 10, color: C.muted });
-      }
-      // Legend.
-      const ly = top + 4 * rowH + 20;
-      let lx = pad;
-      [['S', seg.S.c], ['T', seg.T.c], ['K', seg.K.c], ['H', '#c9ccc6'], ['V', seg.V.c]].forEach(([k2, c2]) => {
-        ctx.fillStyle = c2; ctx.fillRect(lx, ly - 8, 10, 10);
-        const name = k2 === 'H' ? L('对话历史', 'history') : L(seg[k2].zh, seg[k2].en);
-        lx += 16 + text(ctx, name, lx + 16, ly + 1, { size: wide ? 10 : 9 }) + (wide ? 16 : 7);
+    const before = [['S', 1500], ['T', 7280], ['V', 1085], ['K', 900], ['H', 1961]];
+    const after = [['S', 1500], ['T', 5200], ['K', 900], ['H', 1961], ['V', 70]];
+    const MAX = 12726;
+    function place(list) { let x = 0; const o = {}; list.forEach(([k, v]) => { o[k] = { x, w: v }; x += v; }); return o; }
+    const PB = place(before); const PA = place(after);
+
+    function bar(ctx, X, y, W, bh, pos, ticks, label, note, noteColor, cut, cached) {
+      const sc = W / MAX;
+      text(ctx, label, X, y - 10, { size: 11, color: C.ink, weight: 650, font: SANS });
+      ['S', 'T', 'K', 'H', 'V'].forEach((k) => {
+        const p = pos[k]; const x = X + p.x * sc; const wd = Math.max(2, p.w * sc - 1);
+        ctx.fillStyle = SEG[k].c; ctx.fillRect(x, y, wd, bh);
+        if (k === 'T') {
+          ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1; ctx.beginPath();
+          for (let j = 1; j < ticks; j += 1) { const tx = x + (wd / ticks) * j; ctx.moveTo(tx + 0.5, y + 3); ctx.lineTo(tx + 0.5, y + bh - 3); }
+          ctx.stroke();
+        }
       });
-      if (wide) {
-        ctx.fillStyle = C.green; ctx.fillRect(lx, ly - 4, 14, 3); lx += 20 + text(ctx, L('可命中缓存', 'cache hit'), lx + 20, ly + 1, { size: 10 }) + 14;
-        ctx.fillStyle = C.amber; ctx.fillRect(lx, ly - 4, 14, 3); text(ctx, L('每轮重算', 'recomputed'), lx + 20, ly + 1, { size: 10 });
+      // Reusable prefix bracket, then the break.
+      if (cached > 0) {
+        const bx1 = X + cached * sc; const by = y + bh + 8;
+        ctx.strokeStyle = C.green; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(X, by - 4); ctx.lineTo(X, by); ctx.lineTo(bx1, by); ctx.lineTo(bx1, by - 4); ctx.stroke();
+        text(ctx, L('可复用的缓存前缀', 'reusable cache prefix'), X, by + 15, { size: 10.5, color: C.green, weight: 600 });
       }
-      // Right-hand readouts.
-      if (wide && resP === 0) {
-        const rx = w - pad - 130; let ry = top + 16;
-        text(ctx, L('工具目录', 'tool catalog'), rx, ry, { size: 10.5 }); text(ctx, `${Math.round(lerp(28, 20, p))} ${L('个', 'tools')}`, rx, ry + 22, { size: 18, color: C.ink, weight: 650, font: SANS }); ry += 50;
-        text(ctx, L('进行中任务段', 'task-state block'), rx, ry, { size: 10.5 }); text(ctx, `${fmt(lerp(3320, 211, p))} ${L('字符', 'chars')}`, rx, ry + 22, { size: 18, color: p > 0.5 ? C.green : C.amberInk, weight: 650, font: SANS }); ry += 50;
-        if (p < 0.5) { text(ctx, L('缓存命中（实测）', 'cache hit (measured)'), rx, ry, { size: 10.5 }); text(ctx, '51.0%', rx, ry + 22, { size: 18, color: C.amberInk, weight: 650, font: SANS }); }
-        void cachedSum; void totalSum;
+      if (cut != null) {
+        const cx = X + cut * sc;
+        ctx.strokeStyle = C.red; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx - 3, y - 6); ctx.lineTo(cx + 3, y + bh * 0.33); ctx.lineTo(cx - 3, y + bh * 0.66); ctx.lineTo(cx + 3, y + bh + 6); ctx.stroke();
       }
-      // Results.
-      if (resP > 0) {
-        ctx.globalAlpha = resP;
-        const y0 = ly + 26; const colN = wide ? 4 : 2; const cw = (w - pad * 2) / colN; const ch = wide ? h - y0 - pad : (h - y0 - pad) / 2;
+      if (note) text(ctx, note, X + W + 14, y + bh / 2 + 5, { size: 12, color: noteColor, weight: 650, font: SANS });
+    }
+
+    function draw(ctx, w, h, t) {
+      const wide = w >= 700; const pad = wide ? 22 : 14;
+      const noteW = wide ? 150 : 0;
+      const X = pad; const W = w - pad * 2 - noteW;
+      const bh = wide ? 26 : 20;
+      const y1 = wide ? 52 : 46;
+      // Reading direction.
+      ctx.strokeStyle = C.quiet; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(X, 18); ctx.lineTo(X + 60, 18); ctx.lineTo(X + 55, 14); ctx.moveTo(X + 60, 18); ctx.lineTo(X + 55, 22); ctx.stroke();
+      text(ctx, wide ? L('读取方向：缓存只复用与上一轮完全相同的前缀', 'read direction: a cache reuses only the prefix identical to the previous turn') : L('读取方向', 'read direction'), X + 70, 22, { size: wide ? 10.5 : 9, color: C.quiet });
+
+      // Before: always shown. The prefix bracket grows to the break.
+      const gb = easeOut(win(t, 300, 1500));
+      bar(ctx, X, y1, W, bh, PB, 28, L('改前', 'Before'), wide ? L('命中 51.0%', 'hit 51.0%') : null, C.amberInk, t >= 1500 ? PB.V.x : null, (PB.S.w + PB.T.w) * gb);
+      if (t >= 1500) {
+        const cx = X + PB.V.x * (W / MAX);
+        text(ctx, L('每轮都变，缓存在这里断开', 'changes every turn: the cache breaks here'), cx + 8, y1 - 10, { size: wide ? 10.5 : 9, color: C.red, weight: 600, alpha: win(t, 1500, 1800) });
+      }
+
+      // After: morphs out of the before layout during the reorder chapter.
+      const y2 = y1 + bh + (wide ? 78 : 66);
+      if (t >= R0 - 200) {
+        const q = easeInOut(win(t, R0, R1));
+        const pos = {};
+        Object.keys(PB).forEach((k) => { pos[k] = { x: lerp(PB[k].x, PA[k].x, q), w: lerp(PB[k].w, PA[k].w, q) }; });
+        const ticks = Math.round(lerp(28, 20, q));
+        const cached = q >= 1 ? PA.V.x * easeOut(win(t, R1, R1 + 800)) : 0;
+        ctx.globalAlpha = win(t, R0 - 200, R0 + 100);
+        bar(ctx, X, y2, W, bh, pos, ticks, L('改后', 'After'), q >= 1 && wide ? L('前缀一直延伸到末尾', 'prefix runs to the end') : null, C.green, q >= 1 ? PA.V.x : null, cached);
+        ctx.globalAlpha = 1;
+        if (q > 0.2) {
+          const sc = W / MAX;
+          text(ctx, L(`工具目录 ${ticks} 个`, `${ticks} tools`), X + (pos.T.x + pos.T.w / 2) * sc, y2 + bh / 2 + 4, { size: wide ? 10.5 : 9, color: '#fff', align: 'center', weight: 600 });
+          if (q >= 1 && wide) text(ctx, L('进行中任务 3,320 → 211 字符，挪到末尾', 'task state 3,320 → 211 chars, moved last'), X + PA.V.x * sc, y2 - 10, { size: wide ? 10.5 : 9, color: C.amberInk, align: 'right', weight: 600 });
+        }
+      }
+
+      // Results, measured on the regression set after the whole harness pass.
+      if (t >= X0 - 200) {
+        const a = win(t, X0 - 200, X0 + 200);
+        ctx.globalAlpha = a;
+        const y0 = y2 + bh + (wide ? 70 : 60);
+        ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, y0 - 22); ctx.lineTo(w - pad, y0 - 22); ctx.stroke();
+        text(ctx, wide ? L('整轮 harness 调优后的实测结果（重排是其中一项）', 'Measured after the full harness pass (the reorder is one part of it)') : L('整轮调优后的实测结果', 'Measured after the full pass'), pad, y0 - 4, { size: 10.5, color: C.muted });
         const metrics = [
           { k: L('输入 token', 'input tokens'), a: L('159.0 万', '1.59 M'), b: L('89.6 万', '0.896 M'), va: 1590, vb: 896, d: '−43.6%' },
           { k: L('单个 prompt', 'per prompt'), a: '12,726', b: '9,631', va: 12726, vb: 9631, d: '−24.3%' },
-          { k: wide ? L('24 例回归失败', 'regression failures, 24 cases') : L('回归失败', 'regression fails'), a: '53', b: '20', va: 53, vb: 20, d: '53 → 36 → 20' },
+          { k: L('回归失败', 'regression failures'), a: '53', b: '20', va: 53, vb: 20, d: '53 → 36 → 20' },
           { k: L('任务通过', 'tasks passed'), a: '5', b: '7', va: 5, vb: 7, d: '+2', up: true }
         ];
+        const colN = wide ? 4 : 2; const cw = (w - pad * 2) / colN; const ch = wide ? 84 : 96;
         metrics.forEach((m, i) => {
-          const x = pad + (i % colN) * cw; const y = y0 + Math.floor(i / colN) * ch;
-          text(ctx, m.k, x, y + 4, { size: 10.5 });
-          const q = easeOut(win(t, R0 + 200 + i * 180, R0 + 900 + i * 180));
+          const x = pad + (i % colN) * cw; const y = y0 + 20 + Math.floor(i / colN) * ch;
+          const qq = easeOut(win(t, X0 + i * 150, X0 + 700 + i * 150));
+          text(ctx, m.k, x, y, { size: 10.5 });
           const maxV = Math.max(m.va, m.vb); const bw = cw - 24;
-          ctx.fillStyle = C.line2; ctx.fillRect(x, y + 16, (m.va / maxV) * bw, 6);
-          ctx.fillStyle = m.up ? C.green : C.blue; ctx.fillRect(x, y + 26, (lerp(m.va, m.vb, q) / maxV) * bw, 6);
-          const aw = text(ctx, m.a, x, y + 54, { size: 12, color: C.faint, weight: 500, font: SANS });
-          text(ctx, '→', x + aw + 6, y + 54, { size: 12, color: C.faint, font: SANS });
-          text(ctx, m.b, x + aw + 22, y + 54, { size: wide ? 20 : 16, color: C.ink, weight: 700, font: SANS });
-          text(ctx, m.d, x, y + 72, { size: 10.5, color: m.up ? C.green : C.blue, weight: 600 });
+          ctx.fillStyle = C.line2; ctx.fillRect(x, y + 10, (m.va / maxV) * bw, 5);
+          ctx.fillStyle = m.up ? C.green : C.blue; ctx.fillRect(x, y + 19, (lerp(m.va, m.vb, qq) / maxV) * bw, 5);
+          const aw = text(ctx, m.a, x, y + 46, { size: 12, color: C.faint, font: SANS });
+          text(ctx, '→', x + aw + 6, y + 46, { size: 12, color: C.faint, font: SANS });
+          text(ctx, m.b, x + aw + 22, y + 46, { size: wide ? 20 : 16, color: C.ink, weight: 700, font: SANS });
+          text(ctx, m.d, x, y + 63, { size: 10.5, color: m.up ? C.green : C.blue, weight: 600 });
         });
         ctx.globalAlpha = 1;
       }
@@ -1206,10 +1218,11 @@
     mount(el, {
       duration,
       draw,
+      footAfter: el.querySelector('.fig-legend'),
       chapters: [
-        { at: 0, zh: '改前', en: 'Before', sayZh: 'prompt 缓存只能复用“与上一轮完全相同的前缀”。进行中任务每轮都变，却排在 Skill 和历史前面，缓存到这里就断了。实测命中 51.0%。', sayEn: 'A prompt cache only reuses the prefix identical to the previous turn. The task-state block changes every turn yet sat ahead of skills and history, so the cache broke there. Measured hit rate: 51.0%.' },
-        { at: M0, zh: '重排', en: 'Reorder', sayZh: '稳定段挪到前面，易变段从 3,320 字符压到 211 并放到末尾；工具目录 28 → 20。可复用的前缀一下变长。', sayEn: 'Stable sections move first; the volatile block shrinks from 3,320 to 211 characters and goes last; the tool catalog drops from 28 to 20. The reusable prefix grows.' },
-        { at: R0, zh: '结果', en: 'Result', sayZh: '同一套 24 例回归：输入 token 降 43.6%，失败 53 → 20，任务通过 5 → 7。', sayEn: 'On the same 24-case regression: 43.6% fewer input tokens, failures 53 → 20, tasks passed 5 → 7.' }
+        { at: 0, zh: '改前', en: 'Before', sayZh: '进行中任务每轮都变，却排在 Skill 和对话历史前面，缓存前缀在这里断开，后面每轮都要重算。实测命中 51.0%。', sayEn: 'The task-state block changes every turn yet sat ahead of skills and history, so the cache prefix broke there and everything after it was recomputed each turn. Measured hit rate: 51.0%.' },
+        { at: R0, zh: '重排', en: 'Reorder', sayZh: '稳定段挪到前面，易变段从 3,320 字符压到 211 并放到末尾；工具目录 28 → 20。可复用的前缀一直延伸到末尾。', sayEn: 'Stable sections move first; the volatile block shrinks from 3,320 to 211 characters and goes last; the tool catalog drops from 28 to 20. The reusable prefix now runs to the end.' },
+        { at: X0, zh: '结果', en: 'Result', sayZh: '整轮 harness 调优后，同一套 24 例回归：输入 token 降 43.6%，失败 53 → 20，任务通过 5 → 7。', sayEn: 'After the full harness pass, on the same 24-case regression: 43.6% fewer input tokens, failures 53 → 20, tasks passed 5 → 7.' }
       ]
     });
   }
