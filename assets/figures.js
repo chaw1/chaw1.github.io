@@ -832,184 +832,145 @@
   }
 
   /* =====================================================================
-   * FIG.D — CPU segmentation: a real-time latency race, the INT8 trap, thread count.
+   * FIG.D — why not the option that looks fastest.
+   * Three panels that stay on screen: latency on one scale (played at real
+   * speed), mask agreement for INT8, and threads against the core quota.
    * ===================================================================== */
   function figSeg(el) {
-    const R0 = 0; const R1 = 6600; const I0 = 6900; const I1 = 9800; const H0 = 10100; const duration = 13200;
-    const FAST = 6000; const EVIT = 640;
-    const rand = mulberry32(42);
-    const boxes = [...Array(50)].map(() => { const bw = 0.08 + rand() * 0.35; const bh = 0.08 + rand() * 0.4; return [rand() * (1 - bw), rand() * (1 - bh), bw, bh]; });
-    // Scene in unit coordinates: a car and a person on a road.
-    function carPath(ctx, X, Y, Wd, Ht, dx = 0, dy = 0, sc = 1) {
-      const P = (u, v) => [X + (dx + 0.14 + u * 0.46 * sc) * Wd, Y + (dy + 0.48 + v * 0.30 * sc) * Ht];
+    const R0 = 300; const FAST = 6000; const EVIT = 640;
+    const Q0 = 6900; const H0 = 9300; const duration = 11800;
+    const thr = [[1, 2402], [2, 1242], [4, 640], [8, 755], [16, 796], [32, 1007]];
+
+    // Abstract object outline, reused for both masks (unit coordinates).
+    const shape = [[0.18, 0.72], [0.22, 0.46], [0.36, 0.40], [0.46, 0.22], [0.66, 0.2], [0.76, 0.38], [0.86, 0.44], [0.88, 0.72]];
+    function poly(ctx, X, Y, W, H, pts) { ctx.beginPath(); pts.forEach(([u, v], i) => { const x = X + u * W; const y = Y + v * H; if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }); ctx.closePath(); }
+    function blobPath(ctx, X, Y, W, H) {
       ctx.beginPath();
-      const pts = [[0, 0.62], [0.04, 0.42], [0.2, 0.36], [0.33, 0.06], [0.68, 0.04], [0.82, 0.34], [0.97, 0.4], [1, 0.62], [0.98, 0.86], [0, 0.86]];
-      pts.forEach(([u, v], i) => { const [px, py] = P(u, v); if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py); });
+      for (let k = 0; k <= 72; k += 1) {
+        const th = (k / 72) * Math.PI * 2;
+        const r = 1 + 0.2 * Math.sin(th * 3 + 0.6) + 0.1 * Math.sin(th * 7 + 2);
+        const x = X + (0.44 + Math.cos(th) * 0.24 * r) * W; const y = Y + (0.5 + Math.sin(th) * 0.3 * r) * H;
+        if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      }
       ctx.closePath();
     }
-    function personPath(ctx, X, Y, Wd, Ht) {
-      const cx = X + 0.76 * Wd; const top = Y + 0.3 * Ht;
-      ctx.beginPath();
-      ctx.arc(cx, top + 0.05 * Ht, 0.045 * Ht, 0, Math.PI * 2);
-      // Body as a rounded rect added to the same path (rr() would start a new one and drop the head).
-      const bx = cx - 0.045 * Wd; const by = top + 0.11 * Ht; const bw = 0.09 * Wd; const bh = 0.33 * Ht; const q = 0.03 * Wd;
-      ctx.moveTo(bx + q, by); ctx.arcTo(bx + bw, by, bx + bw, by + bh, q); ctx.arcTo(bx + bw, by + bh, bx, by + bh, q);
-      ctx.arcTo(bx, by + bh, bx, by, q); ctx.arcTo(bx, by, bx + bw, by, q); ctx.closePath();
+    function panelTitle(ctx, x, y, n, zh, en, wide) {
+      const a = text(ctx, n, x, y, { size: 10.5, color: C.blue, weight: 600 });
+      text(ctx, L(zh, en), x + a + 8, y, { size: wide ? 11.5 : 10.5, color: C.ink, weight: 650, font: SANS });
     }
-    function scene(ctx, X, Y, Wd, Ht) {
-      ctx.save(); rr(ctx, X, Y, Wd, Ht, 3); ctx.clip();
-      const g = ctx.createLinearGradient(0, Y, 0, Y + Ht); g.addColorStop(0, '#eceee9'); g.addColorStop(0.62, '#e1e3dd'); g.addColorStop(0.63, '#cfd1cb'); g.addColorStop(1, '#c4c6c0');
-      ctx.fillStyle = g; ctx.fillRect(X, Y, Wd, Ht);
-      ctx.fillStyle = '#d6d8d2'; for (let i = 0; i < 6; i += 1) ctx.fillRect(X + (0.02 + i * 0.17) * Wd, Y + (0.12 + (i % 3) * 0.05) * Ht, 0.12 * Wd, (0.5 - (i % 3) * 0.05) * Ht);
-      ctx.fillStyle = '#9ea39f'; carPath(ctx, X, Y, Wd, Ht); ctx.fill();
-      ctx.fillStyle = '#5f6563'; [0.26, 0.74].forEach((u) => { ctx.beginPath(); ctx.arc(X + (0.14 + u * 0.46) * Wd, Y + (0.48 + 0.86 * 0.3) * Ht, 0.045 * Ht, 0, Math.PI * 2); ctx.fill(); });
-      ctx.fillStyle = '#8a8f8b'; personPath(ctx, X, Y, Wd, Ht); ctx.fill();
-      ctx.restore();
-      ctx.strokeStyle = C.line; ctx.lineWidth = 1; rr(ctx, X + 0.5, Y + 0.5, Wd - 1, Ht - 1, 3); ctx.stroke();
-    }
-    function mask(ctx, X, Y, Wd, Ht, a, color = C.blue) {
-      ctx.save(); rr(ctx, X, Y, Wd, Ht, 3); ctx.clip();
-      ctx.globalAlpha = a; ctx.fillStyle = alpha(color, 0.38); carPath(ctx, X, Y, Wd, Ht); ctx.fill(); personPath(ctx, X, Y, Wd, Ht); ctx.fill();
-      ctx.strokeStyle = color; ctx.lineWidth = 1.6; carPath(ctx, X, Y, Wd, Ht); ctx.stroke(); personPath(ctx, X, Y, Wd, Ht); ctx.stroke();
-      ctx.restore(); ctx.globalAlpha = 1;
-    }
-    function blob(ctx, X, Y, Wd, Ht, a) {
-      // An INT8-style mask: plausible from afar, off by more than half up close.
-      ctx.save(); rr(ctx, X, Y, Wd, Ht, 3); ctx.clip(); ctx.globalAlpha = a;
-      const cx = X + 0.44 * Wd; const cy = Y + 0.64 * Ht;
-      ctx.beginPath();
-      for (let k = 0; k <= 64; k += 1) {
-        const th = (k / 64) * Math.PI * 2;
-        const r = 1 + 0.18 * Math.sin(th * 3 + 0.7) + 0.1 * Math.sin(th * 7 + 2.1);
-        const px = cx + Math.cos(th) * 0.27 * Wd * r; const py = cy + Math.sin(th) * 0.17 * Ht * r;
-        if (k) ctx.lineTo(px, py); else ctx.moveTo(px, py);
-      }
-      ctx.closePath(); ctx.fillStyle = alpha(C.amber, 0.35); ctx.fill(); ctx.strokeStyle = C.amber; ctx.lineWidth = 1.6; ctx.stroke();
-      ctx.restore(); ctx.globalAlpha = 1;
-    }
-    const fadeIn = (t, a) => win(t, a, a + 300);
-    const fadeOut = (t, b) => 1 - win(t, b - 300, b);
 
     function draw(ctx, w, h, t) {
-      const wide = w >= 640; const pad = wide ? 20 : 14;
-      // Chapter 1: the race, in real time.
-      const aR = t < I0 ? 1 : fadeOut(t, I0 + 300);
-      if (aR > 0) {
-        ctx.globalAlpha = aR;
-        const el2 = Math.max(0, t - R0 - 300);
-        const lanes = [
-          { name: 'FastSAM + CLIP', sub: 'PyTorch', ms: FAST, color: C.faint },
-          { name: 'EfficientViT-SAM-L0', sub: 'OpenVINO fp32', ms: EVIT, color: C.blue }
-        ];
-        const colW = wide ? (w - pad * 3) / 2 : w - pad * 2;
-        lanes.forEach((ln, j) => {
-          const X = wide ? pad + j * (colW + pad) : pad;
-          const Y = wide ? pad + 8 : pad + 8 + j * (h - pad) / 2;
-          const imgH = wide ? h - pad - 118 : (h - pad) / 2 - 92;
-          const imgW = colW;
-          text(ctx, ln.name, X, Y + 8, { size: 12.5, color: C.ink, weight: 650, font: SANS });
-          text(ctx, ln.sub, X, Y + 25, { size: 10.5 });
-          const elapsed = Math.min(el2, ln.ms); const done = el2 >= ln.ms;
-          text(ctx, `${fmt(elapsed)} ms`, X + imgW, Y + 12, { size: wide ? 22 : 18, color: done ? (j ? C.blue : C.ink) : C.muted, weight: 650, font: SANS, align: 'right' });
-          const iy = Y + 38;
-          scene(ctx, X, iy, imgW, imgH);
-          if (!done && el2 > 0) {
-            const sx = X + ((el2 % 900) / 900) * imgW;
-            const g = ctx.createLinearGradient(sx - 40, 0, sx, 0); g.addColorStop(0, alpha(C.blue, 0)); g.addColorStop(1, alpha(C.blue, 0.18));
-            ctx.fillStyle = g; ctx.fillRect(Math.max(X, sx - 40), iy, Math.min(40, sx - X), imgH);
-          }
-          if (done) {
-            const p = clamp((el2 - ln.ms) / 350);
-            if (j === 0) {
-              ctx.save(); rr(ctx, X, iy, imgW, imgH, 3); ctx.clip();
-              ctx.strokeStyle = alpha(C.ink, 0.22 * p); ctx.lineWidth = 1;
-              boxes.forEach(([bx, by, bw, bh]) => ctx.strokeRect(X + bx * imgW, iy + by * imgH, bw * imgW, bh * imgH));
-              ctx.restore();
-              text(ctx, L('50 个候选框：CLIP 只重排，不过滤', '50 candidates: CLIP re-ranks, never filters'), X + 8, iy + imgH - 10, { size: 10.5, color: C.ink, alpha: p });
-            } else mask(ctx, X, iy, imgW, imgH, p);
-          }
-          // Progress track on a shared 0–6,000 ms scale.
-          const ty = iy + imgH + 18;
-          ctx.fillStyle = C.line2; ctx.fillRect(X, ty, imgW, 5);
-          ctx.fillStyle = ln.color; ctx.fillRect(X, ty, (elapsed / FAST) * imgW, 5);
-          if (j === 1 && done) text(ctx, L(`快 ${(FAST / EVIT).toFixed(1)} 倍`, `${(FAST / EVIT).toFixed(1)}× faster`), X + (EVIT / FAST) * imgW + 8, ty + 6, { size: 11, color: C.blue, weight: 650, alpha: clamp((el2 - EVIT) / 300) });
-        });
-        ctx.globalAlpha = 1;
+      const wide = w >= 720; const pad = wide ? 22 : 14;
+      let SP; let QP; let TP;
+      if (wide) {
+        const topH = h * 0.54; const gap = 30;
+        SP = { x: pad, y: 18, w: (w - pad * 2 - gap) * 0.46, h: topH };
+        QP = { x: pad + SP.w + gap, y: 18, w: w - pad * 2 - gap - SP.w, h: topH };
+        TP = { x: pad, y: 18 + topH + 26, w: w - pad * 2, h: h - topH - 18 - 26 - 10 };
+      } else {
+        const u = (h - 60) / 3;
+        SP = { x: pad, y: 16, w: w - pad * 2, h: u * 0.8 };
+        QP = { x: pad, y: 16 + u * 0.8 + 24, w: w - pad * 2, h: u * 1.2 };
+        TP = { x: pad, y: 16 + u * 2 + 48, w: w - pad * 2, h: u - 8 };
       }
-      // Chapter 2: INT8 looks fine to the model and is wrong to the eye.
-      const aI = t < I0 ? 0 : Math.min(fadeIn(t, I0 + 250), t < H0 ? 1 : fadeOut(t, H0 + 300));
-      if (aI > 0) {
-        ctx.globalAlpha = aI;
-        const imgW = wide ? w * 0.46 : w - pad * 2; const imgH = wide ? h - pad * 2 - 16 : h * 0.46;
-        const X = pad; const Y = pad + 8;
-        scene(ctx, X, Y, imgW, imgH);
-        mask(ctx, X, Y, imgW, imgH, 0.9);
-        blob(ctx, X, Y, imgW, imgH, easeOut(win(t, I0 + 250, I0 + 900)) * aI);
-        chip(ctx, 'fp32', X + 10, Y + 16, C.blue, '#fff'); chip(ctx, 'INT8', X + 54, Y + 16, C.amberInk, '#fff');
-        const sx = wide ? X + imgW + 32 : pad; let sy = wide ? Y + 18 : Y + imgH + 26;
-        const row = (k2, a, b, big) => {
-          text(ctx, k2, sx, sy, { size: 10.5 });
-          const aw = text(ctx, a, sx, sy + (big ? 30 : 22), { size: big ? 26 : 15, color: C.ink, weight: 650, font: SANS });
-          if (b) text(ctx, b, sx + aw + 10, sy + (big ? 30 : 22), { size: 11, color: C.muted });
-          sy += big ? 58 : 46;
-        };
-        row(L('模型自估 IoU · fp32 / INT8', 'model self-estimated IoU · fp32 / INT8'), '0.686 / 0.692', L('几乎不变，坏了也察觉不到', 'barely moves: the damage is invisible'));
-        row(L('INT8 与 fp32 掩码的实际 IoU', 'actual IoU, INT8 vs fp32 masks'), '0.42', L('48–59% 的样本低于 0.5', '48–59% of samples below 0.5'), true);
-        row(L('换来的提速', 'what it buys'), '1.7×', L('不值得', 'not worth it'));
-        if (wide) text(ctx, L('只看延迟表，会得出“INT8 提速 1.7 倍”的结论。', 'A latency table alone says "INT8: 1.7× faster".'), sx, sy + 4, { size: 11, color: C.red, font: SANS, weight: 600 });
-        ctx.globalAlpha = 1;
+
+      /* --- 1. latency, same scale, real time --- */
+      panelTitle(ctx, SP.x, SP.y + 8, '01', '同图同机延迟（4 核，按真实时长播放）', 'Latency, same image and machine (4 cores, real time)', wide);
+      const el0 = Math.max(0, t - R0);
+      const lanes = [
+        { name: 'FastSAM + CLIP', sub: 'PyTorch', ms: FAST, col: C.faint },
+        { name: 'EfficientViT-SAM-L0', sub: 'OpenVINO fp32', ms: EVIT, col: C.blue }
+      ];
+      const bx = SP.x; const bw = SP.w - (wide ? 90 : 76);
+      lanes.forEach((ln, j) => {
+        const y = SP.y + 44 + j * (wide ? 64 : 50);
+        text(ctx, ln.name, bx, y, { size: wide ? 12 : 11, color: C.ink, weight: 600, font: SANS });
+        text(ctx, ln.sub, bx, y + 15, { size: 10, color: C.quiet });
+        const e = Math.min(el0, ln.ms);
+        ctx.fillStyle = C.line2; ctx.fillRect(bx, y + 22, bw, 8);
+        ctx.fillStyle = ln.col; ctx.fillRect(bx, y + 22, (e / FAST) * bw, 8);
+        text(ctx, `${fmt(e)} ms`, bx + bw + 10, y + 30, { size: wide ? 14 : 12, color: e >= ln.ms ? (j ? C.blue : C.ink) : C.muted, weight: 650, font: SANS });
+      });
+      if (el0 >= EVIT) {
+        const y = SP.y + 44 + 2 * (wide ? 64 : 50);
+        text(ctx, L(`快 ${(FAST / EVIT).toFixed(1)} 倍`, `${(FAST / EVIT).toFixed(1)}× faster`), bx, y + 4, { size: wide ? 22 : 17, color: C.blue, weight: 700, font: SANS, alpha: win(el0, EVIT, EVIT + 400) });
+        if (wide) text(ctx, L('FastSAM 的文字提示还只是重排 50 个候选框，并不过滤', 'and FastSAM’s text prompt only re-ranks 50 candidates; it never filters'), bx, y + 24, { size: 10.5, color: C.muted, alpha: win(el0, FAST, FAST + 400) });
       }
-      // Chapter 3: threads vs latency, minimum at the cgroup quota.
-      const aH = t < H0 ? 0 : fadeIn(t, H0 + 250);
-      if (aH > 0) {
-        ctx.globalAlpha = aH;
-        const data = [[1, 2402], [2, 1242], [4, 640], [8, 755], [16, 796], [32, 1007]];
-        const X = pad + (wide ? 56 : 44); const Y = pad + 26; const Wd = w - X - pad - (wide ? 230 : 10); const Ht = wide ? h - Y - 44 : (h - Y) * 0.58;
-        const xs = (n) => X + (Math.log2(n) / 5) * Wd; const ys = (ms) => Y + Ht - (ms / 2600) * Ht;
-        [0, 500, 1000, 1500, 2000, 2500].forEach((v) => {
-          ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X, ys(v) + 0.5); ctx.lineTo(X + Wd, ys(v) + 0.5); ctx.stroke();
-          text(ctx, `${fmt(v)}`, X - 8, ys(v) + 4, { size: 9.5, align: 'right', color: C.faint });
-        });
-        text(ctx, 'ms', X - 8, Y - 10, { size: 9.5, align: 'right', color: C.faint });
-        data.forEach(([n]) => text(ctx, String(n), xs(n), Y + Ht + 18, { size: 10, align: 'center' }));
-        text(ctx, L('推理线程数', 'inference threads'), X + Wd, Y + Ht + 34, { size: 10, align: 'right' });
-        // Quota band.
-        ctx.fillStyle = alpha(C.green, 0.08); ctx.fillRect(xs(4) - 14, Y, 28, Ht);
-        text(ctx, L('= cgroup 配额 4 核', '= cgroup quota, 4 cores'), xs(4), Y - 8, { size: 10.5, color: C.green, align: 'center', weight: 600 });
-        const p = easeInOut(win(t, H0 + 200, H0 + 1600));
-        const upto = p * (data.length - 1);
-        ctx.strokeStyle = C.blue; ctx.lineWidth = 2; ctx.beginPath();
-        data.forEach(([n, ms], i) => {
-          if (i > Math.ceil(upto)) return;
-          let px = xs(n); let py = ys(ms);
-          if (i > upto) { const [n0, m0] = data[i - 1]; const f = upto - (i - 1); px = lerp(xs(n0), px, f); py = lerp(ys(m0), py, f); }
-          if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py);
-        });
-        ctx.stroke();
-        data.forEach(([n, ms], i) => {
-          if (i > upto + 0.001) return;
-          const best = n === 4; const old = n === 2;
-          ctx.fillStyle = best ? C.green : old ? C.amber : C.blue;
-          ctx.beginPath(); ctx.arc(xs(n), ys(ms), best || old ? 4.5 : 3.2, 0, Math.PI * 2); ctx.fill();
-          if (wide || best || old) text(ctx, fmt(ms), xs(n) + (n === 1 ? 10 : n === 2 ? -10 : 0), ys(ms) - (n === 2 ? 2 : 10), { size: 10.5, align: n === 1 ? 'left' : n === 2 ? 'right' : 'center', color: best ? C.green : old ? C.amberInk : C.ink, weight: best || old ? 650 : 400 });
-        });
-        const sx = wide ? w - pad - 206 : pad; let sy = wide ? Y + 20 : Y + Ht + 56;
-        const note = (a, b, c2) => { text(ctx, a, sx, sy, { size: 10.5 }); text(ctx, b, sx, sy + 19, { size: 12, color: c2, weight: 600, font: SANS }); sy += wide ? 48 : 38; };
-        const q = win(t, H0 + 1600, H0 + 2000);
-        ctx.globalAlpha = aH * q;
-        note(L('容器里 os.cpu_count()', 'os.cpu_count() in the container'), L('32（宿主核数）', '32 (the host)'), C.ink);
-        note(L('原配置 OMP_NUM_THREADS=2', 'shipped OMP_NUM_THREADS=2'), L('1,242 ms，慢 1.94 倍', '1,242 ms, 1.94× slower'), C.amberInk);
-        note(L('线程数改成配额核数', 'threads set to the quota'), L('640 ms，只改一行 env', '640 ms, a one-line env change'), C.green);
-        ctx.globalAlpha = 1;
+
+      /* --- 2. INT8: looks the same to the model --- */
+      const qa = t < Q0 - 300 ? 0.25 : win(t, Q0 - 300, Q0 + 200);
+      ctx.globalAlpha = qa;
+      panelTitle(ctx, QP.x, QP.y + 8, '02', 'INT8 量化后的掩码质量', 'Mask quality after INT8 quantization', wide);
+      const tileW = wide ? Math.min(QP.w * 0.46, (QP.h - 40) * 1.2) : QP.w * 0.42; const tileH = wide ? QP.h - 40 : QP.h - 34;
+      const tx = QP.x; const ty = QP.y + 26;
+      ctx.fillStyle = '#f1f1ec'; rr(ctx, tx, ty, tileW, tileH, 4); ctx.fill();
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1; rr(ctx, tx + 0.5, ty + 0.5, tileW - 1, tileH - 1, 4); ctx.stroke();
+      ctx.fillStyle = alpha(C.blue, 0.22); poly(ctx, tx, ty, tileW, tileH, shape); ctx.fill();
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 1.6; poly(ctx, tx, ty, tileW, tileH, shape); ctx.stroke();
+      const bp = easeOut(win(t, Q0 + 200, Q0 + 900));
+      if (bp > 0) {
+        ctx.save(); ctx.globalAlpha = qa * bp; ctx.fillStyle = alpha(C.amber, 0.28); blobPath(ctx, tx, ty, tileW, tileH); ctx.fill();
+        ctx.strokeStyle = C.amber; ctx.lineWidth = 1.6; ctx.setLineDash([4, 3]); blobPath(ctx, tx, ty, tileW, tileH); ctx.stroke(); ctx.restore(); ctx.globalAlpha = qa;
       }
+      text(ctx, 'fp32', tx + 8, ty + 16, { size: 10, color: C.blue, weight: 600 });
+      text(ctx, 'INT8', tx + 44, ty + 16, { size: 10, color: C.amberInk, weight: 600 });
+      text(ctx, L('形状示意', 'shapes illustrative'), tx + tileW - 8, ty + tileH - 8, { size: 9.5, color: C.quiet, align: 'right' });
+      const nx = tx + tileW + (wide ? 22 : 14); let ny = ty + (wide ? 8 : 6);
+      const stat = (k, v, note, big, col) => {
+        text(ctx, k, nx, ny + 4, { size: wide ? 10.5 : 9.5, color: C.quiet });
+        const vw = text(ctx, v, nx, ny + (big ? 32 : 24), { size: big ? (wide ? 28 : 22) : (wide ? 16 : 13), color: col || C.ink, weight: 700, font: SANS });
+        if (note && wide) text(ctx, note, nx + vw + 8, ny + (big ? 32 : 24), { size: 10.5, color: C.muted });
+        ny += big ? (wide ? 52 : 42) : (wide ? 42 : 34);
+      };
+      stat(L('模型自估 IoU · fp32 / INT8', 'model’s own IoU · fp32 / INT8'), '0.686 / 0.692', L('几乎不变', 'barely moves'));
+      stat(L('与 fp32 掩码的实际 IoU', 'actual IoU vs fp32 masks'), '0.42', L('48–59% 的样本低于 0.5', '48–59% of samples below 0.5'), true, C.amberInk);
+      stat(L('换来的提速', 'what it buys'), '1.7×', L('不值得：坏了也察觉不到', 'not worth it: failure is invisible'));
+      ctx.globalAlpha = 1;
+
+      /* --- 3. threads vs the core quota (secondary) --- */
+      const ta = t < H0 - 300 ? 0.25 : win(t, H0 - 300, H0 + 200);
+      ctx.globalAlpha = ta;
+      ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(TP.x, TP.y - 14); ctx.lineTo(TP.x + TP.w, TP.y - 14); ctx.stroke();
+      panelTitle(ctx, TP.x, TP.y + 6, '03', '推理线程数 × 4 核配额', 'Inference threads vs the 4-core quota', wide);
+      const noteW = wide ? 300 : 0;
+      const cx0 = TP.x + (wide ? 40 : 34); const cW = TP.w - (wide ? 40 : 34) - noteW - (wide ? 24 : 6);
+      const cy0 = TP.y + 22; const cH = TP.h - (wide ? 44 : 40);
+      const xs = (n) => cx0 + (Math.log2(n) / 5) * cW; const ys = (ms) => cy0 + cH - (ms / 2600) * cH;
+      [0, 1000, 2000].forEach((v) => { ctx.strokeStyle = C.line2; ctx.beginPath(); ctx.moveTo(cx0, ys(v) + 0.5); ctx.lineTo(cx0 + cW, ys(v) + 0.5); ctx.stroke(); text(ctx, fmt(v), cx0 - 6, ys(v) + 4, { size: 9, color: C.faint, align: 'right' }); });
+      thr.forEach(([n]) => text(ctx, `${n}`, xs(n), cy0 + cH + 14, { size: 9.5, align: 'center', color: C.quiet }));
+      ctx.fillStyle = alpha(C.green, 0.08); ctx.fillRect(xs(4) - 12, cy0, 24, cH);
+      const lp = easeInOut(win(t, H0 + 100, H0 + 1300)); const upto = lp * (thr.length - 1);
+      ctx.strokeStyle = C.blue; ctx.lineWidth = 1.8; ctx.beginPath();
+      thr.forEach(([n, ms], i) => {
+        if (i > Math.ceil(upto)) return;
+        let px = xs(n); let py = ys(ms);
+        if (i > upto) { const [n0, m0] = thr[i - 1]; const f = upto - (i - 1); px = lerp(xs(n0), px, f); py = lerp(ys(m0), py, f); }
+        if (i) ctx.lineTo(px, py); else ctx.moveTo(px, py);
+      });
+      ctx.stroke();
+      thr.forEach(([n, ms], i) => {
+        if (i > upto + 0.001) return;
+        const best = n === 4; const old = n === 2;
+        ctx.fillStyle = best ? C.green : old ? C.amber : C.blue; ctx.beginPath(); ctx.arc(xs(n), ys(ms), best || old ? 4 : 2.8, 0, Math.PI * 2); ctx.fill();
+        if (best || old || wide) text(ctx, fmt(ms), xs(n) + (old ? -8 : 6), ys(ms) - 7, { size: 9.5, align: old ? 'right' : 'left', color: best ? C.green : old ? C.amberInk : C.muted, weight: best || old ? 650 : 400 });
+      });
+      if (wide) {
+        let ny2 = TP.y + 24; const nx2 = TP.x + TP.w - noteW + 10;
+        [[L('容器里 os.cpu_count()', 'os.cpu_count() in the container'), L('32（宿主核数）', '32 (the host)'), C.ink],
+          [L('原配置 OMP_NUM_THREADS=2', 'shipped OMP_NUM_THREADS=2'), L('1,242 ms，慢 1.94 倍', '1,242 ms, 1.94× slower'), C.amberInk],
+          [L('改成配额核数 4', 'set to the quota, 4'), L('640 ms，只改一行 env', '640 ms, a one-line change'), C.green]].forEach(([k, v, col]) => {
+          text(ctx, k, nx2, ny2, { size: 10, color: C.quiet }); text(ctx, v, nx2, ny2 + 17, { size: 12, color: col, weight: 650, font: SANS }); ny2 += 38;
+        });
+      }
+      ctx.globalAlpha = 1;
     }
     mount(el, {
       duration,
       draw,
       chapters: [
-        { at: R0, zh: '延迟（实时）', en: 'Latency, live', sayZh: '同一张图、同一台 4 核机器，按真实时长播放：FastSAM + CLIP 6,000 ms，EfficientViT-SAM 640 ms。', sayEn: 'Same image, same 4-core machine, played at real speed: FastSAM + CLIP takes 6,000 ms, EfficientViT-SAM 640 ms.' },
-        { at: I0, zh: 'INT8 陷阱', en: 'INT8 trap', sayZh: 'INT8 再快 1.7 倍，但掩码和 fp32 的 IoU 只有 0.42，而模型自估的 IoU 几乎没变：坏了也察觉不到。', sayEn: "INT8 buys another 1.7×, but its masks overlap fp32's at IoU 0.42 while the model's own IoU estimate barely moves: failure you cannot see." },
-        { at: H0, zh: '线程数', en: 'Threads', sayZh: '容器看到的是宿主 32 核，真正配额只有 4 核。线程数等于配额时最快：原配置 2 线程 1,242 ms，改成 4 线程 640 ms。', sayEn: 'The container sees the host\u2019s 32 cores, but its quota is 4. Latency bottoms out when threads match the quota: 1,242 ms with the shipped 2 threads, 640 ms with 4.' }
+        { at: 0, zh: '延迟（实时）', en: 'Latency, live', sayZh: '同一张图、同一台 4 核机器，按真实时长播放：FastSAM + CLIP 6,000 ms，EfficientViT-SAM 640 ms。', sayEn: 'Same image, same 4-core machine, played at real speed: FastSAM + CLIP takes 6,000 ms, EfficientViT-SAM 640 ms.' },
+        { at: Q0 - 300, zh: 'INT8 陷阱', en: 'INT8 trap', sayZh: 'INT8 再快 1.7 倍，但掩码和 fp32 的 IoU 只有 0.42，而模型自估的 IoU 几乎没变：坏了也察觉不到，所以不上。', sayEn: "INT8 buys another 1.7×, but its masks overlap fp32's at IoU 0.42 while the model's own IoU estimate barely moves. Failure would be invisible, so it doesn't ship." },
+        { at: H0 - 300, zh: '线程数', en: 'Threads', sayZh: '容器看到的是宿主 32 核，真正配额只有 4 核。线程数等于配额时最快：原配置 2 线程 1,242 ms，改成 4 线程 640 ms。', sayEn: 'The container sees the host’s 32 cores, but its quota is 4. Latency bottoms out when threads match the quota: 1,242 ms with the shipped 2 threads, 640 ms with 4.' }
       ]
     });
   }

@@ -314,11 +314,11 @@
         </ol>
         <figure class="fig" data-fig="seg" aria-labelledby="fig-seg-cap">
           <div class="fig-head">
-            <p class="fig-kicker mono">FIG.D · <span class="zh">CPU 分割选型</span><span class="en">CPU SEGMENTATION</span></p>
+            <p class="fig-kicker mono">FIG.D · <span class="zh">为什么不选看起来更快的方案</span><span class="en">WHY NOT THE OPTION THAT LOOKS FASTER</span></p>
             <button type="button" class="fig-replay"><i class="icon i-reset" aria-hidden="true"></i><span class="zh">重播</span><span class="en">Replay</span></button>
           </div>
           <p class="fig-say" aria-hidden="true"></p>
-          <div class="fig-stage" style="--ar:16/8;--ar-m:4/7.4"><canvas aria-hidden="true"></canvas></div>
+          <div class="fig-stage" style="--ar:16/9.2;--ar-m:4/9.4"><canvas aria-hidden="true"></canvas></div>
           <figcaption class="fig-note" id="fig-seg-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">三组实测：同图同机的延迟（按真实时长播放）；INT8 与 fp32 掩码的实际 IoU；推理线程数与延迟（1 / 2 / 4 / 8 / 16 / 32 线程：2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms）。测试在云上 4 核真机上完成，环境标为内网非生产；图像与掩码形状为示意。</span><span class="en">Three measurements: latency on the same image and machine (played at real speed); the actual IoU between INT8 and fp32 masks; and inference threads vs latency (1 / 2 / 4 / 8 / 16 / 32 threads: 2,402 / 1,242 / 640 / 755 / 796 / 1,007 ms). Run on a real 4-core cloud machine, a non-production environment; the image and mask shapes are illustrative.</span></figcaption>
         </figure>
       </article>
