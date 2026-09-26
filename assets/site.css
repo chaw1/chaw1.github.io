@@ -562,7 +562,7 @@ html:not(.js) .case{padding-left:0;border-bottom:1px solid var(--line)}
   .js .reveal{opacity:1;transform:none}
   .wrap{width:auto}
   /* Interactive exhibits, and headlines the section labels already cover, do not print. */
-  .skip-link,.site-header,.scan,.hero-actions,.heatmap-card,.milestones,.section-intro h2,#year .section-intro,.contact,#platform,#method,#projects,.case-tabs,.case .notes,.case .figure-row,.case .bars,.machine,.fig,.capabilities .evidence,.contact-secondary,.copy-status,.site-footer,.job summary .icon,.section-label .number{display:none!important}
+  .case-dir,.arch-paths,.case-more,.fig-code,.fig-legend,.hero-lede-2,.skip-link,.site-header,.scan,.hero-actions,.heatmap-card,.milestones,.section-intro h2,#year .section-intro,.contact,#platform,#method,#projects,.case-tabs,.case .notes,.case .figure-row,.case .bars,.machine,.fig,.capabilities .evidence,.contact-secondary,.copy-status,.site-footer,.job summary .icon,.section-label .number{display:none!important}
   .section,.section-dark>.wrap{padding:0;border:0}
   .section{margin-top:12pt}
   .section-label{font-size:7.5pt;letter-spacing:.12em;color:#444;border-bottom:.5pt solid #999;padding-bottom:2pt;break-after:avoid}
