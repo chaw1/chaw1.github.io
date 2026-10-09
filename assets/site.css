@@ -566,7 +566,6 @@ html:not(.js) .case{padding-left:0;border-bottom:1px solid var(--line)}
 /* ---------- resume and case reading ---------- */
 .hero-copy{min-width:0}
 @media screen and (min-width:981px){.hero h1 .en{font-size:clamp(40px,4vw,60px);line-height:1.12}}
-.hero .availability{font-size:14px;line-height:1.7;margin-top:6px;color:var(--muted)}
 .button-secondary{background:transparent;color:var(--ink);border-color:var(--line)}
 .button-secondary:hover{background:#fff;border-color:var(--ink);color:var(--ink);box-shadow:none}
 .ticker-note{font:12px/1.7 var(--sans);letter-spacing:0;max-width:850px}
@@ -625,7 +624,7 @@ html:not(.js) .case{padding-left:0;border-bottom:1px solid var(--line)}
 }
 @media print{
   .hero h1{font-size:20pt}
-  .reading-paths,.case-index,.case-tools,#resume,.availability{display:none!important}
+  .reading-paths,.case-index,.case-tools,#resume{display:none!important}
   .case-evidence>summary{display:none}
   .case-summary{margin:4pt 0}
   .case-summary>div{padding:3pt 0;gap:8pt;grid-template-columns:65pt 1fr}
