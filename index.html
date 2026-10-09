@@ -36,11 +36,11 @@
 }
 </script>
 <link rel="icon" href="assets/icons/stack.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20261009-homepage">
+<link rel="stylesheet" href="assets/site.css?v=20261009-refined">
 <script>(function(d){d.classList.add('js');try{var l=localStorage.getItem('jiawis-lang');if(l==='en'||l==='zh'){d.dataset.lang=l;d.lang=l==='zh'?'zh-CN':'en'}}catch(e){}})(document.documentElement)</script>
-<script src="assets/site.js?v=20261009-homepage" defer></script>
-<script src="assets/pointcloud.js?v=20261009-homepage" defer></script>
-<script src="assets/figures.js?v=20261009-homepage" defer></script>
+<script src="assets/site.js?v=20261009-refined" defer></script>
+<script src="assets/pointcloud.js?v=20261009-refined" defer></script>
+<script src="assets/figures.js?v=20261009-refined" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到主要内容</span><span class="en">Skip to content</span></a>
@@ -72,16 +72,17 @@
   <section class="hero wrap" id="intro" aria-labelledby="hero-heading">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="zh">用工程判断，解决复杂问题。</span><span class="en">Engineering judgment. Systems that ship.</span></p>
-        <h1 id="hero-heading"><span class="zh">张嘉玮<span class="period">.</span><span class="hero-role">Java / 全栈技术负责人</span></span><span class="en">Jiawei Zhang<span class="period">.</span><span class="hero-role">Java / Full-Stack Tech Lead</span></span></h1>
-        <p class="identity"><span class="zh">杭州 base · 上海看机会 · 离职，随时到岗</span><span class="en">Based in Hangzhou · Open to Shanghai · Available now</span></p>
+        <p class="eyebrow"><span class="zh">平台架构 / Java 与全栈 / 数据与 AI 工程</span><span class="en">PLATFORM ARCHITECTURE / JAVA &amp; FULL-STACK / DATA &amp; AI</span></p>
+        <h1 id="hero-heading"><span class="zh">用工程判断，<br>解决复杂问题<span class="period">。</span></span><span class="en">Engineering judgment.<br>Systems that ship<span class="period">.</span></span></h1>
+        <p class="identity"><span class="zh">张嘉玮 · Java / 全栈技术负责人</span><span class="en">Jiawei Zhang · Java / Full-Stack Tech Lead</span></p>
+        <p class="availability"><span class="zh">杭州 base · 上海看机会 · 离职，随时到岗</span><span class="en">Based in Hangzhou · Open to Shanghai · Available now</span></p>
         <p class="hero-lede"><span class="zh">以 Java 后端为主，结合 Python 数据工作流、Go 服务与 Vue / TypeScript 全栈，负责平台架构、核心开发和交付。</span><span class="en">Java-focused engineering across platform architecture, hands-on development and delivery, with Python data workflows, Go services and Vue / TypeScript.</span></p>
         <p class="hero-lede hero-lede-2"><span class="zh">曾负责两条产品线，统筹约 20 人的研发、运维与测试平台组。Agent 经历侧重架构设计、质量审计与 LAB 验证。</span><span class="en">Led two product lines and coordinated a platform group of about 20 across engineering, operations and testing. Agent work covers architecture, quality review and LAB validation.</span></p>
         <div class="hero-actions">
-          <a class="button" href="#cases"><span class="zh">看相关案例</span><span class="en">Explore the cases</span><i class="icon i-right" aria-hidden="true"></i></a>
-          <a class="button button-secondary" href="#resume"><span class="zh">获取简历 PDF</span><span class="en">Get my resume</span><i class="icon i-right" aria-hidden="true"></i></a>
+          <a class="button" href="#cases"><span class="zh">看工程案例</span><span class="en">Read the cases</span><i class="icon i-right" aria-hidden="true"></i></a>
+          <a class="text-link" href="#resume"><span class="zh">获取简历 PDF</span><span class="en">Get my resume</span><i class="icon i-right" aria-hidden="true"></i></a>
+          <a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a>
         </div>
-        <div class="hero-links"><a class="text-link" href="#work"><span class="zh">工作与教育</span><span class="en">Experience &amp; education</span></a><a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a></div>
       </div>
       <figure class="scan" id="scan" aria-labelledby="scan-caption">
         <canvas id="scan-canvas" aria-hidden="true"></canvas>
@@ -113,7 +114,14 @@
       <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。性能与交付数字都注明环境：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Performance and delivery numbers state their environment: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
     </div>
 
-    <div class="reading-paths" aria-labelledby="reading-paths-heading"><p class="reading-paths-label" id="reading-paths-heading"><span class="zh">按你关注的方向阅读</span><span class="en">Start with the work that matters to you</span></p><ol class="role-routes"><li><h3><span class="zh">Agent／Harness</span><span class="en">Agent / Harness</span></h3><p><span class="zh">从工具与上下文可靠性，读到任务恢复和验收方法。</span><span class="en">From tool and context reliability to task recovery and acceptance methods.</span></p><div class="route-links"><a href="#case-agent" data-case="tab-agent"><span class="zh">F · Agent优化</span><span class="en">F · Agent optimization</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-queue" data-case="tab-queue"><span class="zh">A · 任务恢复与幂等</span><span class="en">A · Recovery and idempotency</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#method"><span class="zh">我的验收方法</span><span class="en">How I validate</span><i class="icon i-right" aria-hidden="true"></i></a></div></li><li><h3><span class="zh">Java／全栈</span><span class="en">Java / Full-stack</span></h3><p><span class="zh">从事务与数据交付，读到端到端平台架构。</span><span class="en">From transactions and data delivery to end-to-end platform architecture.</span></p><div class="route-links"><a href="#case-queue" data-case="tab-queue"><span class="zh">A · 事务与调度</span><span class="en">A · Transactions and scheduling</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-upload" data-case="tab-upload"><span class="zh">B · 上传与版本</span><span class="en">B · Uploads and versions</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#platform"><span class="zh">平台架构</span><span class="en">Platform architecture</span><i class="icon i-right" aria-hidden="true"></i></a></div></li><li><h3><span class="zh">技术负责人</span><span class="en">Technical leadership</span></h3><p><span class="zh">从发布取舍与交付责任，读到团队协作和任职经历。</span><span class="en">From release trade-offs and delivery ownership to collaboration and experience.</span></p><div class="route-links"><a href="#case-release" data-case="tab-release"><span class="zh">C · 发布与稳定性</span><span class="en">C · Releases and reliability</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#case-arm" data-case="tab-arm"><span class="zh">E · 私有化交付</span><span class="en">E · On-prem delivery</span><i class="icon i-right" aria-hidden="true"></i></a><a href="#work"><span class="zh">任职经历</span><span class="en">Experience</span><i class="icon i-right" aria-hidden="true"></i></a></div></li></ol></div>
+    <div class="reading-paths" aria-labelledby="reading-paths-heading">
+      <p class="reading-paths-label" id="reading-paths-heading"><span class="zh">按方向阅读</span><span class="en">Read by role</span></p>
+      <nav class="role-routes" aria-label="岗位方向 / Role focus">
+        <a href="#case-queue" data-case="tab-queue"><span class="zh">Java / 全栈</span><span class="en">Java / Full-stack</span><i class="icon i-right" aria-hidden="true"></i></a>
+        <a href="#case-agent" data-case="tab-agent">Agent / Harness<i class="icon i-right" aria-hidden="true"></i></a>
+        <a href="#case-release" data-case="tab-release"><span class="zh">技术负责人</span><span class="en">Technical leadership</span><i class="icon i-right" aria-hidden="true"></i></a>
+      </nav>
+    </div>
     <details class="case-index"><summary><span class="zh">浏览全部 6 个案例</span><span class="en">Browse all 6 cases</span></summary>
     <ol class="case-dir" aria-label="案例目录 / Case index">
       <li><a href="#case-queue" data-case="tab-queue"><span class="mono">A</span><strong><span class="zh">队列放进 MySQL，与任务状态同一事务</span><span class="en">Keep the queue in MySQL, in the same transaction as task state</span></strong><span class="dir-result"><span class="zh">万级任务提交 >2 min → 0.89 s；280 次重试只出 1 个版本</span><span class="en">10k-task submission >2 min → 0.89 s; 280 retries, one version</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></span></a></li>
