@@ -353,7 +353,7 @@
   /* ---------------- case tabs ---------------- */
   const tabs = $$('.case-tabs [role="tab"]');
   const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
-  function selectTab(tab, focus) {
+  function selectTab(tab, focus, options = {}) {
     tabs.forEach((other, i) => {
       const selected = other === tab;
       other.setAttribute('aria-selected', String(selected));
@@ -362,13 +362,17 @@
       panels[i].classList.toggle('is-active', selected);
     });
     if (focus) tab.focus();
-    if (selectTab.ready) history.replaceState(null, '', `#${tab.getAttribute('aria-controls')}`);
-    if (tab.scrollIntoView && window.innerWidth <= 980) {
-      tab.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+    const hash = '#' + tab.getAttribute('aria-controls');
+    if (options.historyMode && window.location.hash !== hash) {
+      history[options.historyMode === 'replace' ? 'replaceState' : 'pushState'](null, '', hash);
+    }
+    if (tabList && window.innerWidth <= 980) {
+      const offset = tab.getBoundingClientRect().left - tabList.getBoundingClientRect().left;
+      tabList.scrollLeft += offset - (tabList.clientWidth - tab.offsetWidth) / 2;
     }
   }
   tabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => selectTab(tab));
+    tab.addEventListener('click', () => selectTab(tab, false, { historyMode: 'push' }));
     tab.addEventListener('keydown', (e) => {
       // The list is vertical on desktop and a horizontal strip on small screens; accept both axes.
       let target = null;
@@ -376,7 +380,7 @@
       else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') target = tabs[(i - 1 + tabs.length) % tabs.length];
       else if (e.key === 'Home') target = tabs[0];
       else if (e.key === 'End') target = tabs[tabs.length - 1];
-      if (target) { e.preventDefault(); selectTab(target, true); }
+      if (target) { e.preventDefault(); selectTab(target, true, { historyMode: 'replace' }); }
     });
   });
   const tabList = $('.case-tabs');
@@ -386,27 +390,58 @@
   if (tabs.length) {
     const fromHash = tabs.find((tab) => `#${tab.getAttribute('aria-controls')}` === window.location.hash);
     selectTab(fromHash || tabs[0]);
-    selectTab.ready = true;
+    if (fromHash) requestAnimationFrame(() => document.getElementById(fromHash.getAttribute('aria-controls')).scrollIntoView({ block: 'start', behavior: 'auto' }));
     // Back / forward and pasted links: keep the open case in step with the URL.
-    window.addEventListener('hashchange', () => {
-      const tab = tabs.find((x) => `#${x.getAttribute('aria-controls')}` === window.location.hash);
-      if (tab && tab.getAttribute('aria-selected') !== 'true') selectTab(tab);
-    });
+    const syncCaseFromLocation = () => {
+      const tab = tabs.find((x) => '#' + x.getAttribute('aria-controls') === window.location.hash) || (!window.location.hash ? tabs[0] : null);
+      if (tab && tab.getAttribute('aria-selected') !== 'true') selectTab(tab, false);
+    };
+    window.addEventListener('hashchange', syncCaseFromLocation);
+    window.addEventListener('popstate', syncCaseFromLocation);
   }
   // Capability evidence links open the matching case.
   $$('[data-case]').forEach((link) => link.addEventListener('click', (e) => {
     const tab = document.getElementById(link.dataset.case);
     if (!tab) return;
     e.preventDefault();
-    selectTab(tab);
+    selectTab(tab, false, { historyMode: 'push' });
     const panel = document.getElementById(tab.getAttribute('aria-controls'));
     const target = window.innerWidth <= 980 ? $('#casebook') : panel;
     target.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
-    history.replaceState(null, '', `#${panel.id}`);
     window.setTimeout(() => panel.focus({ preventScroll: true }), reducedMotion() ? 0 : 500);
   }));
 
   // The delivery machine in case A is driven by assets/figures.js (FIG.A).
+
+  /* ---------------- case sharing ---------------- */
+  const shareTimers = new WeakMap();
+  $$('[data-copy-case]').forEach((button) => button.addEventListener('click', async () => {
+    const status = button.parentElement.querySelector('.case-share-status');
+    const url = new URL(window.location.pathname, window.location.origin);
+    url.hash = button.dataset.copyCase;
+    button.disabled = true;
+    let ok = false;
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(url.href);
+      ok = true;
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = url.href;
+      area.readOnly = true;
+      area.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(area);
+      area.select();
+      try { ok = document.execCommand('copy'); } catch (_) { /* use the visible URL */ }
+      area.remove();
+      button.focus({ preventScroll: true });
+    } finally { button.disabled = false; }
+    clearTimeout(shareTimers.get(button));
+    status.textContent = ok ? t('链接已复制', 'Link copied') : t('复制失败，可复制地址栏中的链接。', 'Copy failed. Copy the link from the address bar.');
+    if (!ok) history.replaceState(null, '', url.hash);
+    shareTimers.set(button, setTimeout(() => { status.textContent = ''; }, 5000));
+  }));
+  languageListeners.push(() => $$('.case-share-status').forEach((status) => { status.textContent = ''; }));
 
   /* ---------------- email copy ---------------- */
   const copyButton = $('#copy-email');

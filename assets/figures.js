@@ -245,6 +245,7 @@
       canvas.addEventListener('pointerleave', () => { api.pointer = null; render(); });
     }
     langHooks.push(() => { syncChrome.force = true; render(); syncToggle(); });
+    syncToggle();
     resize();
   }
 
@@ -1174,7 +1175,7 @@
         ctx.globalAlpha = a;
         const y0 = y2 + bh + (wide ? 70 : 60);
         ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, y0 - 22); ctx.lineTo(w - pad, y0 - 22); ctx.stroke();
-        text(ctx, wide ? L('整轮 harness 调优后的实测结果（重排是其中一项）', 'Measured after the full harness pass (the reorder is one part of it)') : L('整轮调优后的实测结果', 'Measured after the full pass'), pad, y0 - 4, { size: 10.5, color: C.muted });
+        text(ctx, wide ? L('本轮 LAB 观察（各指标分别记录）', 'LAB observations (separate metric scopes)') : L('本轮 LAB 观察', 'LAB observations'), pad, y0 - 4, { size: 10.5, color: C.muted });
         const metrics = [
           { k: L('输入 token', 'input tokens'), a: L('159.0 万', '1.59 M'), b: L('89.6 万', '0.896 M'), va: 1590, vb: 896, d: '−43.6%' },
           { k: L('单个 prompt', 'per prompt'), a: '12,726', b: '9,631', va: 12726, vb: 9631, d: '−24.3%' },
@@ -1204,7 +1205,7 @@
       chapters: [
         { at: 0, zh: '改前', en: 'Before', sayZh: '进行中任务每轮都变，却排在 Skill 和对话历史前面，缓存前缀在这里断开，后面每轮都要重算。实测命中 51.0%。', sayEn: 'The task-state block changes every turn yet sat ahead of skills and history, so the cache prefix broke there and everything after it was recomputed each turn. Measured hit rate: 51.0%.' },
         { at: R0, zh: '重排', en: 'Reorder', sayZh: '稳定段挪到前面，易变段从 3,320 字符压到 211 并放到末尾；工具目录 28 → 20。可复用的前缀一直延伸到末尾。', sayEn: 'Stable sections move first; the volatile block shrinks from 3,320 to 211 characters and goes last; the tool catalog drops from 28 to 20. The reusable prefix now runs to the end.' },
-        { at: X0, zh: '结果', en: 'Result', sayZh: '整轮 harness 调优后，同一套 24 例回归：输入 token 降 43.6%，失败 53 → 20，任务通过 5 → 7。', sayEn: 'After the full harness pass, on the same 24-case regression: 43.6% fewer input tokens, failures 53 → 20, tasks passed 5 → 7.' }
+        { at: X0, zh: '结果', en: 'Result', sayZh: 'LAB 记录输入 token 降 43.6%；24 例回归错误数 53 → 20，任务通过数另记 5 → 7，各项计数不合并为一个成功率。', sayEn: 'LAB records show 43.6% fewer input tokens, errors across 24 regression cases falling from 53 to 20, and a separate task-pass count of 5 to 7. These counts are not a single success rate.' }
       ]
     });
   }
