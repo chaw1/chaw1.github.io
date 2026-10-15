@@ -80,7 +80,7 @@
   updateCurrent();
 
   /* ---------------- reveal + count-up ---------------- */
-  const revealTargets = $$('.section-intro, .case-dir, .stats, .heatmap-card, .milestones, .arch, .casebook, .loop, .ledger, .principles, .project-grid, .project-list, .experience, .contact > div');
+  const revealTargets = $$('.section-intro, .case-dir, .stats, .heatmap-card, .milestones, .arch, .casebook, .loop, .ledger, .principles, .project-grid, .project-list, .pj-feature, .pj-mini, .caps, .experience, .contact > div');
   const countTargets = $$('[data-count]');
   function formatNumber(n) { return n.toLocaleString('en-US'); }
   function countUp(el) {
@@ -347,8 +347,76 @@
     activePath = activePath === b.dataset.path ? null : b.dataset.path;
     if (activePath) { archActive = archPaths[activePath].focus; renderArch(true); }
     renderPath();
+    drawWires();
+  }));
+  // Selecting a component outside the current path leaves path mode, so nothing stays greyed out.
+  archNodes.forEach((n) => n.addEventListener('click', () => {
+    if (activePath && !archPaths[activePath].nodes.includes(n.dataset.node)) { activePath = null; renderPath(); drawWires(); }
   }));
   languageListeners.push(renderPath);
+
+  // Wires: an SVG layer that routes the active path through the map, with packets flowing along it.
+  const archMap = $('.arch-map');
+  let wireSvg = null, wirePath = null, wireGlow = null, packets = [], wireLen = 0, wireRaf = 0, wireVisible = false;
+  if (archMap) {
+    const NS = 'http://www.w3.org/2000/svg';
+    wireSvg = document.createElementNS(NS, 'svg');
+    wireSvg.setAttribute('class', 'arch-wires');
+    wireSvg.setAttribute('aria-hidden', 'true');
+    wireGlow = document.createElementNS(NS, 'path'); wireGlow.setAttribute('class', 'wire-glow');
+    wirePath = document.createElementNS(NS, 'path'); wirePath.setAttribute('class', 'wire');
+    wireSvg.append(wireGlow, wirePath);
+    for (let i = 0; i < 4; i++) { const c = document.createElementNS(NS, 'circle'); c.setAttribute('r', i ? '3' : '4.5'); c.setAttribute('class', 'packet'); wireSvg.append(c); packets.push(c); }
+    archMap.prepend(wireSvg);
+  }
+  function drawWires() {
+    if (!wireSvg) return;
+    const box = archMap.getBoundingClientRect();
+    wireSvg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+    const path = activePath ? archPaths[activePath] : null;
+    archMap.classList.toggle('has-path', Boolean(path));
+    if (!path) { wirePath.setAttribute('d', ''); wireGlow.setAttribute('d', ''); wireLen = 0; return; }
+    const pts = path.nodes.map((id) => {
+      const r = archMap.querySelector(`[data-node="${id}"]`).getBoundingClientRect();
+      return [r.left - box.left + r.width / 2, r.top - box.top + r.height / 2];
+    });
+    let d = `M${pts[0][0]},${pts[0][1]}`;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
+      if (Math.abs(y1 - y0) < 4) d += ` L${x1},${y1}`;
+      else { const my = (y0 + y1) / 2; d += ` L${x0},${my} L${x1},${my} L${x1},${y1}`; }
+    }
+    wirePath.setAttribute('d', d); wireGlow.setAttribute('d', d);
+    wireLen = wirePath.getTotalLength();
+    wirePath.style.setProperty('--len', wireLen);
+    wirePath.classList.remove('is-drawing'); void wirePath.getBBox(); wirePath.classList.add('is-drawing');
+    if (!wireRaf && wireVisible) wireRaf = requestAnimationFrame(tickWires);
+  }
+  function tickWires(now) {
+    wireRaf = 0;
+    if (!wireLen || !wireVisible) { packets.forEach((c) => c.setAttribute('opacity', '0')); return; }
+    const period = Math.max(2600, wireLen * 4.5);
+    packets.forEach((c, i) => {
+      const f = ((now / period) + i * 0.09) % 1;
+      const pt = wirePath.getPointAtLength(f * wireLen);
+      c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y);
+      c.setAttribute('opacity', String((i ? 0.55 - i * 0.12 : 1) * Math.min(1, f * 8, (1 - f) * 8)));
+    });
+    if (!reducedMotion()) wireRaf = requestAnimationFrame(tickWires);
+  }
+  if (archMap) {
+    window.addEventListener('resize', () => requestAnimationFrame(drawWires));
+    languageListeners.push(() => requestAnimationFrame(drawWires));
+    const startPath = () => { if (!activePath) { activePath = 'deliver'; archActive = archPaths.deliver.focus; renderArch(false); renderPath(); } drawWires(); };
+    if ('IntersectionObserver' in window) {
+      let started = false;
+      new IntersectionObserver((es) => es.forEach((e) => {
+        wireVisible = e.isIntersecting;
+        if (wireVisible && !started) { started = true; startPath(); }
+        else if (wireVisible && !wireRaf) wireRaf = requestAnimationFrame(tickWires);
+      }), { threshold: 0.25 }).observe(archMap);
+    } else { wireVisible = true; startPath(); }
+  }
 
   /* ---------------- case tabs ---------------- */
   const tabs = $$('.case-tabs [role="tab"]');

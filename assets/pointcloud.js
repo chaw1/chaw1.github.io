@@ -1,7 +1,7 @@
 /*
  * A small, dependency-free WebGL LiDAR scene.
  * 1. Build a street out of boxes and spheres (seeded, so every visit looks the same).
- * 2. Cast rays from a virtual 64-beam spinning LiDAR and keep the first hit of each ray.
+ * 2. Cast rays from a virtual 128-beam spinning LiDAR and keep the first hit of each ray.
  * 3. Render the hits as points with a rotating sweep, plus a 3D annotation cuboid.
  */
 (() => {
@@ -144,9 +144,9 @@
   }
 
   const small = Math.min(window.innerWidth, window.innerHeight) < 700 || (navigator.hardwareConcurrency || 8) <= 4;
-  const scanArgs = [small ? 48 : 64, small ? 900 : 1500, { ground: GROUND, car, cars }];
+  const scanArgs = [small ? 96 : 128, small ? 3200 : 9000, { ground: GROUND, car, cars }];
 
-  // Ray-casting ~100k beams takes 60-200 ms of CPU, so it runs in a worker built from a Blob URL
+  // Ray-casting ~1M beams takes 0.4-1.5 s of CPU, so it runs in a worker built from a Blob URL
   // (no extra file, no build step). If workers are unavailable it falls back to the main thread
   // after first paint. Either way the output is the same seeded point cloud.
   function requestScan(done) {
@@ -383,7 +383,7 @@
       gl.uniformMatrix4fv(loc.uMVP, false, mvp);
       gl.uniform3fv(loc.uEye, eye);
       gl.uniform1f(loc.uSweep, sweep);
-      gl.uniform1f(loc.uSize, small ? 2.1 : 1.9);
+      gl.uniform1f(loc.uSize, small ? 1.45 : 1.25);
       gl.uniform1f(loc.uDpr, dpr);
       gl.bindBuffer(gl.ARRAY_BUFFER, pointBuf);
       gl.enableVertexAttribArray(loc.aPoint);

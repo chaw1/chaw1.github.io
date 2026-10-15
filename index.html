@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#faf9f5">
-<title>张嘉玮 Jiawei Zhang — Java / 全栈技术负责人</title>
-<meta name="description" content="张嘉玮 Jiawei Zhang，Java / 全栈技术负责人。平台架构、Python 数据工作流、Go 服务与 AI 应用工程；六个工程案例、中英文简历与工作经历。">
-<meta property="og:title" content="张嘉玮 Jiawei Zhang — Java / 全栈技术负责人">
-<meta property="og:description" content="张嘉玮 Jiawei Zhang。Java / 全栈、平台与 AI 工程：案例、履历和中英文简历。Engineering cases, experience and bilingual resumes.">
+<title>张嘉玮 Jiawei Zhang — AI 数据平台与 Agent 工程负责人</title>
+<meta name="description" content="张嘉玮 Jiawei Zhang，AI 数据平台与 Agent 工程负责人。Agent 运行时（MCP、Skill、工作流）、万级任务队列与大包入库、模型服务；Java 后端出身，Python / Go / Vue 全栈。工程案例、Agent 演示与中英文简历。">
+<meta property="og:title" content="张嘉玮 Jiawei Zhang — AI 数据平台与 Agent 工程负责人">
+<meta property="og:description" content="张嘉玮 Jiawei Zhang。AI 数据平台与 Agent 工程：三维 Agent 演示、工程案例、中英文简历。AI data platforms and agent engineering: a 3D agent demo, engineering cases and bilingual resumes.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://hire.jiawis.com/">
 <meta property="og:site_name" content="Jiawei Zhang">
@@ -18,8 +18,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="张嘉玮 Jiawei Zhang：用工程判断，解决复杂问题。三个生产指标：15 天可用性 99.9975%，7 天真实请求 331 万，约 10 GB 直传 41.8 MiB/s；右侧是一段 WebGL 激光雷达点云与 3D 标注框。">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="张嘉玮 Jiawei Zhang — Java / 全栈技术负责人">
-<meta name="twitter:description" content="张嘉玮 Jiawei Zhang。Java / 全栈、平台与 AI 工程：案例、履历和中英文简历。Engineering cases, experience and bilingual resumes.">
+<meta name="twitter:title" content="张嘉玮 Jiawei Zhang — AI 数据平台与 Agent 工程负责人">
+<meta name="twitter:description" content="张嘉玮 Jiawei Zhang。AI 数据平台与 Agent 工程：三维 Agent 演示、工程案例、中英文简历。AI data platforms and agent engineering: a 3D agent demo, engineering cases and bilingual resumes.">
 <meta name="twitter:image" content="https://hire.jiawis.com/assets/og.png?v=3">
 <link rel="canonical" href="https://hire.jiawis.com/">
 <script type="application/ld+json">
@@ -36,12 +36,13 @@
 }
 </script>
 <link rel="icon" href="assets/icons/stack.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20261015-clay">
+<link rel="stylesheet" href="assets/site.css?v=20261015-arch">
 <script>(function(d){d.classList.add('js');try{var l=localStorage.getItem('jiawis-lang');if(l==='en'||l==='zh'){d.dataset.lang=l;d.lang=l==='zh'?'zh-CN':'en'}}catch(e){}})(document.documentElement)</script>
-<script src="assets/site.js?v=20261015-clay" defer></script>
-<script src="assets/pointcloud.js?v=20261015-clay" defer></script>
+<script src="assets/site.js?v=20261015-arch" defer></script>
+<script src="assets/pointcloud.js?v=20261015-1m" defer></script>
 <script src="assets/figures.js?v=20261015-clay" defer></script>
 <script src="assets/harness.js?v=20261015-clay" defer></script>
+<script src="assets/agentlab.js?v=20261015-ai" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到主要内容</span><span class="en">Skip to content</span></a>
@@ -49,11 +50,11 @@
   <div class="wrap nav-wrap">
     <a class="brand" href="#top" aria-label="Jiawei Zhang home">jiawei zhang<span>.</span></a>
     <nav id="site-nav" class="site-nav" aria-label="主导航 / Main navigation">
+      <a href="#fit" data-nav><span class="zh">能力</span><span class="en">Skills</span></a>
       <a href="#agent" data-nav>Agent</a>
       <a href="#cases" data-nav><span class="zh">案例</span><span class="en">Cases</span></a>
-      <a href="#work" data-nav><span class="zh">经历</span><span class="en">Experience</span></a>
       <a href="#platform" data-nav><span class="zh">平台</span><span class="en">Platform</span></a>
-      <a href="#method" data-nav><span class="zh">方法</span><span class="en">Method</span></a>
+      <a href="#work" data-nav><span class="zh">经历</span><span class="en">Experience</span></a>
       <a href="#projects" data-nav><span class="zh">项目</span><span class="en">Projects</span></a>
       <a href="#resume" data-nav><span class="zh">简历</span><span class="en">Resume</span></a>
       <a class="nav-mobile-only" href="#contact" data-nav><span class="zh">联系</span><span class="en">Contact</span></a>
@@ -74,14 +75,14 @@
   <section class="hero wrap" id="intro" aria-labelledby="hero-heading">
     <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="zh">平台架构 / 数据与 AI 工程</span><span class="en">PLATFORM ARCHITECTURE / DATA &amp; AI</span></p>
+        <p class="eyebrow"><span class="zh">AI 数据平台 / Agent 工程 / 技术负责人</span><span class="en">AI DATA PLATFORMS / AGENT ENGINEERING / TECH LEAD</span></p>
         <h1 id="hero-heading"><span class="zh">用工程判断，<br>解决复杂问题<span class="period">。</span></span><span class="en">Engineering judgment.<br>Systems that ship<span class="period">.</span></span></h1>
-        <p class="identity"><span class="zh">张嘉玮 · Java / 全栈技术负责人</span><span class="en">Jiawei Zhang · Java / Full-Stack Tech Lead</span></p>
-        <p class="hero-lede"><span class="zh">以 Java 后端为主，结合 Python 数据工作流、Go 服务与 Vue / TypeScript 全栈，负责平台架构、核心开发和交付。</span><span class="en">Java-focused engineering across platform architecture, hands-on development and delivery, with Python data workflows, Go services and Vue / TypeScript.</span></p>
-        <p class="hero-lede hero-lede-2"><span class="zh">曾负责两条产品线，统筹约 20 人的研发、运维与测试平台组。Agent 经历侧重架构设计、质量审计与 LAB 验证。</span><span class="en">Led two product lines and coordinated a platform group of about 20 across engineering, operations and testing. Agent work covers architecture, quality review and LAB validation.</span></p>
+        <p class="identity"><span class="zh">张嘉玮 · AI 数据平台与 Agent 工程负责人</span><span class="en">Jiawei Zhang · AI Data Platform &amp; Agent Engineering Lead</span></p>
+        <p class="hero-lede"><span class="zh">过去一年负责 SolarSense AI 数据平台：从万级任务队列、大包入库与数据版本，到业务 Agent 运行时（MCP 网关、Skill、确定性工作流）。Java 后端出身，Python / Go / Vue 全栈。</span><span class="en">For the past year I owned the SolarSense AI data platform, from a 10k-task queue, large-archive ingest and dataset versioning to a business-agent runtime (MCP gateway, skills, deterministic workflows). Java backend at the core; full-stack across Python, Go and Vue.</span></p>
+        <p class="hero-lede hero-lede-2"><span class="zh">统筹约 20 人的研发、运维与测试平台组；日常用 Claude Code 与 Codex 多智能体开发，规格与验收由我把关。</span><span class="en">I led a platform team of about 20 across engineering, operations and QA. Day to day I build with Claude Code and Codex as a multi-agent team, and I own the spec and the sign-off.</span></p>
         <div class="hero-actions">
           <a class="button" href="#agent"><span class="zh">看 Agent 演示</span><span class="en">Watch the agent demo</span><i class="icon i-right" aria-hidden="true"></i></a>
-          <a class="text-link" href="#resume"><span class="zh">获取简历 PDF</span><span class="en">Get my resume</span><i class="icon i-right" aria-hidden="true"></i></a>
+          <a class="text-link" href="#resume"><span class="zh">获取简历 PDF</span><span class="en">Download resume</span><i class="icon i-right" aria-hidden="true"></i></a>
           <a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a>
         </div>
       </div>
@@ -95,26 +96,64 @@
         <div class="scan-fallback"><p><span class="zh">此处是一段实时渲染的激光雷达点云。<br>当前浏览器未启用 WebGL。</span><span class="en">A live-rendered LiDAR point cloud.<br>WebGL is unavailable in this browser.</span></p></div>
         <figcaption id="scan-caption" class="scan-caption">
           <span class="mono">FIG.0 · WEBGL · NO LIBRARIES</span>
-          <span><span class="zh">程序生成的街景，虚拟多线激光雷达逐束光线投射得到的点云，框为 3D 标注。可拖动旋转。</span><span class="en">A procedurally generated street, ray-cast beam by beam by a virtual LiDAR, with a 3D annotation box. Drag to orbit.</span></span>
+          <span><span class="zh">程序生成的街景，虚拟 128 线激光雷达逐束光线投射出约 100 万个点，框为 3D 标注。可拖动旋转。</span><span class="en">A procedurally generated street, ray-cast beam by beam by a virtual 128-beam LiDAR into about a million points, with a 3D annotation box. Drag to orbit.</span></span>
         </figcaption>
       </figure>
     </div>
-    <dl class="hero-ticker" aria-label="交付与验证 / Delivery and validation">
+    <dl class="hero-ticker" aria-label="规模与验证 / Scale and validation">
+      
+      <div><dt><span class="zh">生产真实请求 · 单周</span><span class="en">Real production requests · one week</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></dt><dd><span class="zh">331 万</span><span class="en">3.31 M</span></dd></div>
       <div><dt><span class="zh">服务稳定性 · 15 天探针</span><span class="en">Reliability · 15-day probe</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></dt><dd>99.9975%</dd></div>
       <div><dt><span class="zh">约 10 GB 大包直传</span><span class="en">~10 GB direct upload</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></dt><dd>41.8 MiB/s</dd></div>
-      <div><dt><span class="zh">万级任务提交耗时</span><span class="en">10k-task submission</span> <span class="tag lab">LAB</span></dt><dd>0.89 s</dd></div>
+      <div><dt><span class="zh">Agent 输入 token · 调优后</span><span class="en">Agent input tokens · after tuning</span> <span class="tag lab">LAB</span></dt><dd>−43.6%</dd></div>
     </dl>
-    <p class="ticker-note"><span class="zh">历史验收记录，各指标对应独立测量窗口；提交耗时不代表任务处理完成时间。详见案例。</span><span class="en">Historical acceptance records from separate measurement windows. Submission latency is not end-to-end processing time. See each case for scope.</span></p>
+    <p class="ticker-note"><span class="zh">各指标为独立测量窗口的实测；LAB 为内网环境。详见下方各节。</span><span class="en">Measured in separate windows; LAB = internal, non-production environment. Details in each section below.</span></p>
+  </section>
+
+  <!-- ============ 01 CAPABILITIES ============ -->
+  <section class="section wrap" id="fit" aria-labelledby="fit-heading">
+    <div class="section-label"><span class="number">01</span><span>/ CAPABILITY MAP</span></div>
+    <div class="section-intro">
+      <h2 id="fit-heading"><span class="zh">六个方向，<br>每条都有实测。</span><span class="en">Six areas,<br>every line measured.</span></h2>
+      <p><span class="zh">按技术岗位最常考察的方向整理。每一行是一项能力、一句证据和一个可追溯的数字；点标题直达页面上的详细出处。</span><span class="en">Organized by the areas technical roles usually look for. Each line is a skill, one piece of evidence and a traceable number; select a heading to jump to the details.</span></p>
+    </div>
+    <div class="caps">
+      <article class="cap">
+        <a class="cap-head" href="#agent"><span class="mono">01</span><h3><span class="zh">Agent 工程化</span><span class="en">Agent engineering</span></h3><i class="icon i-right" aria-hidden="true"></i></a>
+        <ul><li><span class="cap-kw"><span class="zh">大模型调用</span><span class="en">LLM integration</span></span><span class="cap-ev"><span class="zh">LLM 网关对接多家模型，14 个逐一实测；每次调用的 token、缓存、延迟落库</span><span class="en">An LLM gateway across vendors, 14 models tested; tokens, cache and latency logged per call</span></span><span class="cap-num mono"><span class="zh">12/14</span><span class="en">12/14</span></span></li><li><span class="cap-kw"><span class="zh">编排 · 工具 · MCP</span><span class="en">Orchestration · tools · MCP</span></span><span class="cap-ev"><span class="zh">8 个确定性工作流、Agent 间委派；MCP 网关接入 150+ 工具、25 个 Skill</span><span class="en">8 deterministic workflows and delegation; 150+ tools and 25 skills behind an MCP gateway</span></span><span class="cap-num mono"><span class="zh">150+</span><span class="en">150+</span><span class="tag lab">LAB</span></span></li><li><span class="cap-kw"><span class="zh">Prompt · 上下文 · 记忆</span><span class="en">Prompt · context · memory</span></span><span class="cap-ev"><span class="zh">稳定段前置提高缓存复用；用户消息永不丢弃，长会话不失忆</span><span class="en">Stable sections first for cache reuse; user messages never dropped, long sessions keep their memory</span></span><span class="cap-num mono"><span class="zh">−43.6%</span><span class="en">−43.6%</span><span class="tag lab">LAB</span></span></li><li><span class="cap-kw"><span class="zh">评测 · 质量</span><span class="en">Evaluation</span></span><span class="cap-ev"><span class="zh">528 个用例 0 失败；6 个故意改坏的变异全部被测出；回归失败 53 → 20</span><span class="en">528 tests, zero failures; all 6 deliberate mutations caught; regression failures 53 → 20</span></span><span class="cap-num mono"><span class="zh">6/6</span><span class="en">6/6</span><span class="tag lab">LAB</span></span></li></ul>
+      </article>
+      <article class="cap">
+        <a class="cap-head" href="#cases"><span class="mono">02</span><h3><span class="zh">海量数据处理</span><span class="en">Data at scale</span></h3><i class="icon i-right" aria-hidden="true"></i></a>
+        <ul><li><span class="cap-kw"><span class="zh">海量 · TB 级</span><span class="en">Massive volumes</span></span><span class="cap-ev"><span class="zh">上传与版本链路按 TB 级单数据集设计；生产实测 10 GB 包直传零中断</span><span class="en">Upload and versioning designed for TB-scale datasets; a 10 GB archive uploaded in production with no interruptions</span></span><span class="cap-num mono"><span class="zh">TB 级</span><span class="en">TB-scale</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span></li><li><span class="cap-kw"><span class="zh">时序 · 异构</span><span class="en">Time series · heterogeneous</span></span><span class="cap-ev"><span class="zh">10 类模态：图像、视频、点云、音频、文本、工业时序；单帧点云百万点级</span><span class="en">10 modalities: image, video, point cloud, audio, text, industrial time series; million-point frames</span></span><span class="cap-num mono"><span class="zh">10 类</span><span class="en">10 types</span></span></li><li><span class="cap-kw"><span class="zh">清洗 · 解析 · 转换</span><span class="en">Clean · parse · transform</span></span><span class="cap-ev"><span class="zh">56 个算子 × 预览 / 批量 112 格全部真跑，逐个核对 SHA-256</span><span class="en">56 operators × preview / batch: all 112 cells run for real, every output SHA-256-checked</span></span><span class="cap-num mono"><span class="zh">112/112</span><span class="en">112/112</span><span class="tag lab">LAB</span></span></li><li><span class="cap-kw"><span class="zh">流水线 · 延迟 · 异常</span><span class="en">Pipelines · latency · anomalies</span></span><span class="cap-ev"><span class="zh">万级文件提交秒回；疏通 4 万+ 积压；280 次重试只产出 1 个版本</span><span class="en">10k+ files submitted in under a second; a 40k+ backlog cleared; 280 retries, one version</span></span><span class="cap-num mono"><span class="zh">0.89 s</span><span class="en">0.89 s</span><span class="tag lab">LAB</span></span></li></ul>
+      </article>
+      <article class="cap">
+        <a class="cap-head" href="#platform"><span class="mono">03</span><h3><span class="zh">平台架构与后端</span><span class="en">Platform &amp; backend</span></h3><i class="icon i-right" aria-hidden="true"></i></a>
+        <ul><li><span class="cap-kw"><span class="zh">从零搭建</span><span class="en">Built from zero</span></span><span class="cap-ev"><span class="zh">一年从第一个 commit 到前端 + 11 个 Java 服务 + Worker + 模型服务 + 桌面端</span><span class="en">In one year, from the first commit to a web app, 11 Java services, workers, model serving and a desktop client</span></span><span class="cap-num mono"><span class="zh">11</span><span class="en">11</span></span></li><li><span class="cap-kw"><span class="zh">高并发 · 稳定性</span><span class="en">Load · reliability</span></span><span class="cap-ev"><span class="zh">100 并发 p95 50 ms、0 失败；单周 331 万真实请求，可用性 99.9975%</span><span class="en">p95 50 ms at 100 concurrent users, zero failures; 3.31M real requests in a week, 99.9975% availability</span></span><span class="cap-num mono"><span class="zh">50 ms</span><span class="en">50 ms</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span></li><li><span class="cap-kw"><span class="zh">多租户 · 安全</span><span class="en">Multi-tenancy · security</span></span><span class="cap-ev"><span class="zh">三层租户隔离；权限审计覆盖 48 租户、5,804 条授权，复合漏洞 26/26 修复上线</span><span class="en">Three-layer tenant isolation; a permission audit across 48 tenants and 5,804 grants; 26/26 fixes shipped</span></span><span class="cap-num mono"><span class="zh">26/26</span><span class="en">26/26</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span></li><li><span class="cap-kw"><span class="zh">性能瓶颈</span><span class="en">Bottlenecks</span></span><span class="cap-ev"><span class="zh">压测定位 CPU 打满：2 → 6 核，84 → 205 req/s，p95 2.6 s → 0.85 s</span><span class="en">Load testing found a CPU-bound service: 2 → 6 cores, 84 → 205 req/s, p95 2.6 s → 0.85 s</span></span><span class="cap-num mono"><span class="zh">2.4×</span><span class="en">2.4×</span><span class="tag lab">LAB</span></span></li></ul>
+      </article>
+      <article class="cap">
+        <a class="cap-head" href="#cases"><span class="mono">04</span><h3><span class="zh">模型服务与 MLOps</span><span class="en">Model serving &amp; MLOps</span></h3><i class="icon i-right" aria-hidden="true"></i></a>
+        <ul><li><span class="cap-kw"><span class="zh">统一接入</span><span class="en">One contract</span></span><span class="cap-ev"><span class="zh">21 个模型服务单元收敛到统一 /infer + /health 契约，网关按需扩缩</span><span class="en">21 model units unified behind one /infer + /health contract, scaled on demand by a gateway</span></span><span class="cap-num mono"><span class="zh">21</span><span class="en">21</span><span class="tag lab">LAB</span></span></li><li><span class="cap-kw"><span class="zh">按需扩缩</span><span class="en">Scale to zero</span></span><span class="cap-ev"><span class="zh">空闲缩到 0、冷启动 34 s；语音模型冷启动 22 s → 预热 704 ms</span><span class="en">Idle models scale to zero, 34 s cold start; a speech model 22 s cold → 704 ms warm</span></span><span class="cap-num mono"><span class="zh">0 → N</span><span class="en">0 → N</span><span class="tag lab">LAB</span></span></li><li><span class="cap-kw"><span class="zh">CPU 推理优化</span><span class="en">CPU inference</span></span><span class="cap-ev"><span class="zh">无 GPU 环境分割 6,000 → 640 ms；4K 图内存峰值 4,078 → 1,907 MB</span><span class="en">Segmentation without a GPU: 6,000 → 640 ms; 4K-image peak memory 4,078 → 1,907 MB</span></span><span class="cap-num mono"><span class="zh">9.4×</span><span class="en">9.4×</span><span class="tag lab">LAB</span></span></li><li><span class="cap-kw"><span class="zh">健康可信</span><span class="en">Honest health</span></span><span class="cap-ev"><span class="zh">健康状态改实时探活：31 个“全 ERROR”实为 12 个在跑</span><span class="en">Health from live probes: 31 models &quot;all in ERROR&quot; turned out to be 12 running</span></span><span class="cap-num mono"><span class="zh">31 → 12</span><span class="en">31 → 12</span></span></li></ul>
+      </article>
+      <article class="cap">
+        <a class="cap-head" href="#cases"><span class="mono">05</span><h3><span class="zh">云原生与交付</span><span class="en">Cloud-native delivery</span></h3><i class="icon i-right" aria-hidden="true"></i></a>
+        <ul><li><span class="cap-kw"><span class="zh">GitOps 发布</span><span class="en">GitOps releases</span></span><span class="cap-ev"><span class="zh">28 个生产 Deployment 纳入 GitOps；CI 唯一出图口，回滚改一行 tag</span><span class="en">28 production Deployments under GitOps; CI is the only image source; rollback is a one-line tag change</span></span><span class="cap-num mono"><span class="zh">28</span><span class="en">28</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span></li><li><span class="cap-kw"><span class="zh">可观测</span><span class="en">Observability</span></span><span class="cap-ev"><span class="zh">告警有效覆盖 64 / 64；access log 1,313 万 → 71 万行（−94.6%）</span><span class="en">Alert coverage 64 / 64; access-log lines 13.1M → 0.71M (−94.6%)</span></span><span class="cap-num mono"><span class="zh">64/64</span><span class="en">64/64</span><span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></span></li><li><span class="cap-kw"><span class="zh">离线 · 信创</span><span class="en">Air-gapped · domestic stack</span></span><span class="cap-ev"><span class="zh">27 个镜像整套平台离线交付到 ARM64 + 国产 OS 机房</span><span class="en">The full 27-image platform delivered offline to ARM64 on a domestic OS</span></span><span class="cap-num mono"><span class="zh">27</span><span class="en">27</span></span></li><li><span class="cap-kw"><span class="zh">出包前验证</span><span class="en">Verify before shipping</span></span><span class="cap-ev"><span class="zh">同规格实机真装，出包前拦下 19 个问题，其中 5 个致命</span><span class="en">Real installs on matching hardware caught 19 issues before shipping, 5 of them fatal</span></span><span class="cap-num mono"><span class="zh">19</span><span class="en">19</span><span class="tag lab">LAB</span></span></li></ul>
+      </article>
+      <article class="cap">
+        <a class="cap-head" href="#method"><span class="mono">06</span><h3><span class="zh">技术管理</span><span class="en">Engineering leadership</span></h3><i class="icon i-right" aria-hidden="true"></i></a>
+        <ul><li><span class="cap-kw"><span class="zh">团队</span><span class="en">Team</span></span><span class="cap-ev"><span class="zh">统筹约 20 人的研发、运维与测试平台组，负责两条产品线</span><span class="en">Coordinated a platform group of about 20 across engineering, operations and QA, for two product lines</span></span><span class="cap-num mono"><span class="zh">20+</span><span class="en">20+</span></span></li><li><span class="cap-kw"><span class="zh">评审 · 合流</span><span class="en">Review · merge</span></span><span class="cap-ev"><span class="zh">评审通过 400+ 个团队 MR；两条 400+ 文件的长期分支合入主干</span><span class="en">Approved 400+ team MRs; merged two long-lived branches of 400+ files each</span></span><span class="cap-num mono"><span class="zh">400+</span><span class="en">400+</span></span></li><li><span class="cap-kw"><span class="zh">节奏</span><span class="en">Cadence</span></span><span class="cap-ev"><span class="zh">一年 5,839 次提交、21 个仓；连续 8 个基线版本，2～3 周一个</span><span class="en">5,839 commits across 21 repos in a year; 8 consecutive baselines, one every 2–3 weeks</span></span><span class="cap-num mono"><span class="zh">5,839</span><span class="en">5,839</span></span></li><li><span class="cap-kw"><span class="zh">AI 协作开发</span><span class="en">AI-assisted delivery</span></span><span class="cap-ev"><span class="zh">规格与验收由我把关，Codex 实现、Claude Code 复核，多条线并行</span><span class="en">I own spec and sign-off; Codex implements and Claude Code reviews, several lines in parallel</span></span><span class="cap-num mono"><span class="zh">×N</span><span class="en">×N</span></span></li></ul>
+      </article>
+    </div>
   </section>
 
   <!-- ============ 01 SOLAR HARNESS ============ -->
   <section class="section wrap" id="agent" aria-labelledby="agent-heading">
-    <div class="section-label"><span class="number">01</span><span>/ SOLAR HARNESS · AGENT × DATA</span></div>
+    <div class="section-label"><span class="number">02</span><span>/ AI NATIVE · AGENT × MCP × SKILL</span></div>
     <div class="section-intro">
-      <h2 id="agent-heading"><span class="zh">一句话需求，<br>变成可交付的数据包。</span><span class="en">One sentence in.<br>A shippable dataset out.</span></h2>
-      <p><span class="zh">Solar Harness 是 SolarSense 的业务 Agent 运行时（前身 SolarClaw），我负责它的架构设计、质量审计与 harness 调优。它把自然语言需求拆成工作流，调用平台已有的数据集、预处理、模型和复核能力逐步执行；写操作先过确认门，每一步都有记录，可以回放。</span><span class="en">Solar Harness is SolarSense's business-agent runtime (formerly SolarClaw); I owned its architecture, quality review and harness tuning. It turns a plain-language request into a workflow and runs it step by step on the platform's own dataset, preprocessing, model and review services. Write actions pass an approval gate, and every step is logged and replayable.</span></p>
+      <h2 id="agent-heading"><span class="zh">造 Agent，<br>也用 Agent 干活。</span><span class="en">I build agents,<br>and I work with them.</span></h2>
+      <p><span class="zh">三件事：业务 Agent 运行时 Solar Harness 的目标工作流；它的 harness 实测剖面与调优；以及我自己每天怎样用 Agent、MCP 和 Skill 交付。</span><span class="en">Three things: the target workflow of Solar Harness, a business-agent runtime; a measured anatomy of its harness and how I tuned it; and how I deliver with agents, MCP and skills every day.</span></p>
     </div>
 
+    <div class="ai-part"><p class="mono ai-k">01 · SOLAR HARNESS</p><h3><span class="zh">一句话需求，变成可交付的数据包。</span><span class="en">One sentence in, a shippable dataset out.</span></h3><p><span class="zh">Solar Harness 是 SolarSense 的业务 Agent 运行时（前身 SolarClaw），我负责它的架构设计、质量审计与 harness 调优。它把自然语言需求拆成工作流，调用平台已有的数据集、预处理、模型和复核能力逐步执行；写操作先过确认门，每一步都有记录，可以回放。</span><span class="en">Solar Harness is SolarSense's business-agent runtime (formerly SolarClaw); I owned its architecture, quality review and harness tuning. It turns a plain-language request into a workflow and runs it step by step on the platform's own dataset, preprocessing, model and review services. Write actions pass an approval gate, and every step is logged and replayable.</span></p></div>
     <figure class="hf" id="harness-film" aria-labelledby="hf-caption">
       <div class="hx-stage">
         <canvas class="hx-gl" aria-hidden="true"></canvas>
@@ -151,17 +190,49 @@
     <p class="hf-note" id="hf-caption"><span class="zh">FIG.1 · 一条目标工作流的完整演示：需求 → 规划 → 确认 → 清洗 → 预标注 → 人工复核 → 打包交付。画面是 32 张真实高速公路照片（Wikimedia Commons 开放授权，含镜像），框是用开源检测模型（COCO 预训练 Faster R-CNN）在这些照片上实际跑出来的；复核特写也是真实输出——模型对同一辆厢式货车给出了 truck / car 三个互相冲突的框。数据集名、总张数与总框数为示意。每一步对应平台上已有的能力；截至 2026-08，这条端到端链路仍在联调。</span><span class="en">FIG.1 · The target workflow end to end: request → plan → approval → clean → pre-label → human review → package. The frames are 32 real highway photos (openly licensed on Wikimedia Commons, plus mirror images), and the boxes are what an open COCO-pretrained Faster R-CNN actually produced on them; the review close-up is real output too — the model gave one van three conflicting truck / car boxes. The dataset name and totals are illustrative. Each step maps to a capability the platform already has; as of Aug 2026 the end-to-end chain was still in integration.</span></p>
     <details class="hf-credits"><summary class="mono"><span class="zh">照片来源与授权（32）</span><span class="en">Photo credits &amp; licenses (32)</span></summary><ol><li><a href="https://commons.wikimedia.org/wiki/File:Southern_Motorway_Auckland_traffic_-_copyright-free_photo_released_to_public_domain.jpg" target="_blank" rel="noopener noreferrer">Southern Motorway Auckland traffic - copyright-free photo released to public domain.jpg</a> · Kiwiev · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Cars_in_traffic_in_Auckland,_New_Zealand_-_copyright-free_photo_released_to_public_domain.jpg" target="_blank" rel="noopener noreferrer">Cars in traffic in Auckland, New Zealand - copyright-free photo released to public domain.jpg</a> · Kiwiev · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Typical_Weekend_Traffic_on_IH_35_Downtown_Austin_2019.jpg" target="_blank" rel="noopener noreferrer">Typical Weekend Traffic on IH 35 Downtown Austin 2019.jpg</a> · Larry D. Moore · CC BY 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Driving_Cars_in_a_Traffic_Jam.jpg" target="_blank" rel="noopener noreferrer">Driving Cars in a Traffic Jam.jpg</a> · epSos.de · CC BY 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Photograph_of_Shirley_Highway_During_Evening_Rush_Hour_Traffic_-_NARA_-_546644.jpg" target="_blank" rel="noopener noreferrer">Photograph of Shirley Highway During Evening Rush Hour Traffic - NARA - 546644.jpg</a> · Unknown authorUnknown author or not provided · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Trafic_jam_M7_highway_2012.JPG" target="_blank" rel="noopener noreferrer">Trafic jam M7 highway 2012.JPG</a> · Derzsi Elekes Andor · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:SHIRLEY_HIGHWAY_IN_VIRGINIA._HEAVY_TRAFFIC_AND_CLEAR_BUS_LANES_-_NARA_-_546629.jpg" target="_blank" rel="noopener noreferrer">SHIRLEY HIGHWAY IN VIRGINIA. HEAVY TRAFFIC AND CLEAR BUS LANES - NARA - 546629.jpg</a> · Yoichi Okamoto · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Real_Canadian_traffic_jam_(8590180614).jpg" target="_blank" rel="noopener noreferrer">Real Canadian traffic jam (8590180614).jpg</a> · Thomas Woodtli from Zürich, Switzerland · CC BY 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:SHIRLEY_HIGHWAY_DURING_EVENING_RUSH_HOUR_-_NARA_-_546747.jpg" target="_blank" rel="noopener noreferrer">SHIRLEY HIGHWAY DURING EVENING RUSH HOUR - NARA - 546747.jpg</a> · Yoichi Okamoto · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Northbound_traffic_on_the_M1_motorway_-_geograph.org.uk_-_4343339.jpg" target="_blank" rel="noopener noreferrer">Northbound traffic on the M1 motorway - geograph.org.uk - 4343339.jpg</a> · Mat Fascione · CC BY-SA 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_Freeway_1_in_north_Taichung_03.jpg" target="_blank" rel="noopener noreferrer">Traffic on Freeway 1 in north Taichung 03.jpg</a> · Alika113 · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_Freeway_1_in_north_Taichung_02.jpg" target="_blank" rel="noopener noreferrer">Traffic on Freeway 1 in north Taichung 02.jpg</a> · Alika113 · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_Freeway_1_in_north_Taichung_04.jpg" target="_blank" rel="noopener noreferrer">Traffic on Freeway 1 in north Taichung 04.jpg</a> · Alika113 · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_Jam_-_Leh%E2%80%93Manali_Highway_-_Gulaba_-_Kullu_2014-05-10_2366.JPG" target="_blank" rel="noopener noreferrer">Traffic Jam - Leh–Manali Highway - Gulaba - Kullu 2014-05-10 2366.JPG</a> · Biswarup Ganguly · CC BY 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:401_Traffic_Jam.png" target="_blank" rel="noopener noreferrer">401 Traffic Jam.png</a> · Floydian (talk) · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_Jam_on_the_M62_-_geograph.org.uk_-_7390393.jpg" target="_blank" rel="noopener noreferrer">Traffic Jam on the M62 - geograph.org.uk - 7390393.jpg</a> · Chris Heaton · CC BY-SA 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Northbound_freeway_traffic_greenwood.jpg" target="_blank" rel="noopener noreferrer">Northbound freeway traffic greenwood.jpg</a> · Leon Brooks · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_A5_Autobahn_(22072079981).jpg" target="_blank" rel="noopener noreferrer">Traffic on A5 Autobahn (22072079981).jpg</a> · Charles from Port Chester, New York · CC BY 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Cars_are_driving_down_the_street_at_night_2025.jpg" target="_blank" rel="noopener noreferrer">Cars are driving down the street at night 2025.jpg</a> · Pattaya Patrol · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Mitchell_Freeway_147_N_Walter_morning_peak.jpg" target="_blank" rel="noopener noreferrer">Mitchell Freeway 147 N Walter morning peak.jpg</a> · User:Orderinchaos · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Eastern_Freeway_centre_of_road_Balwyn_North-01_from_balloon_2007-03-05.jpg" target="_blank" rel="noopener noreferrer">Eastern Freeway centre of road Balwyn North-01 from balloon 2007-03-05.jpg</a> · Tangerineduel · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Highway_intersection_at_night-time_(Unsplash).jpg" target="_blank" rel="noopener noreferrer">Highway intersection at night-time (Unsplash).jpg</a> · Israel Sundseth kappuru · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Eastern_Freeway_centre_of_road_Balwyn_North-02_from_balloon_2007-03-05.jpg" target="_blank" rel="noopener noreferrer">Eastern Freeway centre of road Balwyn North-02 from balloon 2007-03-05.jpg</a> · Tangerineduel · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Shutoko_expressway_Kandabashi_exit_001.jpg" target="_blank" rel="noopener noreferrer">Shutoko expressway Kandabashi exit 001.jpg</a> · Ebiebi2 · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway-Baghdad2025.jpg" target="_blank" rel="noopener noreferrer">Freeway-Baghdad2025.jpg</a> · Unknown authorUnknown author · CC BY 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Mitchell_Freeway_011_S_Mount_Street.jpg" target="_blank" rel="noopener noreferrer">Mitchell Freeway 011 S Mount Street.jpg</a> · Original uploader was Kcdtsg (David) at en.wikipedia · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Olympic_urban_expressway_Seoul.jpg" target="_blank" rel="noopener noreferrer">Olympic urban expressway Seoul.jpg</a> · ja:User:Sonata · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_accident_Southeast_Freeway_and_North_Quay_P1400982.jpg" target="_blank" rel="noopener noreferrer">Traffic accident Southeast Freeway and North Quay P1400982.jpg</a> · John Robert McPherson · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway_7_(Iran)_or_the_Persian_Gulf_in_Iran_Mostafa_Meraji_2011_07.jpg" target="_blank" rel="noopener noreferrer">Freeway 7 (Iran) or the Persian Gulf in Iran Mostafa Meraji 2011 07.jpg</a> · Mostafameraji · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway_7_(Iran)_or_the_Persian_Gulf_in_Iran_Mostafa_Meraji_2011_17.jpg" target="_blank" rel="noopener noreferrer">Freeway 7 (Iran) or the Persian Gulf in Iran Mostafa Meraji 2011 17.jpg</a> · Mostafameraji · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Midday_traffic_on_Kwinana_Freeway_Cockburn_2018.jpg" target="_blank" rel="noopener noreferrer">Midday traffic on Kwinana Freeway Cockburn 2018.jpg</a> · Orderinchaos · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway_7_(Iran)_or_the_Persian_Gulf_in_Iran_Mostafa_Meraji_2011_10.jpg" target="_blank" rel="noopener noreferrer">Freeway 7 (Iran) or the Persian Gulf in Iran Mostafa Meraji 2011 10.jpg</a> · Mostafameraji · CC0</li></ol></details>
 
-    <ul class="hf-proof" aria-label="背后的实测 / Measured underneath">
-      <li><p class="mono">AGENT RUNTIME</p><strong><span class="zh">150+ 个工具</span><span class="en">150+ tools</span></strong><p><span class="zh">经 MCP 网关统一接入平台各模块；25 个 Skill、8 个确定性工作流，写操作走确认门。</span><span class="en">Platform modules exposed through one MCP gateway; 25 skills, 8 deterministic workflows, approval-gated writes.</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></p></li>
-      <li><p class="mono">HARNESS</p><strong><span class="zh">token −43.6%</span><span class="en">tokens −43.6%</span></strong><p><span class="zh">重排 prompt、裁工具目录、修反思孤儿消息；任务通过 5 → 7，回归失败 53 → 20。</span><span class="en">Prompt reordering, a trimmed tool catalog and a reflection fix; tasks passed 5 → 7, regression failures 53 → 20.</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></p></li>
-      <li><p class="mono">TASK QUEUE</p><strong><span class="zh">10,025 个文件 · 0.89 s</span><span class="en">10,025 files · 0.89 s</span></strong><p><span class="zh">万级预处理提交从超时到秒回；故障注入下 280 次重试只产出 1 个版本。</span><span class="en">10k-file preprocessing submission from timing out to sub-second; 280 retries under fault injection, one version.</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></p></li>
-      <li><p class="mono">INGEST</p><strong><span class="zh">约 10 GB · 41.8 MiB/s</span><span class="en">~10 GB · 41.8 MiB/s</span></strong><p><span class="zh">浏览器分片直传，零中断；入库带版本与血缘，导入失败可恢复。</span><span class="en">Browser multipart direct upload, no interruptions; ingest is versioned with lineage and resumable.</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></p></li>
-    </ul>
+    <div class="ai-part" id="anatomy-head"><p class="mono ai-k">02 · HARNESS ANATOMY</p><h3><span class="zh">一次 Agent 调用，token 花在哪里。</span><span class="en">Where one agent call spends its tokens.</span></h3><p><span class="zh">先量再改。主链路 982 次调用，每段 token 用模型返回的真实计数校准，归因误差 0.00%。最贵的是工具定义，而大家一直在省的对话历史只占 8.8%。</span><span class="en">Measure before changing anything. 982 main-chat calls, every segment calibrated against the provider's real token counts, 0.00% attribution error. Tool definitions cost the most; chat history, the part everyone tries to save on, is only 8.8%.</span></p></div>
+    <div class="ax" id="anatomy">
+      <div class="ax-map">
+        <div class="ax-groups mono"><span style="--w:40.5%"><span class="zh">工具定义 40.5%</span><span class="en">Tool definitions 40.5%</span></span><span style="--w:31.7%"><span class="zh">system 骨架 31.7%</span><span class="en">System scaffold 31.7%</span></span><span style="--w:27.8%"><span class="zh">会话内容 27.8%</span><span class="en">Conversation 27.8%</span></span></div>
+        <div class="ax-bar" role="group" aria-label="单次调用 token 构成 / Token composition of one call"></div>
+        <p class="ax-tip" aria-live="polite"></p>
+        <div class="ax-cache">
+          <p class="mono"><span class="zh">prompt 缓存命中率</span><span class="en">PROMPT CACHE HIT RATE</span></p>
+          <div class="ax-gauge"><span class="zh">调优前</span><span class="en">Before</span><i style="--w:51%"></i><b class="mono">51.0%</b></div>
+          <div class="ax-gauge ref"><span class="zh">对照标杆</span><span class="en">Reference</span><i style="--w:97.3%"></i><b class="mono">97.3%</b></div>
+          <p><span class="zh">差距来自易变内容排在稳定内容前面：工具一加载，整个可缓存前缀就作废。重排后稳定前缀从 888 涨到 2,777 字符，越过缓存起步线。</span><span class="en">The gap came from volatile sections sitting before stable ones: loading a tool invalidated the whole cacheable prefix. After reordering, the stable prefix grew from 888 to 2,777 characters, past the caching threshold.</span></p>
+        </div>
+      </div>
+      <div class="ax-side">
+        <p class="mono ax-side-k"><span class="zh">调优结果 · 前 → 后</span><span class="en">TUNING · BEFORE → AFTER</span> <span class="tag lab">LAB</span></p>
+        <ul class="ax-res"></ul>
+        <p class="ax-foot"><span class="zh">528 个用例 0 失败；故意改坏实现的 6 个变异全部被测试打红。用例是在验效果，不是摆设。</span><span class="en">528 tests, 0 failures; all 6 deliberate mutations of the implementation turned the suite red. The tests check outcomes, not ceremony.</span></p>
+      </div>
+    </div>
+
+    <div class="ai-part"><p class="mono ai-k">03 · MY AGENT WORKBENCH</p><h3><span class="zh">把运维经验写成 Skill，让 Agent 安全地动生产。</span><span class="en">Ops know-how, written as skills so agents can work on production safely.</span></h3><p><span class="zh">我写规格与验收，Claude Code 规划并调用 Skill，Codex 按任务包实现；踩过的坑都沉淀成带护栏的 Skill，通过 MCP 接上浏览器、文档与知识库。右侧是通用化后的示意运行。</span><span class="en">I write the spec and the acceptance criteria; Claude Code plans, calls skills and reviews; Codex implements from task packages. Every lesson becomes a skill with guardrails, connected through MCP to a browser, documents and a knowledge base. The terminal shows generalized, illustrative runs.</span></p></div>
+    <div class="wb" id="workbench">
+      <ol class="wb-flow" aria-label="分工 / Division of work">
+        <li><span class="mono">ME</span><strong><span class="zh">规格 · 验收</span><span class="en">Spec · sign-off</span></strong><p><span class="zh">目标、边界、可证伪的验收条件</span><span class="en">Goals, limits, falsifiable criteria</span></p></li>
+        <li><span class="mono">CLAUDE CODE</span><strong><span class="zh">规划 · Skill · 复核</span><span class="en">Plan · skills · review</span></strong><p><span class="zh">调用 Skill，独立复算，不信自报</span><span class="en">Runs skills, recomputes, never trusts self-reported results</span></p></li>
+        <li><span class="mono">CODEX</span><strong><span class="zh">按任务包实现</span><span class="en">Implements task packages</span></strong><p><span class="zh">可断点续跑，多条线并行</span><span class="en">Resumable, several lines in parallel</span></p></li>
+        <li><span class="mono">GATE</span><strong><span class="zh">门禁 · 棘轮</span><span class="en">Gates · ratchet</span></strong><p><span class="zh">教训写进门禁，失败清单只准变短</span><span class="en">Lessons become gates; failure lists only shrink</span></p></li>
+      </ol>
+      <p class="wb-mcp mono"><span>MCP</span><i>Playwright</i><i>Notion</i><i>Docs</i><i>Git</i><i><span class="zh">长期记忆</span><span class="en">Memory</span></i><i><span class="zh">阅读库</span><span class="en">Reading library</span></i></p>
+      <div class="wb-main">
+        <ul class="wb-skills" aria-label="Skill"></ul>
+        <div class="wb-term">
+          <div class="wb-term-bar"><i></i><i></i><i></i><span class="mono wb-term-title">/skill</span><span class="mono wb-demo"><span class="zh">示意运行</span><span class="en">ILLUSTRATIVE RUN</span></span></div>
+          <div class="wb-term-body mono" aria-live="off"></div>
+          <p class="wb-guard"></p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ============ 03 CASES ============ -->
   <section class="section wrap" id="cases" aria-labelledby="cases-heading">
-    <div class="section-label"><span class="number">02</span><span>/ CASE FILES</span></div>
+    <div class="section-label"><span class="number">03</span><span>/ CASE FILES</span></div>
     <div class="section-intro">
       <h2 id="cases-heading"><span class="zh">约束、取舍、验证。</span><span class="en">Constraints. Trade-offs.<br>Proof.</span></h2>
       <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。性能与交付数字都注明环境：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Performance and delivery numbers state their environment: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
@@ -421,38 +492,6 @@
     </div>
   </section>
 
-  <section class="section wrap" id="work" aria-labelledby="experience-heading">
-    <div class="section-label"><span class="number">03</span><span>/ EXPERIENCE &amp; EDUCATION</span></div>
-    <div class="experience">
-      <div class="experience-aside"><h2 id="experience-heading"><span class="zh">在真实约束下，<br>把系统做成。</span><span class="en">Real constraints.<br>Working systems.</span></h2><p><span class="zh">从交易系统、企业服务到 AI 数据平台，承担设计、开发与交付责任。</span><span class="en">Designing, building and delivering across trading systems, enterprise services and AI data platforms.</span></p></div>
-      <div class="timeline">
-<details class="job" open><summary><span class="job-summary-copy"><span class="job-date">2025.09 — 2026.09</span><span class="job-title"><span class="zh">研发负责人</span><span class="en">Head of Engineering</span></span><span class="company"><span class="zh">杭州景联文科技有限公司</span><span class="en">Hangzhou Jinglianwen Technology Co., Ltd.</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责两条产品线研发，统筹约20人的研发、运维与测试平台组，承担技术评审、任务拆解及发布把关；主导Java / Vue平台建设并参与核心开发。</span><span class="en">Led architecture and delivery across two product lines; coordinated a platform group of about 20 in engineering, operations and testing, and contributed to core Java / Vue development.</span></li><li><span class="zh">负责业务Agent运行时（Solar Harness）的架构设计与质量审计：MCP网关统一接入150+平台工具，补齐确定性工作流与写操作确认门；按实测调优harness，输入token降低43.6%。</span><span class="en">Owned architecture and quality review for the business-agent runtime (Solar Harness): 150+ platform tools behind one MCP gateway, deterministic workflows and approval gates for writes; measurement-driven harness tuning cut input tokens by 43.6%.</span> <span class="tag lab">LAB</span></li><li><span class="zh">负责大规模数据处理链路：万级任务队列使10,025个文件的提交从超过2分钟降至0.89秒；约10 GB数据包经浏览器分片直传入库（41.8 MiB/s），数据集带版本与血缘。</span><span class="en">Owned the large-scale data path: a 10k-task queue cut submission of 10,025 files from over 2 min to 0.89 s; ~10 GB archives upload directly in parts (41.8 MiB/s) into versioned datasets with lineage.</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></li><li><span class="zh">设计异步任务方案，组织Python工作流、CPU / GPU资源调度和模型服务接入；推动质量门禁、监控回滚及客户私有化交付。</span><span class="en">Designed task-execution architecture and coordinated Python workflows, CPU / GPU scheduling, model integration, quality gates, monitoring, rollback and on-premises delivery.</span></li></ul><p class="stack">Java · Vue 3 · TypeScript · Python · Go · MySQL · Redis · Docker · k3s</p></div></details>
-<details class="job"><summary><span class="job-summary-copy"><span class="job-date">2024.02 — 2025.05</span><span class="job-title"><span class="zh">技术合伙人</span><span class="en">Technical Partner</span></span><span class="company"><span class="zh">JiawisTech Solutions LLC</span><span class="en">JiawisTech Solutions LLC</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责AI客服技术方案、模型选型、提示词设计和Java核心接口开发，组织小团队完成模型API、业务接口联调与部署。</span><span class="en">Owned technical design, model selection, prompt design and core Java APIs for AI customer service; coordinated small-team integration and deployment.</span></li><li><span class="zh">开展Python / LangChain文本分析与提示词迭代；参与Shopify前端性能评审，构建用户行为推荐原型。</span><span class="en">Built Python / LangChain text-analysis workflows; reviewed Shopify frontend performance and developed a prototype using user behavior for recommendations.</span></li></ul><p class="stack">Java · Python · Spring Boot · Redis · MongoDB · Docker · LangChain</p></div></details>
-<details class="job"><summary><span class="job-summary-copy"><span class="job-date">2020.03 — 2022.01</span><span class="job-title"><span class="zh">全栈工程师</span><span class="en">Full-Stack Engineer</span></span><span class="company"><span class="zh">东方证券</span><span class="en">Orient Securities</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责委托与回报消息模块的Java化开发及跨系统联调，使用Kafka / Netty完成消息通信与实时推送，结合Redis锁与状态机处理并发一致性。</span><span class="en">Owned Java migration and integration of order and execution-report messaging, using Kafka / Netty for messaging and real-time push, with Redis locks and state control.</span></li><li><span class="zh">使用Python与Vue开发交易延迟监控工具，结合ELK日志检索、可视化和告警支持性能排查及异常定位。</span><span class="en">Developed Python / Vue latency monitoring with ELK log search, visualization and alerts for performance investigation and incident diagnosis.</span></li></ul><p class="stack">Java · Kafka · Netty · Oracle · Redis · Python · Vue · ELK</p></div></details>
-<details class="job"><summary><span class="job-summary-copy"><span class="job-date">2017.09 — 2019.07</span><span class="job-title"><span class="zh">全栈工程师</span><span class="en">Full-Stack Engineer</span></span><span class="company"><span class="zh">联创集团</span><span class="en">Linkage Group</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">参与政务房产交易及智慧城市系统建设，带领5人开发团队开展需求拆解、技术设计、任务分配与阶段评审。</span><span class="en">Contributed to government property-transaction and smart-city systems; led a five-person team in requirements, design, task allocation and milestone reviews.</span></li><li><span class="zh">负责MySQL查询优化、RabbitMQ异步处理及Redis缓存；独立开发汽车服务微信小程序，使用Node.js中间层对接Java后端。</span><span class="en">Optimized MySQL queries; implemented RabbitMQ processing and Redis caching. Independently developed an automotive WeChat Mini Program integrating Node.js and Java.</span></li></ul><p class="stack">Java · Spring Boot · MyBatis · MySQL · RabbitMQ · Redis · Node.js</p></div></details>
-
-      </div>
-    </div>
-    <div class="education">
-      <h3><span class="zh">教育背景</span><span class="en">Education</span></h3>
-      <div class="education-list">
-        <div class="education-item">
-          <div>
-            <h4>Marquette University</h4>
-            <p><span class="zh">计算机与信息科学 · 硕士 · GPA 3.7 / 4.0</span><span class="en">Computer and Information Science · Master's degree · GPA 3.7 / 4.0</span></p>
-          </div>
-          <span class="education-date">2022.05 — 2024.01</span>
-        </div>
-        <div class="education-item">
-          <div>
-            <h4><span class="zh">南京大学金陵学院</span><span class="en">Jinling College, Nanjing University</span></h4>
-            <p><span class="zh">新闻学 · 全日制本科</span><span class="en">Journalism · Bachelor's degree · Full-time</span></p>
-          </div>
-          <span class="education-date">2012 — 2016</span>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ============ 02 PLATFORM ============ -->
   <section class="section wrap" id="platform" aria-labelledby="platform-heading">
@@ -511,8 +550,8 @@
   </section>
 
   <!-- ============ 01 THE YEAR ============ -->
-  <section class="section wrap" id="year" aria-labelledby="year-heading">
-    <div class="section-label"><span class="number">05</span><span>/ THE YEAR · 2025.09 — 2026.08</span></div>
+  <section class="section wrap section-follow" id="year" aria-labelledby="year-heading">
+    <div class="section-label section-label-sub"><span>/ THE YEAR · 2025.09 — 2026.08</span></div>
     <div class="section-intro">
       <h2 id="year-heading"><span class="zh">从 initial commit，<br>到生产环境。</span><span class="en">From the initial commit<br>to production.</span></h2>
       <p><span class="zh">2025-09-19，我在同一天提交了前后端两个仓的第一个 commit。十二个月后，它是 11 个 Java 服务、Python Worker、模型服务、标注工具矩阵、桌面端和多套环境组成的产品体系。</span><span class="en">On 2025-09-19 I made the first commit to both the backend and frontend repositories. Twelve months later it had become a product: 11 Java services, Python workers, model serving, an annotation-tool suite, a desktop client and several environments.</span></p>
@@ -549,18 +588,11 @@
   <!-- ============ 04 METHOD ============ -->
   <section class="section section-dark" id="method" aria-labelledby="method-heading">
     <div class="wrap">
-      <div class="section-label"><span class="number">06</span><span>/ HOW I WORK</span></div>
+      <div class="section-label"><span class="number">05</span><span>/ HOW I VERIFY</span></div>
       <div class="section-intro">
-        <h2 id="method-heading"><span class="zh">用 AI 放大产出，<br>验收覆盖真实交付。</span><span class="en">AI multiplies the output.<br>Acceptance covers real delivery.</span></h2>
-        <p><span class="zh">我写规格与验收清单，让 Codex 实现，再独立复算、实测。这套方式支撑了能力平台、可观测、桌面端等多条线同时推进，而验收始终由我自己把关。</span><span class="en">I write the spec and the acceptance checklist, Codex implements, and I verify independently by recomputing and running it. This let several lines move at once, from the capability platform to observability and the desktop client, while acceptance stayed with me.</span></p>
+        <h2 id="method-heading"><span class="zh">产出越多，<br>验收越要真。</span><span class="en">Faster output,<br>stricter sign-off.</span></h2>
+        <p><span class="zh">AI 让交付变快，“看起来好了”的信号也变多。下面每一行都经过另一条路径复核：真机点击、真实网关计时、逐条回读，复核结果写成团队的验收要求。</span><span class="en">AI speeds up delivery, and multiplies the signals that only look like done. Every row below was re-checked another way, by a real click, a timed call through the real gateway or a read-back of every record, and became a team acceptance requirement.</span></p>
       </div>
-
-      <ol class="loop" aria-label="工作循环 / Working loop">
-        <li><span class="mono">01</span><strong><span class="zh">规格</span><span class="en">Spec</span></strong><p><span class="zh">写清目标、边界与可证伪的验收条件，包括前端接线状态。</span><span class="en">Goals, boundaries and falsifiable acceptance criteria, including frontend wiring status.</span></p></li>
-        <li><span class="mono">02</span><strong><span class="zh">实现</span><span class="en">Build</span></strong><p><span class="zh">Codex 按任务包实现，可断点续跑；多条线并行。</span><span class="en">Codex implements from a task package, resumable from checkpoints; several lines in parallel.</span></p></li>
-        <li><span class="mono">03</span><strong><span class="zh">复算</span><span class="en">Recompute</span></strong><p><span class="zh">不看自报数字，用另一个数据源或另一条路径独立重算。</span><span class="en">Ignore self-reported numbers; recompute from another source or another path.</span></p></li>
-        <li><span class="mono">04</span><strong><span class="zh">门禁</span><span class="en">Gate</span></strong><p><span class="zh">把教训写进门禁。存量失败用棘轮锁住，清单只准变短。</span><span class="en">Turn lessons into gates. Existing failures are locked by a ratchet; the list may only shrink.</span></p></li>
-      </ol>
 
       <div class="method-grid">
         <div class="ledger">
@@ -590,6 +622,41 @@
     </div>
   </section>
 
+  <!-- ============ 05 EXPERIENCE ============ -->
+  <section class="section wrap" id="work" aria-labelledby="experience-heading">
+    <div class="section-label"><span class="number">06</span><span>/ EXPERIENCE &amp; EDUCATION</span></div>
+    <div class="experience">
+      <div class="experience-aside"><h2 id="experience-heading"><span class="zh">在真实约束下，<br>把系统做成。</span><span class="en">Real constraints.<br>Working systems.</span></h2><p><span class="zh">从交易系统、企业服务到 AI 数据平台，承担设计、开发与交付责任。</span><span class="en">Designing, building and delivering across trading systems, enterprise services and AI data platforms.</span></p></div>
+      <div class="timeline">
+<details class="job" open><summary><span class="job-summary-copy"><span class="job-date">2025.09 — 2026.09</span><span class="job-title"><span class="zh">研发负责人</span><span class="en">Head of Engineering</span></span><span class="company"><span class="zh">杭州景联文科技有限公司</span><span class="en">Hangzhou Jinglianwen Technology Co., Ltd.</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责新一代数据平台 SolarSense 与业务平台 QApex 两条产品线研发，统筹约20人的研发、运维与测试平台组，承担技术评审、任务拆解及发布把关；主导Java / Vue平台建设并参与核心开发。</span><span class="en">Led engineering for two product lines, the next-generation data platform SolarSense and the QApex business platform; coordinated a platform group of about 20 in engineering, operations and testing, and contributed to core Java / Vue development.</span></li><li><span class="zh">负责业务Agent运行时（Solar Harness）的架构设计与质量审计：MCP网关统一接入150+平台工具，补齐确定性工作流与写操作确认门；按实测调优harness，输入token降低43.6%。</span><span class="en">Owned architecture and quality review for the business-agent runtime (Solar Harness): 150+ platform tools behind one MCP gateway, deterministic workflows and approval gates for writes; measurement-driven harness tuning cut input tokens by 43.6%.</span> <span class="tag lab">LAB</span></li><li><span class="zh">负责大规模数据处理链路：按 TB 级单数据集设计上传与版本链路，约10 GB数据包浏览器分片直传（41.8 MiB/s，生产）；单次万级文件提交秒级返回，疏通 4 万+ 任务积压；覆盖图像、视频、点云、音频、文本、时序 10 类模态。</span><span class="en">Owned the large-scale data path: upload and versioning designed for terabyte-scale datasets, ~10 GB archives uploaded directly in parts (41.8 MiB/s, production); 10k+ files submitted at once with a sub-second response; a 40k+ job backlog cleared; 10 modalities from image and video to point cloud, audio, text and time series.</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></li><li><span class="zh">设计异步任务方案，组织Python工作流、CPU / GPU资源调度和模型服务接入；推动质量门禁、监控回滚及客户私有化交付。</span><span class="en">Designed task-execution architecture and coordinated Python workflows, CPU / GPU scheduling, model integration, quality gates, monitoring, rollback and on-premises delivery.</span></li></ul><p class="stack">Java · Vue 3 · TypeScript · Python · Go · MySQL · Redis · Docker · k3s</p></div></details>
+<details class="job"><summary><span class="job-summary-copy"><span class="job-date">2024.02 — 2025.05</span><span class="job-title"><span class="zh">技术合伙人</span><span class="en">Technical Partner</span></span><span class="company"><span class="zh">JiawisTech Solutions LLC</span><span class="en">JiawisTech Solutions LLC</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责AI客服技术方案、模型选型、提示词设计和Java核心接口开发，组织小团队完成模型API、业务接口联调与部署。</span><span class="en">Owned technical design, model selection, prompt design and core Java APIs for AI customer service; coordinated small-team integration and deployment.</span></li><li><span class="zh">开展Python / LangChain文本分析与提示词迭代；参与Shopify前端性能评审，构建用户行为推荐原型。</span><span class="en">Built Python / LangChain text-analysis workflows; reviewed Shopify frontend performance and developed a prototype using user behavior for recommendations.</span></li></ul><p class="stack">Java · Python · Spring Boot · Redis · MongoDB · Docker · LangChain</p></div></details>
+<details class="job"><summary><span class="job-summary-copy"><span class="job-date">2020.03 — 2022.01</span><span class="job-title"><span class="zh">全栈工程师</span><span class="en">Full-Stack Engineer</span></span><span class="company"><span class="zh">东方证券</span><span class="en">Orient Securities</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责委托与回报消息模块的Java化开发及跨系统联调，使用Kafka / Netty完成消息通信与实时推送，结合Redis锁与状态机处理并发一致性。</span><span class="en">Owned Java migration and integration of order and execution-report messaging, using Kafka / Netty for messaging and real-time push, with Redis locks and state control.</span></li><li><span class="zh">使用Python与Vue开发交易延迟监控工具，结合ELK日志检索、可视化和告警支持性能排查及异常定位。</span><span class="en">Developed Python / Vue latency monitoring with ELK log search, visualization and alerts for performance investigation and incident diagnosis.</span></li></ul><p class="stack">Java · Kafka · Netty · Oracle · Redis · Python · Vue · ELK</p></div></details>
+<details class="job"><summary><span class="job-summary-copy"><span class="job-date">2017.09 — 2019.07</span><span class="job-title"><span class="zh">全栈工程师</span><span class="en">Full-Stack Engineer</span></span><span class="company"><span class="zh">联创集团</span><span class="en">Linkage Group</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">参与政务房产交易及智慧城市系统建设，带领5人开发团队开展需求拆解、技术设计、任务分配与阶段评审。</span><span class="en">Contributed to government property-transaction and smart-city systems; led a five-person team in requirements, design, task allocation and milestone reviews.</span></li><li><span class="zh">负责MySQL查询优化、RabbitMQ异步处理及Redis缓存；独立开发汽车服务微信小程序，使用Node.js中间层对接Java后端。</span><span class="en">Optimized MySQL queries; implemented RabbitMQ processing and Redis caching. Independently developed an automotive WeChat Mini Program integrating Node.js and Java.</span></li></ul><p class="stack">Java · Spring Boot · MyBatis · MySQL · RabbitMQ · Redis · Node.js</p></div></details>
+
+      </div>
+    </div>
+    <div class="education">
+      <h3><span class="zh">教育背景</span><span class="en">Education</span></h3>
+      <div class="education-list">
+        <div class="education-item">
+          <div>
+            <h4>Marquette University</h4>
+            <p><span class="zh">计算机与信息科学 · 硕士 · GPA 3.7 / 4.0</span><span class="en">Computer and Information Science · Master's degree · GPA 3.7 / 4.0</span></p>
+          </div>
+          <span class="education-date">2022.05 — 2024.01</span>
+        </div>
+        <div class="education-item">
+          <div>
+            <h4><span class="zh">南京大学金陵学院</span><span class="en">Jinling College, Nanjing University</span></h4>
+            <p><span class="zh">新闻学 · 全日制本科</span><span class="en">Journalism · Bachelor's degree · Full-time</span></p>
+          </div>
+          <span class="education-date">2012 — 2016</span>
+        </div>
+      </div>
+    </div>
+      <div class="resume-panel" id="resume"><div><h3 id="resume-heading"><span class="zh">简历</span><span class="en">Resume</span></h3><p class="resume-note"><span class="zh">公开版 · 各 2 页 · 更新于 2026-10-09</span><span class="en">Public edition · 2 pages each · Updated 2026-10-09</span></p></div><div class="resume-downloads"><a class="button" href="assets/resume/jiawei-zh.pdf" download="张嘉玮_简历_中文.pdf" data-resume="zh"><span class="zh">中文简历 PDF</span><span class="en">Chinese resume · PDF</span><i class="icon i-right" aria-hidden="true"></i></a><a class="button button-secondary" href="assets/resume/jiawei-en.pdf" download="Jiawei_Zhang_Resume_EN.pdf" data-resume="en">English · PDF<i class="icon i-right" aria-hidden="true"></i></a></div></div>
+  </section>
+
   <!-- ============ 05 PROJECTS ============ -->
   <section class="section wrap" id="projects" aria-labelledby="projects-heading">
     <div class="section-label"><span class="number">07</span><span>/ BUILT ON MY OWN TIME</span></div>
@@ -597,43 +664,58 @@
       <h2 id="projects-heading"><span class="zh">工作之外，<br>也一直在做东西。</span><span class="en">Outside work,<br>still building.</span></h2>
       <p><span class="zh">最近一年业余做、自己每天在用的东西。模型只做它擅长的部分，能用确定性逻辑算的，就不交给模型。</span><span class="en">Things I built on my own time over the past year and use every day. Models do only what they are good at; anything that can be computed deterministically is.</span></p>
     </div>
-    <div class="project-grid project-shots">
-      <article class="card card-shot">
-        <figure class="shot"><img src="assets/projects/receipt-kitchen.png" width="800" height="908" loading="lazy" alt="Receipt Kitchen: a 7.0 / 10 health score for one grocery trip, with coverage bars for vegetables, fruit, protein, dairy, free sugar and ultra-processed food."></figure>
-        <div class="card-body">
+    <div class="pj-feature">
+      <article class="pj pj-rk">
+        <div class="pj-stage">
+          <figure class="pj-device"><img src="assets/projects/receipt-kitchen.png" width="800" height="908" loading="lazy" alt="Receipt Kitchen: a 7.0 / 10 health score for one grocery trip, with coverage bars for vegetables, fruit, protein, dairy, free sugar and ultra-processed food."></figure>
+          <span class="pj-chip c1"><b>7.0</b><span class="zh">健康分 · 确定性计算</span><span class="en">health score · deterministic</span></span>
+          <span class="pj-chip c2"><i>✓</i><span class="zh">识别结果自动对账</span><span class="en">auto-reconciled with subtotal</span></span>
+          <span class="pj-chip c3">ZH / EN</span>
+        </div>
+        <div class="pj-body">
           <p class="card-meta mono">VISION LLM · VANILLA JS · ZH / EN</p>
           <h3><span class="zh">小票厨房</span><span class="en">Receipt Kitchen</span></h3>
-          <p><span class="zh">拍一下小票或订单截图，识别进食材库，按到期先后排出几天的菜谱，再给这一单打健康分。健康分按膳食指南公式在页面里确定性计算，模型只负责识别、点评和替换建议；识别结果自动对账，商品合计对不上小计就提示漏截。中英双语，中国与欧美两套营养口径。</span><span class="en">Snap a receipt or order screenshot; items land in a pantry, a few days of recipes are planned around what expires first, and the order gets a health score. The score is computed deterministically in the page from dietary-guideline formulas; the model only reads the receipt and writes commentary and swaps. Recognized items are reconciled against the subtotal, flagging missed screenshots. Bilingual, with Chinese and Western nutrition standards.</span></p>
+          <p><span class="zh">拍一下小票或订单截图，识别进食材库，按到期先后排出几天的菜谱，再给这一单打健康分。健康分按膳食指南公式在页面里确定性计算，模型只负责识别、点评和替换建议；商品合计对不上小计就提示漏截。</span><span class="en">Snap a receipt; items land in a pantry, recipes are planned around what expires first, and the order gets a health score computed deterministically from dietary-guideline formulas. The model only reads the receipt and writes commentary; totals that miss the subtotal flag a missed screenshot.</span></p>
           <p class="shot-note mono"><span class="zh">截图：演示模式，虚构订单</span><span class="en">Screenshot: demo mode, fictional order</span></p>
         </div>
       </article>
-      <article class="card card-shot">
-        <figure class="shot"><img src="assets/projects/hola.png" width="560" height="786" loading="lazy" alt="Hola: day one of the Spanish course, a listening question asking what 'Hola.' means, with three answer choices."></figure>
-        <div class="card-body">
+      <article class="pj pj-hola">
+        <div class="pj-stage">
+          <figure class="pj-device pj-phone"><img src="assets/projects/hola.png" width="560" height="786" loading="lazy" alt="Hola: day one of the Spanish course, a listening question asking what 'Hola.' means, with three answer choices."></figure>
+          <span class="pj-chip c1"><b>30</b><span class="zh">天 · 每天约 20 分钟</span><span class="en">days · ~20 min a day</span></span>
+          <span class="pj-chip c2"><i>↻</i><span class="zh">FSRS 间隔重复</span><span class="en">FSRS spaced repetition</span></span>
+          <span class="pj-chip c3"><span class="zh">离线可用</span><span class="en">Offline PWA</span></span>
+        </div>
+        <div class="pj-body">
           <p class="card-meta mono">REACT · TYPESCRIPT · PWA · FSRS</p>
           <h3>Hola</h3>
-          <p><span class="zh">给零基础成年人的 30 天西班牙语入门课，每天约 20 分钟，以整句话为单位：听懂、跟读、遮住说、情境表达。复习按 FSRS 间隔重复算法排期；纯静态、可离线安装，没有账号和后端，学习记录只存在本机 IndexedDB。</span><span class="en">A 30-day Spanish course for adult beginners, about 20 minutes a day, taught in whole sentences: understand, shadow, say it with the text hidden, then use it in context. Reviews are scheduled with the FSRS spaced-repetition algorithm; it is fully static and installable offline, with no account or backend, and progress stays in the browser's IndexedDB.</span></p>
+          <p><span class="zh">给零基础成年人的 30 天西班牙语入门课，以整句话为单位：听懂、跟读、遮住说、情境表达。复习按 FSRS 算法排期；纯静态、可离线安装，没有账号和后端，学习记录只存在本机。</span><span class="en">A 30-day Spanish course for adult beginners, taught in whole sentences: understand, shadow, say it with the text hidden, use it in context. Reviews follow FSRS; fully static and installable offline, no account or backend, progress stays on the device.</span></p>
         </div>
       </article>
     </div>
-    <ul class="project-list">
-      <li><p class="card-meta mono">ELECTRON · REACT</p><h3>Jarvis Workspace</h3><p><span class="zh">跨平台个人工作台：Markdown 计划、原子写入与版本冲突保护、一步撤销、本机资源 24 小时趋势。</span><span class="en">A cross-platform workspace: Markdown plans, atomic writes with conflict protection, one-step undo, 24-hour local resource trends.</span></p></li>
-      <li><p class="card-meta mono">NODE · LOCAL-ONLY</p><h3><span class="zh">拾页 · 本地阅读器</span><span class="en">Shiye · local reader</span></h3><p><span class="zh">直接读 Obsidian 阅读库，不导入不上云；原文按不可信内容清洗，回写时遇到并发修改会拒绝覆盖。</span><span class="en">Reads an Obsidian library in place; source HTML is sanitized as untrusted, and write-backs refuse to overwrite concurrent edits.</span></p></li>
-      <li><p class="card-meta mono">DOCKER · PGVECTOR · NGINX</p><h3><span class="zh">自托管 AI 工作台</span><span class="en">Self-hosted AI workbench</span></h3><p><span class="zh">个人云主机上的对话、检索、对象存储与向量库，Nginx 入口与自动证书，多智能体开发的试验田。</span><span class="en">Chat, search, object storage and a vector database on my own host behind Nginx with automated TLS; a proving ground for multi-agent work.</span></p></li>
+    <ul class="pj-mini">
+      <li>
+        <svg class="pj-art" viewBox="0 0 240 120" aria-hidden="true"><rect x="16" y="14" width="208" height="92" rx="6" class="a-panel"/><rect x="16" y="14" width="208" height="16" rx="6" class="a-bar"/><circle cx="28" cy="22" r="3" class="a-dot1"/><circle cx="38" cy="22" r="3" class="a-dot"/><circle cx="48" cy="22" r="3" class="a-dot"/><rect x="30" y="42" width="70" height="5" rx="2" class="a-ink"/><rect x="30" y="54" width="92" height="4" rx="2" class="a-line"/><rect x="30" y="64" width="80" height="4" rx="2" class="a-line"/><rect x="30" y="74" width="60" height="4" rx="2" class="a-line"/><rect x="30" y="86" width="44" height="8" rx="4" class="a-accent"/><polyline points="138,92 150,80 162,84 174,66 186,72 198,52 210,58" class="a-spark"/><line x1="134" y1="96" x2="214" y2="96" class="a-axis"/></svg>
+        <p class="card-meta mono">ELECTRON · REACT</p><h3>Jarvis Workspace</h3><p><span class="zh">跨平台个人工作台：Markdown 计划、原子写入与版本冲突保护、一步撤销、本机资源 24 小时趋势。</span><span class="en">A cross-platform workspace: Markdown plans, atomic writes with conflict protection, one-step undo, 24-hour local resource trends.</span></p></li>
+      <li>
+        <svg class="pj-art" viewBox="0 0 240 120" aria-hidden="true"><rect x="70" y="22" width="110" height="84" rx="4" class="a-page3"/><rect x="62" y="17" width="110" height="84" rx="4" class="a-page2"/><rect x="54" y="12" width="110" height="88" rx="4" class="a-panel"/><rect x="66" y="26" width="60" height="6" rx="2" class="a-ink"/><rect x="66" y="40" width="86" height="4" rx="2" class="a-line"/><rect x="66" y="50" width="86" height="4" rx="2" class="a-hl"/><rect x="66" y="60" width="70" height="4" rx="2" class="a-line"/><rect x="66" y="70" width="80" height="4" rx="2" class="a-line"/><rect x="66" y="84" width="34" height="8" rx="4" class="a-accent"/><path d="M190 46 l10 -8 l10 8 v26 h-20z" class="a-lock"/><circle cx="200" cy="58" r="3" class="a-dot1"/></svg>
+        <p class="card-meta mono">NODE · LOCAL-ONLY</p><h3><span class="zh">拾页 · 本地阅读器</span><span class="en">Shiye · local reader</span></h3><p><span class="zh">直接读 Obsidian 阅读库，不导入不上云；原文按不可信内容清洗，回写时遇到并发修改会拒绝覆盖。</span><span class="en">Reads an Obsidian library in place; source HTML is sanitized as untrusted, and write-backs refuse to overwrite concurrent edits.</span></p></li>
+      <li>
+        <svg class="pj-art" viewBox="0 0 240 120" aria-hidden="true"><line x1="120" y1="60" x2="52" y2="30" class="a-edge"/><line x1="120" y1="60" x2="52" y2="92" class="a-edge"/><line x1="120" y1="60" x2="188" y2="30" class="a-edge"/><line x1="120" y1="60" x2="188" y2="92" class="a-edge"/><circle cx="120" cy="60" r="20" class="a-hub"/><text x="120" y="64" class="a-t a-tw">AI</text><g class="a-node"><rect x="22" y="18" width="60" height="24" rx="12"/><text x="52" y="34" class="a-t">chat</text></g><g class="a-node"><rect x="22" y="80" width="60" height="24" rx="12"/><text x="52" y="96" class="a-t">search</text></g><g class="a-node"><rect x="158" y="18" width="60" height="24" rx="12"/><text x="188" y="34" class="a-t">S3</text></g><g class="a-node"><rect x="158" y="80" width="60" height="24" rx="12"/><text x="188" y="96" class="a-t">pgvector</text></g></svg>
+        <p class="card-meta mono">DOCKER · PGVECTOR · NGINX</p><h3><span class="zh">自托管 AI 工作台</span><span class="en">Self-hosted AI workbench</span></h3><p><span class="zh">个人云主机上的对话、检索、对象存储与向量库，Nginx 入口与自动证书，多智能体开发的试验田。</span><span class="en">Chat, search, object storage and a vector database on my own host behind Nginx with automated TLS; a proving ground for multi-agent work.</span></p></li>
+      <li>
+        <svg class="pj-art" viewBox="0 0 240 120" aria-hidden="true"><g class="a-node"><rect x="10" y="48" width="44" height="24" rx="12"/><text x="32" y="64" class="a-t">URL</text></g><line x1="54" y1="60" x2="74" y2="60" class="a-flow"/><g class="a-step"><rect x="74" y="44" width="50" height="32" rx="6"/><text x="99" y="58" class="a-t">OCR</text><text x="99" y="69" class="a-t a-tq">read</text></g><line x1="124" y1="60" x2="142" y2="60" class="a-flow"/><g class="a-step"><rect x="142" y="44" width="50" height="32" rx="6"/><text x="167" y="58" class="a-t">4×</text><text x="167" y="69" class="a-t a-tq">summary</text></g><line x1="192" y1="60" x2="206" y2="60" class="a-flow"/><rect x="206" y="38" width="26" height="44" rx="3" class="a-hub"/><rect x="211" y="46" width="16" height="3" class="a-wline"/><rect x="211" y="53" width="16" height="3" class="a-wline"/><rect x="211" y="60" width="12" height="3" class="a-wline"/></svg>
+        <p class="card-meta mono">AGENT SKILL · OBSIDIAN</p><h3><span class="zh">阅读库 Agent</span><span class="en">Reading-library agent</span></h3><p><span class="zh">贴一个公众号或 X 链接，Agent 读正文、OCR 配图、写四段总结（含核验与疑点），自动入 Obsidian 库；周回顾、库体检、写心得都是固定 Skill。</span><span class="en">Paste a WeChat or X link; the agent reads the text, OCRs the images, writes a four-part summary with checks and doubts, and files it in Obsidian. Weekly reviews, library health checks and notes are fixed skills.</span></p></li>
     </ul>
   </section>
 
   <!-- ============ 07 EXPERIENCE ============ -->
 
 
-  <section class="section wrap" id="resume" aria-labelledby="resume-heading">
-    <div class="section-label"><span class="number">08</span><span>/ RESUME</span></div>
-    <div class="resume-panel"><div><h2 id="resume-heading"><span class="zh">简历</span><span class="en">Resume</span></h2><p class="resume-note"><span class="zh">公开版 · 各 2 页 · 更新于 2026-10-09</span><span class="en">Public edition · 2 pages each · Updated 2026-10-09</span></p></div><div class="resume-downloads"><a class="button" href="assets/resume/jiawei-zh.pdf" download="张嘉玮_简历_中文.pdf" data-resume="zh"><span class="zh">中文简历 PDF</span><span class="en">Chinese resume · PDF</span><i class="icon i-right" aria-hidden="true"></i></a><a class="button button-secondary" href="assets/resume/jiawei-en.pdf" download="Jiawei_Zhang_Resume_EN.pdf" data-resume="en">English · PDF<i class="icon i-right" aria-hidden="true"></i></a></div></div>
-  </section>
 
   <!-- ============ CONTACT ============ -->
   <section class="contact wrap" id="contact" aria-labelledby="contact-heading">
-    <div><div class="section-label"><span class="number">09</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">杭州</span><span class="en">Hangzhou</span></p></div>
+    <div><div class="section-label"><span class="number">08</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">杭州</span><span class="en">Hangzhou</span></p></div>
     <div class="contact-actions"><a class="email-link" href="mailto:zchaw127@gmail.com">zchaw127@gmail.com<i class="icon i-up" aria-hidden="true"></i></a><div class="contact-secondary"><button type="button" id="copy-email" class="copy-email" data-email="zchaw127@gmail.com"><i class="icon i-copy" aria-hidden="true"></i><span class="zh">复制邮箱</span><span class="en">Copy email</span></button><a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a></div><p class="copy-status" id="copy-status" role="status" aria-live="polite"></p></div>
   </section>
 
