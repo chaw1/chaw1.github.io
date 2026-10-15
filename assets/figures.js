@@ -16,9 +16,9 @@
 
   /* ---------------- palette & helpers (mirrors site.css) ---------------- */
   const C = {
-    paper: '#f7f7f2', line: '#d6d7d1', line2: '#e4e5df', ink: '#17191c', muted: '#5d6168', quiet: '#6a7078', faint: '#a3a8ae',
-    blue: '#2255ee', blueSoft: '#e6ecfd', blueMid: '#9db4f6', green: '#16734b', greenSoft: '#e2f2ea', greenMid: '#7cc4a0',
-    amber: '#e39a2d', amberSoft: '#fbf0db', amberInk: '#8a5a00', red: '#b3362f', redSoft: '#f8e4e2'
+    paper: '#faf9f5', line: '#dad8ce', line2: '#e8e6dc', ink: '#141413', muted: '#5e5d59', quiet: '#6b6a64', faint: '#a8a59c',
+    blue: '#b4532f', blueSoft: '#f6e5dc', blueMid: '#e3a68c', green: '#4a6b2f', greenSoft: '#e8eedb', greenMid: '#a9c18a',
+    amber: '#e39a2d', amberSoft: '#f7ebd3', amberInk: '#8a5a00', red: '#b3362f', redSoft: '#f6e1dc'
   };
   const MONO = '"SFMono-Regular", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace';
   const SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
@@ -453,7 +453,7 @@
       const srows = Math.ceil(FILES / scols);
       const sp = Math.min(S.w / scols, S.h / srows); const sd = Math.max(1, sp * 0.72);
       const sx = (g) => S.x + (g % scols) * sp; const sy = (g) => S.y + Math.floor(g / scols) * sp;
-      ctx.fillStyle = '#fbfbf8'; ctx.fillRect(S.x - 4, S.y - 4, scols * sp + 8, srows * sp + 8);
+      ctx.fillStyle = '#fcfbf8'; ctx.fillRect(S.x - 4, S.y - 4, scols * sp + 8, srows * sp + 8);
       ctx.strokeStyle = C.line2; ctx.lineWidth = 1; ctx.strokeRect(S.x - 4.5, S.y - 4.5, scols * sp + 9, srows * sp + 9);
       const landed = []; const flying = [];
       chunks.forEach((c) => {
@@ -801,7 +801,7 @@
             ctx.fillStyle = mix('#ffffff', C.greenSoft, p); rr(ctx, x, y, s, s, 2); ctx.fill();
             ctx.globalAlpha = p; tick(ctx, x + s / 2, y + s / 2, s * 0.42, C.green, 1.5); ctx.globalAlpha = 1;
           } else {
-            ctx.fillStyle = '#f3f3ee'; rr(ctx, x, y, s, s, 2); ctx.fill();
+            ctx.fillStyle = '#f4f2ec'; rr(ctx, x, y, s, s, 2); ctx.fill();
           }
         }
       }
@@ -924,7 +924,7 @@
       panelTitle(ctx, QP.x, QP.y + 8, '02', 'INT8 量化后的掩码质量', 'Mask quality after INT8 quantization', wide);
       const tileW = wide ? Math.min(QP.w * 0.46, (QP.h - 40) * 1.2) : QP.w * 0.42; const tileH = wide ? QP.h - 40 : QP.h - 34;
       const tx = QP.x; const ty = QP.y + 26;
-      ctx.fillStyle = '#f1f1ec'; rr(ctx, tx, ty, tileW, tileH, 4); ctx.fill();
+      ctx.fillStyle = '#f2f0ea'; rr(ctx, tx, ty, tileW, tileH, 4); ctx.fill();
       ctx.strokeStyle = C.line; ctx.lineWidth = 1; rr(ctx, tx + 0.5, ty + 0.5, tileW - 1, tileH - 1, 4); ctx.stroke();
       ctx.fillStyle = alpha(C.blue, 0.22); poly(ctx, tx, ty, tileW, tileH, shape); ctx.fill();
       ctx.strokeStyle = C.blue; ctx.lineWidth = 1.6; poly(ctx, tx, ty, tileW, tileH, shape); ctx.stroke();
@@ -1009,7 +1009,7 @@
       { zh: '钉死线程数之后', en: 'Threads pinned', cores: 32, units: 24, t0: F0, t1: F1, fixed: true }
     ];
     const MAXU = 210; const LIMIT = 150; // illustrative heights; only cores and restarts are measured
-    const svc = ['#6f8fe8', '#2255ee', '#15309a'];
+    const svc = ['#6a9bcc', '#b4532f', '#7a3520'];
     function draw(ctx, w, h, t) {
       const wide = w >= 640; const pad = wide ? 22 : 12; const gap = wide ? 28 : 10;
       const colW = (w - pad * 2 - gap * 2) / 3;
@@ -1092,10 +1092,10 @@
   function figPrompt(el) {
     const R0 = 3000; const R1 = 5200; const X0 = 6200; const duration = 9400;
     const SEG = {
-      S: { c: '#5d6168', zh: '系统', en: 'system' },
-      T: { c: '#6f8fe8', zh: '工具目录', en: 'tools' },
-      K: { c: '#8e959c', zh: 'Skill', en: 'skills' },
-      H: { c: '#c9ccc6', zh: '对话历史', en: 'history' },
+      S: { c: '#5e5d59', zh: '系统', en: 'system' },
+      T: { c: '#6a9bcc', zh: '工具目录', en: 'tools' },
+      K: { c: '#97958d', zh: 'Skill', en: 'skills' },
+      H: { c: '#d2d0c6', zh: '对话历史', en: 'history' },
       V: { c: C.amber, zh: '进行中任务', en: 'task state' }
     };
     const before = [['S', 1500], ['T', 7280], ['V', 1085], ['K', 900], ['H', 1961]];

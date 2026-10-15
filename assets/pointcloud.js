@@ -184,20 +184,20 @@
       gl_Position = uMVP * vec4(p, 1.0);
       float dist = length(p - uEye);
       float h = clamp((p.z + 1.8) / 16.0, 0.0, 1.0);
-      vec3 low = vec3(0.16, 0.36, 0.72);
-      vec3 mid = vec3(0.30, 0.78, 0.98);
-      vec3 high = vec3(0.86, 0.95, 1.0);
+      vec3 low = vec3(0.42, 0.20, 0.13);
+      vec3 mid = vec3(0.88, 0.50, 0.36);
+      vec3 high = vec3(0.99, 0.94, 0.86);
       vec3 c = mix(low, mid, smoothstep(0.0, 0.35, h));
       c = mix(c, high, smoothstep(0.45, 1.0, h));
-      if (kind < 0.5) c = mix(vec3(0.20, 0.30, 0.42), vec3(0.33, 0.55, 0.78), clamp(1.0 - length(p.xy) / 60.0, 0.0, 1.0));
-      else if (kind > 1.5 && kind < 2.5) c = vec3(0.55, 0.86, 1.0);
-      else if (kind > 2.5 && kind < 3.5) c = vec3(0.36, 0.84, 0.66);
-      else if (kind > 4.5) c = vec3(1.0, 0.72, 0.30);
+      if (kind < 0.5) c = mix(vec3(0.30, 0.25, 0.21), vec3(0.58, 0.47, 0.39), clamp(1.0 - length(p.xy) / 60.0, 0.0, 1.0));
+      else if (kind > 1.5 && kind < 2.5) c = vec3(0.98, 0.84, 0.70);
+      else if (kind > 2.5 && kind < 3.5) c = vec3(0.62, 0.80, 0.52);
+      else if (kind > 4.5) c = vec3(0.55, 0.76, 0.98);
       float az = atan(p.y, p.x);
       float lag = mod(uSweep - az, 6.2831853);
       float glow = exp(-lag * 1.35);
       float range = clamp(1.15 - length(p.xy) / 80.0, 0.35, 1.0);
-      vColor = c * (0.52 + 0.95 * glow) * range + vec3(0.25, 0.35, 0.4) * glow * 0.35;
+      vColor = c * (0.52 + 0.95 * glow) * range + vec3(0.40, 0.30, 0.24) * glow * 0.35;
       vAlpha = (kind < 0.5 ? 0.62 : 0.92) * range;
       gl_PointSize = uSize * uDpr * clamp(22.0 / dist, 0.55, 2.4) * (kind > 4.5 ? 1.25 : 1.0);
     }`;
@@ -265,9 +265,9 @@
     ring.push(Math.cos(a0) * 6, Math.sin(a0) * 6, GROUND, Math.cos(a1) * 6, Math.sin(a1) * 6, GROUND);
   }
   const lineBufs = [
-    { data: new Float32Array(cubLines), color: [1, 0.71, 0.28, 1] },
-    { data: new Float32Array(egoLines), color: [0.9, 0.95, 1, 0.45] },
-    { data: new Float32Array(ring), color: [0.37, 0.83, 1, 0.18] }
+    { data: new Float32Array(cubLines), color: [0.55, 0.76, 0.98, 1] },
+    { data: new Float32Array(egoLines), color: [1, 0.95, 0.88, 0.45] },
+    { data: new Float32Array(ring), color: [0.85, 0.47, 0.34, 0.2] }
   ].map((l) => {
     const b = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, b);

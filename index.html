@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#f7f7f2">
+<meta name="theme-color" content="#faf9f5">
 <title>张嘉玮 Jiawei Zhang — Java / 全栈技术负责人</title>
 <meta name="description" content="张嘉玮 Jiawei Zhang，Java / 全栈技术负责人。平台架构、Python 数据工作流、Go 服务与 AI 应用工程；六个工程案例、中英文简历与工作经历。">
 <meta property="og:title" content="张嘉玮 Jiawei Zhang — Java / 全栈技术负责人">
@@ -36,11 +36,12 @@
 }
 </script>
 <link rel="icon" href="assets/icons/stack.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20261009-clean">
+<link rel="stylesheet" href="assets/site.css?v=20261015-clay">
 <script>(function(d){d.classList.add('js');try{var l=localStorage.getItem('jiawis-lang');if(l==='en'||l==='zh'){d.dataset.lang=l;d.lang=l==='zh'?'zh-CN':'en'}}catch(e){}})(document.documentElement)</script>
-<script src="assets/site.js?v=20261009-clean" defer></script>
-<script src="assets/pointcloud.js?v=20261009-clean" defer></script>
-<script src="assets/figures.js?v=20261009-clean" defer></script>
+<script src="assets/site.js?v=20261015-clay" defer></script>
+<script src="assets/pointcloud.js?v=20261015-clay" defer></script>
+<script src="assets/figures.js?v=20261015-clay" defer></script>
+<script src="assets/harness.js?v=20261015-clay" defer></script>
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到主要内容</span><span class="en">Skip to content</span></a>
@@ -48,6 +49,7 @@
   <div class="wrap nav-wrap">
     <a class="brand" href="#top" aria-label="Jiawei Zhang home">jiawei zhang<span>.</span></a>
     <nav id="site-nav" class="site-nav" aria-label="主导航 / Main navigation">
+      <a href="#agent" data-nav>Agent</a>
       <a href="#cases" data-nav><span class="zh">案例</span><span class="en">Cases</span></a>
       <a href="#work" data-nav><span class="zh">经历</span><span class="en">Experience</span></a>
       <a href="#platform" data-nav><span class="zh">平台</span><span class="en">Platform</span></a>
@@ -78,7 +80,7 @@
         <p class="hero-lede"><span class="zh">以 Java 后端为主，结合 Python 数据工作流、Go 服务与 Vue / TypeScript 全栈，负责平台架构、核心开发和交付。</span><span class="en">Java-focused engineering across platform architecture, hands-on development and delivery, with Python data workflows, Go services and Vue / TypeScript.</span></p>
         <p class="hero-lede hero-lede-2"><span class="zh">曾负责两条产品线，统筹约 20 人的研发、运维与测试平台组。Agent 经历侧重架构设计、质量审计与 LAB 验证。</span><span class="en">Led two product lines and coordinated a platform group of about 20 across engineering, operations and testing. Agent work covers architecture, quality review and LAB validation.</span></p>
         <div class="hero-actions">
-          <a class="button" href="#cases"><span class="zh">看工程案例</span><span class="en">Read the cases</span><i class="icon i-right" aria-hidden="true"></i></a>
+          <a class="button" href="#agent"><span class="zh">看 Agent 演示</span><span class="en">Watch the agent demo</span><i class="icon i-right" aria-hidden="true"></i></a>
           <a class="text-link" href="#resume"><span class="zh">获取简历 PDF</span><span class="en">Get my resume</span><i class="icon i-right" aria-hidden="true"></i></a>
           <a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a>
         </div>
@@ -105,9 +107,61 @@
     <p class="ticker-note"><span class="zh">历史验收记录，各指标对应独立测量窗口；提交耗时不代表任务处理完成时间。详见案例。</span><span class="en">Historical acceptance records from separate measurement windows. Submission latency is not end-to-end processing time. See each case for scope.</span></p>
   </section>
 
+  <!-- ============ 01 SOLAR HARNESS ============ -->
+  <section class="section wrap" id="agent" aria-labelledby="agent-heading">
+    <div class="section-label"><span class="number">01</span><span>/ SOLAR HARNESS · AGENT × DATA</span></div>
+    <div class="section-intro">
+      <h2 id="agent-heading"><span class="zh">一句话需求，<br>变成可交付的数据包。</span><span class="en">One sentence in.<br>A shippable dataset out.</span></h2>
+      <p><span class="zh">Solar Harness 是 SolarSense 的业务 Agent 运行时（前身 SolarClaw），我负责它的架构设计、质量审计与 harness 调优。它把自然语言需求拆成工作流，调用平台已有的数据集、预处理、模型和复核能力逐步执行；写操作先过确认门，每一步都有记录，可以回放。</span><span class="en">Solar Harness is SolarSense's business-agent runtime (formerly SolarClaw); I owned its architecture, quality review and harness tuning. It turns a plain-language request into a workflow and runs it step by step on the platform's own dataset, preprocessing, model and review services. Write actions pass an approval gate, and every step is logged and replayable.</span></p>
+    </div>
+
+    <figure class="hf" id="harness-film" aria-labelledby="hf-caption">
+      <div class="hx-stage">
+        <canvas class="hx-gl" aria-hidden="true"></canvas>
+        <canvas class="hx-over" aria-hidden="true"></canvas>
+        <div class="hx-hud" aria-hidden="true">
+          <div class="hx-brand mono"><i></i>SOLAR HARNESS<span><span class="zh">目标工作流演示 · 示意数据</span><span class="en">TARGET WORKFLOW · ILLUSTRATIVE DATA</span></span></div>
+          <div class="hx-step"><span class="hx-step-n mono">01</span><span class="hx-step-t"></span><span class="hx-step-s mono"></span></div>
+          <dl class="hx-metrics mono">
+            <div><dt><span class="zh">帧</span><span class="en">FRAMES</span></dt><dd data-m="frames">2,400</dd></div>
+            <div><dt><span class="zh">框</span><span class="en">BOXES</span></dt><dd data-m="boxes">0</dd></div>
+            <div><dt><span class="zh">复核</span><span class="en">REVIEWED</span></dt><dd data-m="review">0/37</dd></div>
+            <div><dt><span class="zh">版本</span><span class="en">VERSION</span></dt><dd data-m="ver">v2</dd></div>
+          </dl>
+          <div class="hx-prompt"><span class="hx-prompt-k mono"><span class="zh">你</span><span class="en">YOU</span></span><p class="hx-typed"></p><span class="hx-send"></span></div>
+          <div class="hx-approve"><p class="mono"><span class="zh">写操作需要确认</span><span class="en">WRITE ACTION · APPROVAL</span></p><p><span class="zh">生成数据集新版本 v3，v2 原样保留。</span><span class="en">Create dataset version v3; v2 stays untouched.</span></p><span class="hx-approve-b"><span class="zh">确认</span><span class="en">Approve</span></span><span class="hx-approve-ok mono"><span class="zh">✓ 已确认 · 审批人 PM</span><span class="en">✓ APPROVED · BY PM</span></span></div>
+          <ol class="hx-log mono"></ol>
+          <div class="hx-final">
+            <p class="mono hx-final-k"><span class="zh">交付</span><span class="en">DELIVERED</span></p>
+            <p class="hx-final-name mono">highway-0412_v3_coco.zip</p>
+            <ol class="hx-lineage mono"><li><b>v2</b>2,400</li><li><b><span class="zh">清洗</span><span class="en">clean</span></b>−232</li><li><b><span class="zh">预标注</span><span class="en">label</span></b>9,412</li><li><b><span class="zh">复核</span><span class="en">review</span></b>37</li><li><b>v3</b>2,168</li></ol>
+            <p class="hx-final-note"><span class="zh">每一步都有记录、可回放；v2 原样保留，可回滚。</span><span class="en">Every step is logged and replayable; v2 is kept for rollback.</span></p>
+          </div>
+          <div class="hx-fade"></div>
+        </div>
+        <p class="hx-nogl"><span class="zh">这段演示需要 WebGL2，当前浏览器未启用。</span><span class="en">This demo needs WebGL2, which this browser has not enabled.</span></p>
+      </div>
+      <div class="hf-controls">
+        <button type="button" class="hf-play" aria-pressed="false" aria-label="播放 / 暂停 · Play / pause"><i class="icon i-play" aria-hidden="true"></i><i class="icon i-pause" aria-hidden="true"></i></button>
+        <input class="hf-range" type="range" min="0" max="400" step="1" value="0" aria-label="进度 / Progress">
+        <span class="hf-time mono">0:00 / 0:40</span>
+      </div>
+      <div class="hf-chapters" aria-label="章节 / Chapters"></div>
+    </figure>
+    <p class="hf-note" id="hf-caption"><span class="zh">FIG.1 · 一条目标工作流的完整演示：需求 → 规划 → 确认 → 清洗 → 预标注 → 人工复核 → 打包交付。画面是 32 张真实高速公路照片（Wikimedia Commons 开放授权，含镜像），框是用开源检测模型（COCO 预训练 Faster R-CNN）在这些照片上实际跑出来的；复核特写也是真实输出——模型对同一辆厢式货车给出了 truck / car 三个互相冲突的框。数据集名、总张数与总框数为示意。每一步对应平台上已有的能力；截至 2026-08，这条端到端链路仍在联调。</span><span class="en">FIG.1 · The target workflow end to end: request → plan → approval → clean → pre-label → human review → package. The frames are 32 real highway photos (openly licensed on Wikimedia Commons, plus mirror images), and the boxes are what an open COCO-pretrained Faster R-CNN actually produced on them; the review close-up is real output too — the model gave one van three conflicting truck / car boxes. The dataset name and totals are illustrative. Each step maps to a capability the platform already has; as of Aug 2026 the end-to-end chain was still in integration.</span></p>
+    <details class="hf-credits"><summary class="mono"><span class="zh">照片来源与授权（32）</span><span class="en">Photo credits &amp; licenses (32)</span></summary><ol><li><a href="https://commons.wikimedia.org/wiki/File:Southern_Motorway_Auckland_traffic_-_copyright-free_photo_released_to_public_domain.jpg" target="_blank" rel="noopener noreferrer">Southern Motorway Auckland traffic - copyright-free photo released to public domain.jpg</a> · Kiwiev · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Cars_in_traffic_in_Auckland,_New_Zealand_-_copyright-free_photo_released_to_public_domain.jpg" target="_blank" rel="noopener noreferrer">Cars in traffic in Auckland, New Zealand - copyright-free photo released to public domain.jpg</a> · Kiwiev · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Typical_Weekend_Traffic_on_IH_35_Downtown_Austin_2019.jpg" target="_blank" rel="noopener noreferrer">Typical Weekend Traffic on IH 35 Downtown Austin 2019.jpg</a> · Larry D. Moore · CC BY 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Driving_Cars_in_a_Traffic_Jam.jpg" target="_blank" rel="noopener noreferrer">Driving Cars in a Traffic Jam.jpg</a> · epSos.de · CC BY 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Photograph_of_Shirley_Highway_During_Evening_Rush_Hour_Traffic_-_NARA_-_546644.jpg" target="_blank" rel="noopener noreferrer">Photograph of Shirley Highway During Evening Rush Hour Traffic - NARA - 546644.jpg</a> · Unknown authorUnknown author or not provided · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Trafic_jam_M7_highway_2012.JPG" target="_blank" rel="noopener noreferrer">Trafic jam M7 highway 2012.JPG</a> · Derzsi Elekes Andor · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:SHIRLEY_HIGHWAY_IN_VIRGINIA._HEAVY_TRAFFIC_AND_CLEAR_BUS_LANES_-_NARA_-_546629.jpg" target="_blank" rel="noopener noreferrer">SHIRLEY HIGHWAY IN VIRGINIA. HEAVY TRAFFIC AND CLEAR BUS LANES - NARA - 546629.jpg</a> · Yoichi Okamoto · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Real_Canadian_traffic_jam_(8590180614).jpg" target="_blank" rel="noopener noreferrer">Real Canadian traffic jam (8590180614).jpg</a> · Thomas Woodtli from Zürich, Switzerland · CC BY 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:SHIRLEY_HIGHWAY_DURING_EVENING_RUSH_HOUR_-_NARA_-_546747.jpg" target="_blank" rel="noopener noreferrer">SHIRLEY HIGHWAY DURING EVENING RUSH HOUR - NARA - 546747.jpg</a> · Yoichi Okamoto · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Northbound_traffic_on_the_M1_motorway_-_geograph.org.uk_-_4343339.jpg" target="_blank" rel="noopener noreferrer">Northbound traffic on the M1 motorway - geograph.org.uk - 4343339.jpg</a> · Mat Fascione · CC BY-SA 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_Freeway_1_in_north_Taichung_03.jpg" target="_blank" rel="noopener noreferrer">Traffic on Freeway 1 in north Taichung 03.jpg</a> · Alika113 · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_Freeway_1_in_north_Taichung_02.jpg" target="_blank" rel="noopener noreferrer">Traffic on Freeway 1 in north Taichung 02.jpg</a> · Alika113 · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_Freeway_1_in_north_Taichung_04.jpg" target="_blank" rel="noopener noreferrer">Traffic on Freeway 1 in north Taichung 04.jpg</a> · Alika113 · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_Jam_-_Leh%E2%80%93Manali_Highway_-_Gulaba_-_Kullu_2014-05-10_2366.JPG" target="_blank" rel="noopener noreferrer">Traffic Jam - Leh–Manali Highway - Gulaba - Kullu 2014-05-10 2366.JPG</a> · Biswarup Ganguly · CC BY 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:401_Traffic_Jam.png" target="_blank" rel="noopener noreferrer">401 Traffic Jam.png</a> · Floydian (talk) · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_Jam_on_the_M62_-_geograph.org.uk_-_7390393.jpg" target="_blank" rel="noopener noreferrer">Traffic Jam on the M62 - geograph.org.uk - 7390393.jpg</a> · Chris Heaton · CC BY-SA 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Northbound_freeway_traffic_greenwood.jpg" target="_blank" rel="noopener noreferrer">Northbound freeway traffic greenwood.jpg</a> · Leon Brooks · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_on_A5_Autobahn_(22072079981).jpg" target="_blank" rel="noopener noreferrer">Traffic on A5 Autobahn (22072079981).jpg</a> · Charles from Port Chester, New York · CC BY 2.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Cars_are_driving_down_the_street_at_night_2025.jpg" target="_blank" rel="noopener noreferrer">Cars are driving down the street at night 2025.jpg</a> · Pattaya Patrol · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Mitchell_Freeway_147_N_Walter_morning_peak.jpg" target="_blank" rel="noopener noreferrer">Mitchell Freeway 147 N Walter morning peak.jpg</a> · User:Orderinchaos · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Eastern_Freeway_centre_of_road_Balwyn_North-01_from_balloon_2007-03-05.jpg" target="_blank" rel="noopener noreferrer">Eastern Freeway centre of road Balwyn North-01 from balloon 2007-03-05.jpg</a> · Tangerineduel · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Highway_intersection_at_night-time_(Unsplash).jpg" target="_blank" rel="noopener noreferrer">Highway intersection at night-time (Unsplash).jpg</a> · Israel Sundseth kappuru · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Eastern_Freeway_centre_of_road_Balwyn_North-02_from_balloon_2007-03-05.jpg" target="_blank" rel="noopener noreferrer">Eastern Freeway centre of road Balwyn North-02 from balloon 2007-03-05.jpg</a> · Tangerineduel · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Shutoko_expressway_Kandabashi_exit_001.jpg" target="_blank" rel="noopener noreferrer">Shutoko expressway Kandabashi exit 001.jpg</a> · Ebiebi2 · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway-Baghdad2025.jpg" target="_blank" rel="noopener noreferrer">Freeway-Baghdad2025.jpg</a> · Unknown authorUnknown author · CC BY 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Mitchell_Freeway_011_S_Mount_Street.jpg" target="_blank" rel="noopener noreferrer">Mitchell Freeway 011 S Mount Street.jpg</a> · Original uploader was Kcdtsg (David) at en.wikipedia · Public domain</li><li><a href="https://commons.wikimedia.org/wiki/File:Olympic_urban_expressway_Seoul.jpg" target="_blank" rel="noopener noreferrer">Olympic urban expressway Seoul.jpg</a> · ja:User:Sonata · CC BY-SA 3.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Traffic_accident_Southeast_Freeway_and_North_Quay_P1400982.jpg" target="_blank" rel="noopener noreferrer">Traffic accident Southeast Freeway and North Quay P1400982.jpg</a> · John Robert McPherson · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway_7_(Iran)_or_the_Persian_Gulf_in_Iran_Mostafa_Meraji_2011_07.jpg" target="_blank" rel="noopener noreferrer">Freeway 7 (Iran) or the Persian Gulf in Iran Mostafa Meraji 2011 07.jpg</a> · Mostafameraji · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway_7_(Iran)_or_the_Persian_Gulf_in_Iran_Mostafa_Meraji_2011_17.jpg" target="_blank" rel="noopener noreferrer">Freeway 7 (Iran) or the Persian Gulf in Iran Mostafa Meraji 2011 17.jpg</a> · Mostafameraji · CC0</li><li><a href="https://commons.wikimedia.org/wiki/File:Midday_traffic_on_Kwinana_Freeway_Cockburn_2018.jpg" target="_blank" rel="noopener noreferrer">Midday traffic on Kwinana Freeway Cockburn 2018.jpg</a> · Orderinchaos · CC BY-SA 4.0</li><li><a href="https://commons.wikimedia.org/wiki/File:Freeway_7_(Iran)_or_the_Persian_Gulf_in_Iran_Mostafa_Meraji_2011_10.jpg" target="_blank" rel="noopener noreferrer">Freeway 7 (Iran) or the Persian Gulf in Iran Mostafa Meraji 2011 10.jpg</a> · Mostafameraji · CC0</li></ol></details>
+
+    <ul class="hf-proof" aria-label="背后的实测 / Measured underneath">
+      <li><p class="mono">AGENT RUNTIME</p><strong><span class="zh">150+ 个工具</span><span class="en">150+ tools</span></strong><p><span class="zh">经 MCP 网关统一接入平台各模块；25 个 Skill、8 个确定性工作流，写操作走确认门。</span><span class="en">Platform modules exposed through one MCP gateway; 25 skills, 8 deterministic workflows, approval-gated writes.</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></p></li>
+      <li><p class="mono">HARNESS</p><strong><span class="zh">token −43.6%</span><span class="en">tokens −43.6%</span></strong><p><span class="zh">重排 prompt、裁工具目录、修反思孤儿消息；任务通过 5 → 7，回归失败 53 → 20。</span><span class="en">Prompt reordering, a trimmed tool catalog and a reflection fix; tasks passed 5 → 7, regression failures 53 → 20.</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></p></li>
+      <li><p class="mono">TASK QUEUE</p><strong><span class="zh">10,025 个文件 · 0.89 s</span><span class="en">10,025 files · 0.89 s</span></strong><p><span class="zh">万级预处理提交从超时到秒回；故障注入下 280 次重试只产出 1 个版本。</span><span class="en">10k-file preprocessing submission from timing out to sub-second; 280 retries under fault injection, one version.</span> <span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span></p></li>
+      <li><p class="mono">INGEST</p><strong><span class="zh">约 10 GB · 41.8 MiB/s</span><span class="en">~10 GB · 41.8 MiB/s</span></strong><p><span class="zh">浏览器分片直传，零中断；入库带版本与血缘，导入失败可恢复。</span><span class="en">Browser multipart direct upload, no interruptions; ingest is versioned with lineage and resumable.</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></p></li>
+    </ul>
+  </section>
+
   <!-- ============ 03 CASES ============ -->
   <section class="section wrap" id="cases" aria-labelledby="cases-heading">
-    <div class="section-label"><span class="number">01</span><span>/ CASE FILES</span></div>
+    <div class="section-label"><span class="number">02</span><span>/ CASE FILES</span></div>
     <div class="section-intro">
       <h2 id="cases-heading"><span class="zh">约束、取舍、验证。</span><span class="en">Constraints. Trade-offs.<br>Proof.</span></h2>
       <p><span class="zh">六个真实案例。每个都写清楚遇到的约束、考虑过的方案、为什么这样选，以及怎么证明它成立。性能与交付数字都注明环境：<span class="tag prod">生产</span> 为生产环境实测，<span class="tag lab">内网</span> 为内网或预发环境。</span><span class="en">Six real cases, each with the constraint, the options considered, why I chose what I did, and how it was proven. Performance and delivery numbers state their environment: <span class="tag prod">PROD</span> measured in production, <span class="tag lab">LAB</span> measured in staging or pre-production.</span></p>
@@ -348,7 +402,7 @@
           </div>
           <p class="fig-say" aria-hidden="true"></p>
           <div class="fig-stage" style="--ar:16/6.7;--ar-m:4/5.8"><canvas aria-hidden="true"></canvas></div>
-          <p class="fig-legend"><span class="lg"><i style="background:#5d6168"></i><span class="zh">系统</span><span class="en">system</span></span><span class="lg"><i style="background:#6f8fe8"></i><span class="zh">工具目录</span><span class="en">tool catalog</span></span><span class="lg"><i style="background:#8e959c"></i><span class="zh">Skill</span><span class="en">skills</span></span><span class="lg"><i style="background:#c9ccc6"></i><span class="zh">对话历史</span><span class="en">history</span></span><span class="lg"><i style="background:#e39a2d"></i><span class="zh">进行中任务（每轮变化）</span><span class="en">task state (changes every turn)</span></span></p>
+          <p class="fig-legend"><span class="lg"><i style="background:#5e5d59"></i><span class="zh">系统</span><span class="en">system</span></span><span class="lg"><i style="background:#6a9bcc"></i><span class="zh">工具目录</span><span class="en">tool catalog</span></span><span class="lg"><i style="background:#97958d"></i><span class="zh">Skill</span><span class="en">skills</span></span><span class="lg"><i style="background:#d2d0c6"></i><span class="zh">对话历史</span><span class="en">history</span></span><span class="lg"><i style="background:#e39a2d"></i><span class="zh">进行中任务（每轮变化）</span><span class="en">task state (changes every turn)</span></span></p>
           <figcaption class="fig-note" id="fig-prompt-cap"><span class="tag lab"><span class="zh">内网</span><span class="en">LAB</span></span> <span class="zh">缓存只复用与上一轮完全相同的前缀。改前易变段排在前面，实测命中 51.0%；改后稳定段在前、易变段压缩后放末尾，工具目录 28 → 20。分段比例为示意（按单 prompt 均值 12,726 → 9,631 token 配平）。图内 prompt 与缓存数值来自历史 LAB 记录；24 例回归错误数与任务通过数 5 → 7 分别记录，不合并为一个成功率。</span><span class="en">A cache reuses only the prefix identical to the previous turn. Before, volatile content came first and the measured hit rate was 51.0%; after, stable sections lead, the volatile block is trimmed and moved last, and the tool catalog drops from 28 to 20. Segment proportions are illustrative (balanced to the recorded per-prompt means, 12,726 → 9,631 tokens). Prompt and cache figures are historical LAB observations. Errors across the 24-case regression and the task-pass count 5 → 7 are separate records, not a single success rate.</span></figcaption>
         </figure>
         <ol class="notes notes-main">
@@ -368,11 +422,11 @@
   </section>
 
   <section class="section wrap" id="work" aria-labelledby="experience-heading">
-    <div class="section-label"><span class="number">02</span><span>/ EXPERIENCE &amp; EDUCATION</span></div>
+    <div class="section-label"><span class="number">03</span><span>/ EXPERIENCE &amp; EDUCATION</span></div>
     <div class="experience">
       <div class="experience-aside"><h2 id="experience-heading"><span class="zh">在真实约束下，<br>把系统做成。</span><span class="en">Real constraints.<br>Working systems.</span></h2><p><span class="zh">从交易系统、企业服务到 AI 数据平台，承担设计、开发与交付责任。</span><span class="en">Designing, building and delivering across trading systems, enterprise services and AI data platforms.</span></p></div>
       <div class="timeline">
-<details class="job" open><summary><span class="job-summary-copy"><span class="job-date">2025.09 — 2026.09</span><span class="job-title"><span class="zh">研发负责人</span><span class="en">Head of Engineering</span></span><span class="company"><span class="zh">杭州景联文科技有限公司</span><span class="en">Hangzhou Jinglianwen Technology Co., Ltd.</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责两条产品线研发，统筹约20人的研发、运维与测试平台组，承担技术评审、任务拆解及发布把关；主导Java / Vue平台建设并参与核心开发。</span><span class="en">Led architecture and delivery across two product lines; coordinated a platform group of about 20 in engineering, operations and testing, and contributed to core Java / Vue development.</span></li><li><span class="zh">设计异步任务方案，组织Python工作流、CPU / GPU资源调度和模型服务接入；推动质量门禁、监控回滚及客户私有化交付。</span><span class="en">Designed task-execution architecture and coordinated Python workflows, CPU / GPU scheduling, model integration, quality gates, monitoring, rollback and on-premises delivery.</span></li></ul><p class="stack">Java · Vue 3 · TypeScript · Python · Go · MySQL · Redis · Docker · k3s</p></div></details>
+<details class="job" open><summary><span class="job-summary-copy"><span class="job-date">2025.09 — 2026.09</span><span class="job-title"><span class="zh">研发负责人</span><span class="en">Head of Engineering</span></span><span class="company"><span class="zh">杭州景联文科技有限公司</span><span class="en">Hangzhou Jinglianwen Technology Co., Ltd.</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责两条产品线研发，统筹约20人的研发、运维与测试平台组，承担技术评审、任务拆解及发布把关；主导Java / Vue平台建设并参与核心开发。</span><span class="en">Led architecture and delivery across two product lines; coordinated a platform group of about 20 in engineering, operations and testing, and contributed to core Java / Vue development.</span></li><li><span class="zh">负责业务Agent运行时（Solar Harness）的架构设计与质量审计：MCP网关统一接入150+平台工具，补齐确定性工作流与写操作确认门；按实测调优harness，输入token降低43.6%。</span><span class="en">Owned architecture and quality review for the business-agent runtime (Solar Harness): 150+ platform tools behind one MCP gateway, deterministic workflows and approval gates for writes; measurement-driven harness tuning cut input tokens by 43.6%.</span> <span class="tag lab">LAB</span></li><li><span class="zh">负责大规模数据处理链路：万级任务队列使10,025个文件的提交从超过2分钟降至0.89秒；约10 GB数据包经浏览器分片直传入库（41.8 MiB/s），数据集带版本与血缘。</span><span class="en">Owned the large-scale data path: a 10k-task queue cut submission of 10,025 files from over 2 min to 0.89 s; ~10 GB archives upload directly in parts (41.8 MiB/s) into versioned datasets with lineage.</span> <span class="tag prod"><span class="zh">生产</span><span class="en">PROD</span></span></li><li><span class="zh">设计异步任务方案，组织Python工作流、CPU / GPU资源调度和模型服务接入；推动质量门禁、监控回滚及客户私有化交付。</span><span class="en">Designed task-execution architecture and coordinated Python workflows, CPU / GPU scheduling, model integration, quality gates, monitoring, rollback and on-premises delivery.</span></li></ul><p class="stack">Java · Vue 3 · TypeScript · Python · Go · MySQL · Redis · Docker · k3s</p></div></details>
 <details class="job"><summary><span class="job-summary-copy"><span class="job-date">2024.02 — 2025.05</span><span class="job-title"><span class="zh">技术合伙人</span><span class="en">Technical Partner</span></span><span class="company"><span class="zh">JiawisTech Solutions LLC</span><span class="en">JiawisTech Solutions LLC</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责AI客服技术方案、模型选型、提示词设计和Java核心接口开发，组织小团队完成模型API、业务接口联调与部署。</span><span class="en">Owned technical design, model selection, prompt design and core Java APIs for AI customer service; coordinated small-team integration and deployment.</span></li><li><span class="zh">开展Python / LangChain文本分析与提示词迭代；参与Shopify前端性能评审，构建用户行为推荐原型。</span><span class="en">Built Python / LangChain text-analysis workflows; reviewed Shopify frontend performance and developed a prototype using user behavior for recommendations.</span></li></ul><p class="stack">Java · Python · Spring Boot · Redis · MongoDB · Docker · LangChain</p></div></details>
 <details class="job"><summary><span class="job-summary-copy"><span class="job-date">2020.03 — 2022.01</span><span class="job-title"><span class="zh">全栈工程师</span><span class="en">Full-Stack Engineer</span></span><span class="company"><span class="zh">东方证券</span><span class="en">Orient Securities</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">负责委托与回报消息模块的Java化开发及跨系统联调，使用Kafka / Netty完成消息通信与实时推送，结合Redis锁与状态机处理并发一致性。</span><span class="en">Owned Java migration and integration of order and execution-report messaging, using Kafka / Netty for messaging and real-time push, with Redis locks and state control.</span></li><li><span class="zh">使用Python与Vue开发交易延迟监控工具，结合ELK日志检索、可视化和告警支持性能排查及异常定位。</span><span class="en">Developed Python / Vue latency monitoring with ELK log search, visualization and alerts for performance investigation and incident diagnosis.</span></li></ul><p class="stack">Java · Kafka · Netty · Oracle · Redis · Python · Vue · ELK</p></div></details>
 <details class="job"><summary><span class="job-summary-copy"><span class="job-date">2017.09 — 2019.07</span><span class="job-title"><span class="zh">全栈工程师</span><span class="en">Full-Stack Engineer</span></span><span class="company"><span class="zh">联创集团</span><span class="en">Linkage Group</span></span></span><i class="icon i-plus" aria-hidden="true"></i></summary><div class="job-body"><ul><li><span class="zh">参与政务房产交易及智慧城市系统建设，带领5人开发团队开展需求拆解、技术设计、任务分配与阶段评审。</span><span class="en">Contributed to government property-transaction and smart-city systems; led a five-person team in requirements, design, task allocation and milestone reviews.</span></li><li><span class="zh">负责MySQL查询优化、RabbitMQ异步处理及Redis缓存；独立开发汽车服务微信小程序，使用Node.js中间层对接Java后端。</span><span class="en">Optimized MySQL queries; implemented RabbitMQ processing and Redis caching. Independently developed an automotive WeChat Mini Program integrating Node.js and Java.</span></li></ul><p class="stack">Java · Spring Boot · MyBatis · MySQL · RabbitMQ · Redis · Node.js</p></div></details>
@@ -402,7 +456,7 @@
 
   <!-- ============ 02 PLATFORM ============ -->
   <section class="section wrap" id="platform" aria-labelledby="platform-heading">
-    <div class="section-label"><span class="number">03</span><span>/ PLATFORM ARCHITECTURE</span></div>
+    <div class="section-label"><span class="number">04</span><span>/ PLATFORM ARCHITECTURE</span></div>
     <div class="section-intro">
       <h2 id="platform-heading"><span class="zh">一张图看我负责的系统。</span><span class="en">The system I was<br>responsible for.</span></h2>
       <p><span class="zh">点选任一组件，查看它解决什么问题、我做了什么，以及对应的实测数字。</span><span class="en">Select any component to see what it solves, what I did, and the numbers behind it.</span></p>
@@ -458,7 +512,7 @@
 
   <!-- ============ 01 THE YEAR ============ -->
   <section class="section wrap" id="year" aria-labelledby="year-heading">
-    <div class="section-label"><span class="number">04</span><span>/ THE YEAR · 2025.09 — 2026.08</span></div>
+    <div class="section-label"><span class="number">05</span><span>/ THE YEAR · 2025.09 — 2026.08</span></div>
     <div class="section-intro">
       <h2 id="year-heading"><span class="zh">从 initial commit，<br>到生产环境。</span><span class="en">From the initial commit<br>to production.</span></h2>
       <p><span class="zh">2025-09-19，我在同一天提交了前后端两个仓的第一个 commit。十二个月后，它是 11 个 Java 服务、Python Worker、模型服务、标注工具矩阵、桌面端和多套环境组成的产品体系。</span><span class="en">On 2025-09-19 I made the first commit to both the backend and frontend repositories. Twelve months later it had become a product: 11 Java services, Python workers, model serving, an annotation-tool suite, a desktop client and several environments.</span></p>
@@ -495,7 +549,7 @@
   <!-- ============ 04 METHOD ============ -->
   <section class="section section-dark" id="method" aria-labelledby="method-heading">
     <div class="wrap">
-      <div class="section-label"><span class="number">05</span><span>/ HOW I WORK</span></div>
+      <div class="section-label"><span class="number">06</span><span>/ HOW I WORK</span></div>
       <div class="section-intro">
         <h2 id="method-heading"><span class="zh">用 AI 放大产出，<br>验收覆盖真实交付。</span><span class="en">AI multiplies the output.<br>Acceptance covers real delivery.</span></h2>
         <p><span class="zh">我写规格与验收清单，让 Codex 实现，再独立复算、实测。这套方式支撑了能力平台、可观测、桌面端等多条线同时推进，而验收始终由我自己把关。</span><span class="en">I write the spec and the acceptance checklist, Codex implements, and I verify independently by recomputing and running it. This let several lines move at once, from the capability platform to observability and the desktop client, while acceptance stayed with me.</span></p>
@@ -538,7 +592,7 @@
 
   <!-- ============ 05 PROJECTS ============ -->
   <section class="section wrap" id="projects" aria-labelledby="projects-heading">
-    <div class="section-label"><span class="number">06</span><span>/ BUILT ON MY OWN TIME</span></div>
+    <div class="section-label"><span class="number">07</span><span>/ BUILT ON MY OWN TIME</span></div>
     <div class="section-intro">
       <h2 id="projects-heading"><span class="zh">工作之外，<br>也一直在做东西。</span><span class="en">Outside work,<br>still building.</span></h2>
       <p><span class="zh">最近一年业余做、自己每天在用的东西。模型只做它擅长的部分，能用确定性逻辑算的，就不交给模型。</span><span class="en">Things I built on my own time over the past year and use every day. Models do only what they are good at; anything that can be computed deterministically is.</span></p>
@@ -573,13 +627,13 @@
 
 
   <section class="section wrap" id="resume" aria-labelledby="resume-heading">
-    <div class="section-label"><span class="number">07</span><span>/ RESUME</span></div>
+    <div class="section-label"><span class="number">08</span><span>/ RESUME</span></div>
     <div class="resume-panel"><div><h2 id="resume-heading"><span class="zh">简历</span><span class="en">Resume</span></h2><p class="resume-note"><span class="zh">公开版 · 各 2 页 · 更新于 2026-10-09</span><span class="en">Public edition · 2 pages each · Updated 2026-10-09</span></p></div><div class="resume-downloads"><a class="button" href="assets/resume/jiawei-zh.pdf" download="张嘉玮_简历_中文.pdf" data-resume="zh"><span class="zh">中文简历 PDF</span><span class="en">Chinese resume · PDF</span><i class="icon i-right" aria-hidden="true"></i></a><a class="button button-secondary" href="assets/resume/jiawei-en.pdf" download="Jiawei_Zhang_Resume_EN.pdf" data-resume="en">English · PDF<i class="icon i-right" aria-hidden="true"></i></a></div></div>
   </section>
 
   <!-- ============ CONTACT ============ -->
   <section class="contact wrap" id="contact" aria-labelledby="contact-heading">
-    <div><div class="section-label"><span class="number">08</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">杭州</span><span class="en">Hangzhou</span></p></div>
+    <div><div class="section-label"><span class="number">09</span><span>/ LET'S BUILD SOMETHING</span></div><h2 id="contact-heading"><span class="zh">下一个复杂问题，<br>一起解决<span class="period">。</span></span><span class="en">The next hard problem.<br>Let's solve it<span class="period">.</span></span></h2><p><span class="zh">杭州</span><span class="en">Hangzhou</span></p></div>
     <div class="contact-actions"><a class="email-link" href="mailto:zchaw127@gmail.com">zchaw127@gmail.com<i class="icon i-up" aria-hidden="true"></i></a><div class="contact-secondary"><button type="button" id="copy-email" class="copy-email" data-email="zchaw127@gmail.com"><i class="icon i-copy" aria-hidden="true"></i><span class="zh">复制邮箱</span><span class="en">Copy email</span></button><a class="text-link" href="https://github.com/chaw1" target="_blank" rel="noopener noreferrer">GitHub<i class="icon i-up" aria-hidden="true"></i></a></div><p class="copy-status" id="copy-status" role="status" aria-live="polite"></p></div>
   </section>
 
