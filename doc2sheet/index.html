@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1519" media="(prefers-color-scheme: dark)">
+<title>Doc2Sheet — receipts and invoices into a spreadsheet that checks itself</title>
+<link rel="canonical" href="https://hire.jiawis.com/doc2sheet/">
+<link rel="icon" href="../assets/icons/stack.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hire.jiawis.com/doc2sheet/">
+<meta property="og:title" content="Doc2Sheet — your paperwork in a spreadsheet that checks its own math">
+<meta property="og:description" content="Receipts and invoices into a spreadsheet that checks its own math: every total re-added by code, every mismatch flagged with the reason. Built and run by Jiawei Zhang.">
+<meta name="description" content="Receipts and invoices into a spreadsheet that checks its own math: every total re-added by code, every mismatch flagged with the reason. Built and run by Jiawei Zhang.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; the hero pairs the pitch with a real till-tape receipt whose
+   check results print underneath it, and that tape style returns wherever the page shows a check. */
+:root {
+  --paper: #f4f6f3;
+  --sheet: #fdfefb;
+  --ink: #16202b;
+  --muted: #56616c;
+  --rule: #d5dad3;
+  --accent: #2346b5;
+  --flag: #c8283c;
+  --flag-bg: #fbe7ea;
+  --pass: #2b7a4b;
+  --pass-bg: #e3f1e8;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.7rem;
+  --step-3: clamp(2.1rem, 5.2vw, 3.4rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1519; --sheet: #172027; --ink: #e6ebee; --muted: #9aa6b0; --rule: #2b363e;
+    --accent: #93a9ff; --flag: #ff7b8a; --flag-bg: #3a1c22; --pass: #6fcf95; --pass-bg: #16301f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1519; --sheet: #172027; --ink: #e6ebee; --muted: #9aa6b0; --rule: #2b363e;
+  --accent: #93a9ff; --flag: #ff7b8a; --flag-bg: #3a1c22; --pass: #6fcf95; --pass-bg: #16301f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 68rem; margin: 0 auto; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.12; text-wrap: balance; margin: 0; }
+h2 { font-size: var(--step-2); font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: var(--step-1); font-weight: 600; }
+p { margin: 0; }
+.label {
+  font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.num { font-variant-numeric: tabular-nums; }
+
+/* header */
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 20px; border-bottom: 1px solid var(--rule); }
+.mark { font-family: var(--display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.02em; }
+.mark span { color: var(--accent); }
+.top .who { color: var(--muted); font-size: var(--step--1); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: clamp(28px, 5vw, 64px); align-items: start; padding-block: clamp(36px, 7vw, 72px) 48px; }
+.hero h1 { font-size: var(--step-3); font-weight: 800; letter-spacing: -0.025em; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .lede { margin-top: 20px; max-width: 34rem; color: var(--muted); font-size: 1.15rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 8px;
+  background: var(--ink); color: var(--paper); font-weight: 600; text-decoration: none; border: 0; font: inherit; cursor: pointer;
+}
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 28px; padding: 0; list-style: none; color: var(--muted); font-size: var(--step--1); }
+.facts li::before { content: "✓ "; color: var(--pass); font-weight: 600; }
+
+/* receipt + tape */
+.receipt {
+  background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 22px 22px 18px;
+  font-family: var(--mono); font-size: 0.8125rem; line-height: 1.55; box-shadow: 0 10px 30px -18px rgba(10, 20, 30, 0.45);
+}
+.receipt .store { text-align: center; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.04em; }
+.receipt .meta { text-align: center; color: var(--muted); }
+.receipt hr { border: 0; border-top: 1px dashed var(--rule); margin: 10px 0; }
+.row { display: flex; justify-content: space-between; gap: 12px; }
+.row span:last-child { font-variant-numeric: tabular-nums; }
+.row.bad span:last-child { color: var(--flag); text-decoration: underline wavy var(--flag); text-underline-offset: 3px; }
+.row.total { font-weight: 600; }
+.tape { margin-top: 14px; display: grid; gap: 8px; font-family: var(--mono); font-size: 0.8rem; }
+.check { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px 10px; border-radius: 6px; }
+.check b { font-weight: 600; }
+.check.fail { background: var(--flag-bg); color: var(--flag); }
+.check.ok { background: var(--pass-bg); color: var(--pass); }
+.check .why { color: var(--ink); }
+.caption { margin-top: 10px; font-size: 0.78rem; color: var(--muted); }
+
+/* sections */
+section { padding-block: 56px; border-top: 1px solid var(--rule); }
+.sec-head { display: grid; gap: 10px; margin-bottom: 28px; max-width: 44rem; }
+.sec-head p { color: var(--muted); }
+
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 14px; }
+.checks article { display: grid; gap: 10px; align-content: start; padding: 18px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; }
+.checks .rule { font-family: var(--mono); font-size: 0.85rem; }
+.checks .eg { font-family: var(--mono); font-size: 0.78rem; color: var(--flag); background: var(--flag-bg); padding: 8px 10px; border-radius: 6px; }
+
+.proof { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td.file { font-family: var(--mono); font-size: 0.82rem; white-space: nowrap; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.pill.fail { background: var(--flag-bg); color: var(--flag); }
+.pill.ok { background: var(--pass-bg); color: var(--pass); }
+.score { display: grid; gap: 14px; }
+.score div { display: flex; align-items: baseline; gap: 12px; }
+.score strong { font-family: var(--display); font-size: 2.6rem; font-weight: 800; line-height: 1; min-width: 3.2ch; }
+.score span { color: var(--muted); }
+
+.get { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 24px; padding: 0; margin: 0; list-style: none; }
+.get li { display: grid; gap: 6px; align-content: start; }
+.get li p { color: var(--muted); font-size: 0.95rem; }
+
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.plan { display: grid; gap: 14px; align-content: start; padding: 22px; border: 1px solid var(--rule); border-radius: 12px; background: var(--sheet); }
+.plan.pick { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.plan .price { font-family: var(--display); font-size: 2.2rem; font-weight: 800; line-height: 1; }
+.plan ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 6px; font-size: 0.95rem; }
+.plan .terms { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); border-top: 1px dashed var(--rule); padding-top: 12px; }
+
+.faq { display: grid; gap: 0; max-width: 50rem; }
+.faq details { border-bottom: 1px solid var(--rule); padding-block: 4px; }
+.faq summary { cursor: pointer; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; padding-block: 14px; font-weight: 600; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; font-family: var(--mono); color: var(--muted); }
+.faq details[open] summary::after { content: "–"; }
+.faq .a { padding-bottom: 18px; display: grid; gap: 10px; color: var(--ink); max-width: 44rem; }
+.faq .a p { color: var(--muted); }
+.faq .heard { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+
+.about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
+.about ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 8px; }
+.contact { display: grid; gap: 14px; padding: 24px; border-radius: 12px; background: var(--sheet); border: 1px solid var(--rule); }
+.email { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.email code { font-family: var(--mono); font-size: 1rem; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 6px; user-select: all; overflow-wrap: anywhere; }
+.copied { font-size: 0.85rem; color: var(--pass); }
+
+footer { padding-block: 28px 40px; border-top: 1px solid var(--rule); color: var(--muted); font-size: var(--step--1); }
+
+@media (max-width: 860px) {
+  .hero, .proof, .about { grid-template-columns: minmax(0, 1fr); }
+  .plans { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tape .check { animation: print 0.5s ease-out both; }
+  .tape .check:nth-child(2) { animation-delay: 0.15s; }
+  .tape .check:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes print { from { transform: translateY(-4px); } to { transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="mark">Doc<span>2</span>Sheet</div>
+    <div class="who">Built and run by Jiawei Zhang · AI automation for small teams</div>
+  </header>
+
+  <div class="hero">
+    <div>
+      <p class="label">Receipts · invoices · order screenshots</p>
+      <h1 style="margin-top:14px">Your paperwork in a spreadsheet that <em>checks its own math</em>.</h1>
+      <p class="lede">A vision model copies what's printed. Then plain code adds up every line, checks every total and looks for duplicates. You only look at the documents it flags, with the reason written next to each one.</p>
+      <div class="cta-row">
+        <a class="btn" href="#contact">Send 3 sample documents</a>
+        <a class="btn ghost" href="#pricing">See pricing</a>
+      </div>
+      <ul class="facts">
+        <li>Excel or Google Sheets</li>
+        <li>Runs in your own accounts</li>
+        <li>Fixed price, 3–10 days</li>
+      </ul>
+    </div>
+
+    <figure style="margin:0">
+      <div class="receipt" aria-label="Sample receipt with a subtotal error">
+        <div class="store">GREENLEAF MARKET</div>
+        <div class="meta">9 Harbor Ave, Portland OR<br>10/05/2026 17:40</div>
+        <hr>
+        <div class="row"><span>1 x Organic Spinach</span><span>4.99</span></div>
+        <div class="row"><span>2 x Greek Yogurt</span><span>9.98</span></div>
+        <div class="row"><span>1 x Chicken Thighs 2lb</span><span>11.49</span></div>
+        <div class="row"><span>3 x Avocado</span><span>5.97</span></div>
+        <div class="row"><span>1 x Sourdough Loaf</span><span>6.50</span></div>
+        <div class="row"><span>1 x Olive Oil 500ml</span><span>8.87</span></div>
+        <hr>
+        <div class="row bad"><span>SUBTOTAL</span><span>49.80</span></div>
+        <div class="row"><span>TAX</span><span>0.00</span></div>
+        <div class="row total"><span>TOTAL USD</span><span>49.80</span></div>
+      </div>
+      <div class="tape" role="list" aria-label="Check results">
+        <div class="check fail" role="listitem"><b>✕</b><span>Items add up to <b>47.80</b>, but the subtotal says <b>49.80</b>.</span></div>
+        <div class="check ok" role="listitem"><b>✓</b><span>Subtotal + tax = total</span></div>
+        <div class="check ok" role="listitem"><b>✓</b><span>Vendor, date and total present</span></div>
+      </div>
+      <figcaption class="caption">One of six test documents. The $2.00 error was planted on purpose, and the checks caught it.</figcaption>
+    </figure>
+  </div>
+
+  <section id="checks">
+    <div class="sec-head">
+      <p class="label">What gets checked</p>
+      <h2>The AI reads. Code does the arithmetic.</h2>
+      <p>Vision models are good at copying text and bad at noticing when the numbers on the page don't agree. So every number they copy goes through checks written in ordinary code, the same way every time.</p>
+    </div>
+    <div class="checks">
+      <article>
+        <h3>Line items match the subtotal</h3>
+        <p class="rule">sum(line amounts) = subtotal</p>
+        <p class="eg">Items add up to 47.80, but the subtotal says 49.80</p>
+      </article>
+      <article>
+        <h3>Quantity × price matches each line</h3>
+        <p class="rule">qty × unit price = line amount</p>
+        <p class="eg">Line "Window cleaning (per pane)": 3 x 12.50 = 37.50, but the document says 35.00</p>
+      </article>
+      <article>
+        <h3>The total adds up</h3>
+        <p class="rule">subtotal + tax + shipping = total</p>
+        <p class="eg">Subtotal + tax + shipping = 354.74, but the total says 345.74</p>
+      </article>
+      <article>
+        <h3>Nothing is entered twice</h3>
+        <p class="rule">same vendor + number or date + total</p>
+        <p class="eg">Looks like a duplicate of 02_northwind_office_supply.png (same vendor, number/date and total)</p>
+      </article>
+      <article>
+        <h3>Required fields are there</h3>
+        <p class="rule">vendor, date, total not empty</p>
+        <p class="eg">Missing date</p>
+      </article>
+      <article>
+        <h3>Your own rules</h3>
+        <p class="rule">anything you can state as a rule</p>
+        <p>I can add checks for your business, such as vendors that must be on your approved list, amounts over a limit, or dates outside the period you are closing.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="proof">
+    <div class="sec-head">
+      <p class="label">Test run · 15 Oct 2026</p>
+      <h2>Six documents, three planted mistakes</h2>
+      <p>All six are made-up documents with fake vendors. Three contain errors put there on purpose. The workflow ran twice, the second time with no cached answers.</p>
+    </div>
+    <div class="proof">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Document</th><th>Planted error</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td class="file">01 Maple Bean Coffee</td><td>none</td><td><span class="pill ok">OK</span></td></tr>
+            <tr><td class="file">02 Northwind Office</td><td>none</td><td><span class="pill ok">OK</span></td></tr>
+            <tr><td class="file">03 Greenleaf Market</td><td>items 47.80, subtotal 49.80</td><td><span class="pill fail">flagged</span></td></tr>
+            <tr><td class="file">04 Brightpath Cleaning</td><td>3 × 12.50 printed as 35.00</td><td><span class="pill fail">flagged</span></td></tr>
+            <tr><td class="file">05 Northwind (rescan)</td><td>same invoice as 02</td><td><span class="pill fail">duplicate</span></td></tr>
+            <tr><td class="file">06 ParcelPeak order</td><td>none</td><td><span class="pill ok">OK</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="score">
+        <div><strong class="num">3/3</strong><span>planted errors caught</span></div>
+        <div><strong class="num">0</strong><span>false alarms on the three clean documents</span></div>
+        <div><strong class="num">2</strong><span>runs with the same result</span></div>
+        <p class="caption">Six documents is a demo, not a benchmark. Before you pay, I run it on a few of your own documents and show you the result.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="deliverables">
+    <div class="sec-head">
+      <p class="label">What you get</p>
+      <h2>A working setup you own</h2>
+    </div>
+    <ul class="get">
+      <li><h3>A three-sheet workbook</h3><p>Documents (one row each), Line items, and Issues with the exact reason for every flag.</p></li>
+      <li><h3>A review page</h3><p>Each document shown next to what was read from it, problem documents first.</p></li>
+      <li><h3>The script and notes</h3><p>Runs on your computer or in your own cloud account, with setup steps written for whoever takes it over.</p></li>
+      <li><h3>Your data stays yours</h3><p>Documents go to the vision model on your own API account. I don't keep copies after delivery.</p></li>
+    </ul>
+  </section>
+
+  <section id="pricing">
+    <div class="sec-head">
+      <p class="label">Pricing</p>
+      <h2>Fixed price, agreed before I start</h2>
+      <p>Model costs are billed to your own API account, usually a few cents per document.</p>
+    </div>
+    <div class="plans">
+      <article class="plan">
+        <p class="label">Basic</p>
+        <h3>One document type</h3>
+        <p class="price num">$120</p>
+        <ul>
+          <li>1 layout, up to 12 fields</li>
+          <li>Totals check</li>
+          <li>Run on 20 of your documents</li>
+        </ul>
+        <p class="terms">3 days · 1 revision</p>
+      </article>
+      <article class="plan pick">
+        <p class="label">Standard</p>
+        <h3>Line items and every check</h3>
+        <p class="price num">$350</p>
+        <ul>
+          <li>Up to 4 layouts</li>
+          <li>Line items and all checks above</li>
+          <li>Duplicate detection</li>
+          <li>Issue report</li>
+        </ul>
+        <p class="terms">5 days · 2 revisions</p>
+      </article>
+      <article class="plan">
+        <p class="label">Premium</p>
+        <h3>Hands-off intake</h3>
+        <p class="price num">$800</p>
+        <ul>
+          <li>Everything in Standard</li>
+          <li>Picks up new documents from an inbox or Drive folder</li>
+          <li>Deployed to your account</li>
+          <li>Review page for flagged documents</li>
+        </ul>
+        <p class="terms">10 days · 3 revisions · 14 days support</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="sec-head">
+      <p class="label">Questions</p>
+      <h2>What people ask before automating this</h2>
+      <p>These come from small business owners and bookkeepers asking about the same problem on Reddit.</p>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Do I really have to type every receipt into a spreadsheet?</summary>
+        <div class="a"><p class="heard">A freelancer on r/smallbusiness said typing receipts into Excel took hours last month.</p><p>No. Drop photos or PDFs into a folder, or forward them to an inbox with the Premium setup. Every field you asked for lands in your spreadsheet: one row per document, one row per line item.</p><p>Your part is opening the few documents that get flagged and fixing what the reason says.</p></div>
+      </details>
+      <details>
+        <summary>Can it record every item on the receipt, not just the total?</summary>
+        <div class="a"><p class="heard">People on r/Bookkeeping point out that most receipt apps capture vendor, date, tax and total, and charge extra for line items.</p><p>Yes. Line items are part of the Standard package. Description, quantity, unit price and amount go to their own sheet, linked to the document they came from.</p><p>Line items are also what make the checks work, because they have to add up to the subtotal. If you want items sorted into your own categories, like food, packaging and cleaning supplies, I can add a category column driven by a list you control. Items it can&#x27;t match go to review instead of being guessed.</p></div>
+      </details>
+      <details>
+        <summary>Vendors say 99% accurate. What does that mean for me?</summary>
+        <div class="a"><p class="heard">A post on r/Accounting did the math: at 99% per field, about 18% of 20-field invoices have at least one error.</p><p>That math is right, which is why I don&#x27;t quote per-field accuracy. The numbers on an invoice depend on each other, so code can check them against each other: items against the subtotal, subtotal plus tax against the total, quantity times price against each line. A misread number almost always breaks one of those.</p><p>Checks can&#x27;t catch a wrong value that still fits, like a misread date or vendor name. That&#x27;s why the review page shows each document next to what was read from it. Before you pay, you see the result on your own documents.</p></div>
+      </details>
+      <details>
+        <summary>I have a backlog of 500 invoices. Can it handle all of them?</summary>
+        <div class="a"><p class="heard">Someone on r/excel needed invoice number, vendor, items and total from 500 PDFs, and Copilot wouldn&#x27;t take that many files.</p><p>Yes. It runs over a whole folder, and every answer is cached, so a rerun after a fix costs nothing for documents already read. At a few cents per document on your own API account, a 500-invoice backlog is a model bill of tens of dollars at most.</p><p>If all your PDFs come from one system with the same layout, Excel&#x27;s Power Query may be all you need, and I&#x27;ll tell you so. This is for mixed layouts, scans and photos.</p></div>
+      </details>
+      <details>
+        <summary>Why not just ask ChatGPT or Copilot to read them?</summary>
+        <div class="a"><p class="heard">Someone on r/Accounting said writing prompts and then fixing the mistakes was another nightmare.</p><p>For five invoices, do that. For hundreds, a chat window doesn&#x27;t remember your fields, doesn&#x27;t check its own arithmetic and doesn&#x27;t keep a record of what it read.</p><p>Here the model gets the same instructions every time and writes to fixed columns, and code checks the numbers it copied. You fix the flagged documents instead of re-reading every answer.</p></div>
+      </details>
+      <details>
+        <summary>Why not use Dext, Hubdoc or the scanner in QuickBooks?</summary>
+        <div class="a"><p class="heard">Threads on r/Bookkeeping weigh Dext&#x27;s price, Hubdoc&#x27;s weaker line items and QuickBooks&#x27; built-in scanner.</p><p>If one of them fits, use it. They&#x27;re good at vendor, date, tax and total, and they connect to accounting software.</p><p>I&#x27;m a better fit when you need line items in your own spreadsheet layout, checks specific to your business, a one-off backlog cleared, or a setup you own outright with no monthly per-seat fee.</p></div>
+      </details>
+      <details>
+        <summary>Our invoices arrive by email. Can it pick them up from there?</summary>
+        <div class="a"><p class="heard">A side-business owner on r/smallbusiness opens every supplier email each week to copy out amounts and dates.</p><p>Yes, that&#x27;s the Premium package. New attachments in an inbox or a Drive folder are picked up, read, checked and added to the sheet. PDFs, forwarded receipts and screenshots all work.</p><p>Anything flagged also shows up on the review page with the reason, so you can fix it before it goes anywhere else.</p></div>
+      </details>
+      <details>
+        <summary>Can it match invoices against our own register and flag exceptions?</summary>
+        <div class="a"><p class="heard">An auditor on r/Accounting wanted to upload an invoice register and the PDFs and get exceptions flagged, without paying for an enterprise tool.</p><p>Yes, as a custom check. Your register becomes one more input, and each document is matched by invoice number, vendor and amount.</p><p>Anything missing from either side, or matched with a different amount, goes to the Issues sheet with both values side by side.</p></div>
+      </details>
+      <details>
+        <summary>Our system is old and has no API. Will this fit?</summary>
+        <div class="a"><p class="heard">A food distributor on r/smallbusiness said the admin assistant spends half her time typing invoices into an old ERP with no API.</p><p>The output is a spreadsheet or CSV with columns in whatever order your system imports. Plenty of older systems with no API still take a CSV import, so that&#x27;s the first thing I&#x27;d check with you.</p><p>If yours truly accepts nothing, the sheet still turns typing into checking and pasting, and we can look at the next step from there.</p></div>
+      </details>
+      <details>
+        <summary>Will my invoices be used to train an AI?</summary>
+        <div class="a"><p class="heard">A reply on r/Accounting warned that uploading invoices to the wrong AI tool could leak them into training data.</p><p>Your documents go only to the vision model, through an API account in your name, and the results stay in your own spreadsheet or cloud folder.</p><p>The major model providers say they don&#x27;t train on API data by default. Before we start, I&#x27;ll show you the policy of whichever provider you choose. I delete my copies of your sample documents after delivery.</p></div>
+      </details>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="about">
+      <div class="sec-head" style="margin:0">
+        <p class="label">Who builds it</p>
+        <h2>Jiawei Zhang</h2>
+        <p>I spent the last year leading a team of about 20 engineers building an AI data platform. Checking that the data was actually right was my job, and that's the habit I bring to these automations: the model does the reading, and plain code checks its output before anyone trusts it.</p>
+      </div>
+      <ul>
+        <li>Backend and data engineering since 2017: Java, Python, Go, TypeScript</li>
+        <li>LLM apps, agents and tool integrations with Claude, Qwen and OpenAI-compatible APIs</li>
+        <li>M.S. Computer Science, Marquette University</li>
+        <li>English and Mandarin</li>
+        <li>More of my work: <a href="https://hire.jiawis.com" target="_blank" rel="noopener">hire.jiawis.com</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="contact">
+      <p class="label">Start with a free check</p>
+      <h2>Send me 3 sample documents</h2>
+      <p>Remove anything sensitive first. Tell me which fields you need, where the output should go, and roughly how many documents you get each month. I'll reply with what's realistic, a fixed price and a delivery date.</p>
+      <div class="email">
+        <code id="email">zchaw127@gmail.com</code>
+        <button class="btn ghost" id="copy" type="button">Copy address</button>
+        <span class="copied" id="copied" hidden>Copied</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>Doc2Sheet · Jiawei Zhang · All sample documents on this page are synthetic.</footer>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy');
+    var done = document.getElementById('copied');
+    var addr = document.getElementById('email');
+    btn.addEventListener('click', function () {
+      var text = addr.textContent.trim();
+      function selectIt() {
+        var r = document.createRange(); r.selectNodeContents(addr);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done.hidden = false; }, selectIt);
+      } else { selectIt(); }
+    });
+  })();
+</script>
+</body>
+</html>
