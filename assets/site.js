@@ -234,25 +234,25 @@
     desktop: {
       kicker: 'CLIENTS / DESKTOP',
       title: ['桌面端', 'Desktop client'],
-      body: ['为本地大数据与离线场景立项的 Electron 客户端：Rust + NAPI-RS 自研点云八叉树，Go 写 BFF。我定下“桌面端只做宿主，工具只有一份实现”，一个 5,432 行的视图拆包后剩 259 行。截至 2026-08 仍处于内网集成态。', 'An Electron client for local data and offline work, with a Rust + NAPI-RS point-cloud octree and a Go BFF. I set the rule that the desktop is only a host and every tool has exactly one implementation; once the tools became packages, a 5,432-line view shrank to 259 lines. As of Aug 2026 it was still in internal integration.'],
+      body: ['为本地大数据与离线场景立项的 Electron 客户端：Rust + NAPI-RS 自研点云八叉树，Go 写 BFF。我定下“桌面端只做宿主，工具只有一份实现”，一个 5,432 行的视图拆包后剩 259 行，已交付公司内部与工业、具身方向客户使用。', 'An Electron client for local data and offline work, with a Rust + NAPI-RS point-cloud octree and a Go BFF. I set the rule that the desktop is only a host and every tool has exactly one implementation; a 5,432-line view shrank to 259 lines, shipped for internal teams and industrial / embodied customers.'],
       facts: [[['我的桌面端提交', 'My desktop commits'], '703'], [['LOD 更新 P95', 'LOD update P95'], '0.32 ms', L], [['Vitest 用例', 'Vitest cases'], '1,432 / 0 fail', L]]
     },
     gateway: {
       kicker: 'EDGE / GATEWAY',
       title: ['网关 · 认证 · 多租户', 'Gateway · auth · tenancy'],
-      body: ['所有请求的统一入口。多租户做成三层纵深：数据访问层自动加租户条件、入口处 fail-closed 校验资源归属、网络层用 HMAC 签名保护内部调用。另有每日权限漂移哨兵，自动比对快照并生成修复 SQL。', 'The single entry point. Multi-tenancy in three layers: tenant filters in data access, fail-closed ownership checks at the entry, and HMAC-signed internal calls at the network layer. A daily drift sentinel diffs permission snapshots and generates fix-up SQL.'],
+      body: ['所有请求的统一入口。多租户做成三层纵深：数据访问层自动加租户条件、入口处 fail-closed 与按任务鉴权文件网关 + 预览票据（配合 Go 水印媒体代理）、网络层用 HMAC 签名保护内部调用，并有每日权限漂移哨兵自动比对。', 'The single entry point. Multi-tenancy in three layers: data-access filters, task-scoped file gateway & preview tickets (backed by a Go watermarked media proxy), HMAC-signed internal calls, and a daily permission drift sentinel.'],
       facts: [[['生产基线租户 / 有效授权', 'Tenants / active grants'], '48 / 5,804', P], [['治理复合漏洞修复上线', 'Governance fixes shipped'], '26 / 26', P], [['发版凭证矩阵全验', 'Credential matrix verified'], '77 / 77', P]]
     },
     modules: {
       kicker: 'SERVICES / DOMAIN',
       title: ['10 个业务模块', 'Ten domain modules'],
-      body: ['模块化单体加网关，而不是彻底微服务：由团队规模和交付节奏决定。数据集、治理、项目、AI、Agent、BPM、考培等模块共用 17 个自研 starter。代价也写进了我自己的架构评审。', 'A modular monolith behind a gateway rather than full microservices, a choice driven by team size and delivery pace. Datasets, governance, projects, AI, agents, BPM and training share 17 in-house starters. The trade-offs are listed in my own architecture review.'],
-      facts: [[['Controller / 自研 starter', 'Controllers / starters'], '210 / 17'], [['生产库表', 'Production tables'], '367', P], [['后端仓提交', 'Backend commits'], '2,793']]
+      body: ['模块化单体加网关，而不是彻底微服务：由团队规模和交付节奏决定。与 QApex 双平台拆分后保留独立网关与数据库，并牵头全平台语义统一与 211 条黄金样例三端 CI 门禁。', 'A modular monolith behind a gateway driven by team size and pace. Spun off QApex with independent gateways and databases, and enforced 211 golden semantic-contract checks across Java, Python and frontend CI.'],
+      facts: [[['Controller / 自研 starter', 'Controllers / starters'], '210 / 17'], [['语义合同格式 / CI 样例', 'Formats / golden CI cases'], '40 / 211'], [['后端仓提交', 'Backend commits'], '2,793']]
     },
     agent: {
       kicker: 'SERVICES / AGENT',
       title: ['SolarClaw Agent', 'SolarClaw agent'],
-      body: ['平台内置 Agent：MCP 网关接管 150+ 工具，25 个 Skill，8 个确定性工作流。我负责架构、质量审计与 harness 优化，定位出多轮失败与缓存命中低的真实原因。', 'The built-in agent: an MCP gateway exposing 150+ tools, 25 skills and 8 deterministic workflows. I owned its architecture, quality audit and harness tuning, and traced the real causes of multi-turn failures and low cache hits.'],
+      body: ['拆读 OpenClaw 自研 3,000+ 行 Java 主循环（源码审计排除外部框架无多租户与远程 Skill RCE 风险）：MCP 网关接 150+ 工具与参数绑定一次性写审批；982 次调用埋点调优定位跨轮失败与缓存瓶颈。', '3,000+ line Java main loop modeled on OpenClaw after rejecting external frameworks over missing tenancy and Skill RCE; 150+ MCP tools with parameter-bound approvals, tuned via 982-call segment traces.'],
       facts: [[['输入 token', 'Input tokens'], '−43.6%', L], [['reflection 失败率', 'Reflection failures'], '34.7% → 0', L], [['一个 MCP 工具平均耗时', 'One MCP tool, mean latency'], '72 s → 3.4 s', L]]
     },
     queue: {
@@ -263,21 +263,21 @@
     },
     worker: {
       kicker: 'EXECUTION / WORKERS',
-      title: ['DAG Worker 与五态交付', 'DAG workers, five-stage delivery'],
-      body: ['Python DAG 引擎执行缩略图、转码、清洗、脱敏、OCR/ASR、检测分割预标注等算子。算子契约是一份 manifest，生成 Worker 与 Java 两侧定义。交付状态机把“算完了”和“交付了”拆开。', 'A Python DAG engine runs operators from thumbnails and transcoding to cleaning, redaction, OCR/ASR and detection or segmentation pre-labels. A single manifest defines the operator contract for both the workers and Java. The delivery state machine separates "computed" from "delivered".'],
+      title: ['DAG Worker 与执行隔离', 'DAG workers & isolation'],
+      body: ['Python DAG 引擎执行 53 个内置算子；将 Python 执行沙箱隔离边界下沉至容器层（K8s NetworkPolicy 白名单、非 root、收回 Linux 能力、seccomp），交付状态机把“算完了”和“交付了”严格拆开。', 'A Python DAG engine running 53 built-in operators, with custom execution isolation enforced at the container layer (NetworkPolicy allowlists, non-root, dropped Linux capabilities, seccomp) and a delivery state machine separating computed from delivered.'],
       facts: [[['生产内置算子', 'Built-in operators'], '53', P], [['算子 × 模式全部真跑 READY', 'Operator × mode cells READY'], '112 / 112', L], [['Worker 副本', 'Worker replicas'], '16', L]]
     },
     models: {
       kicker: 'EXECUTION / MODELS',
-      title: ['模型服务', 'Model serving'],
-      body: ['把散落在 GPU 机上的模型统一成最小契约：只暴露 /infer 与 /health，网关按需扩容、空闲缩到 0。健康状态改成实时探活，不再相信数据库里的状态位。', 'Scattered GPU services unified behind a minimal contract, just /infer and /health, with the gateway scaling on demand and down to zero when idle. Health now comes from live probes instead of a status column in the database.'],
+      title: ['模型服务与 GPU 准入', 'Model serving & GPU admission'],
+      body: ['把散落 GPU 服务统一 behind /infer 与 /health：按需唤醒与空闲缩容至 0，设计 GPU 准入（错误分级、按卡排队限流、显存巡检、全链路超时对齐）并修复冷启动实例误回收竞态，健康只信实时探活。', 'Unified scattered model units behind /infer and /health with scale-to-zero, per-GPU queuing & admission, VRAM checks, aligned timeouts, a cold-start reclamation race fix, and live health probes.'],
       facts: [[['统一模型入口', 'Unified model entries'], '16', L], [['scale-to-zero 冷启动', 'Cold start from zero'], '34 s', L], [['CPU 分割延迟', 'CPU segmentation latency'], '6,000 → 640 ms', L]]
     },
     storage: {
       kicker: 'DATA / STORAGE',
       title: ['元数据 · 标注 · 版本 · 对象', 'Metadata · labels · versions · objects'],
-      body: ['MySQL 存元数据与权限，MongoDB 存标注正文，LakeFS 做数据版本（branch / commit / tag，零拷贝），对象存储承载原始数据。血缘用资产引用加事件建模，导出物可回溯到源数据集版本。', 'MySQL for metadata and permissions, MongoDB for annotation bodies, LakeFS for data versions (branch / commit / tag, zero-copy) and object storage for raw data. Lineage is modeled as asset references plus events, so every export traces back to a source version.'],
-      facts: [[['约 10 GB 直传', '~10 GB direct upload'], '41.8 MiB/s', P], [['血缘事件回填，对账全等', 'Lineage events, reconciled'], '18,370', P], [['12 GB 事故重新入湖', '12 GB incident re-ingest'], '6 min', L]]
+      body: ['MySQL 存元数据（367 表）与权限，MongoDB 存标注正文，LakeFS 做数据版本，对象存储承载 TB 级分片直传（1 TiB 上限）；面向十万小时多模态与具身一期做六层容量规划，血缘回填 18,370 条全等对账。', 'MySQL (367 tables), MongoDB, LakeFS and object storage with 1 TiB presigned multipart caps; six-layer capacity plan for 100k multimodal hours and phase-1 embodied pipelines, with 18,370 reconciled lineage events.'],
+      facts: [[['约 10 GB 直传', '~10 GB direct upload'], '41.8 MiB/s', P], [['血缘事件回填，对账全等', 'Lineage events, reconciled'], '18,370', P], [['密集标注单图打开', '1,035-label image open'], '5 min → 2.4 s', L]]
     },
     delivery: {
       kicker: 'RUNTIME / DELIVERY',
