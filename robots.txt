@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://hire.jiawis.com/sitemap.xml
-Sitemap: https://hire.jiawis.com/datakeel/sitemap.xml
+Sitemap: https://datakeel.jiawis.com/sitemap.xml
