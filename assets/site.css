@@ -1122,6 +1122,7 @@ html:not(.js) .case{padding-left:0;border-bottom:1px solid var(--line)}
 .dk-star{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;margin-left:6px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;background:var(--amber-soft);color:var(--amber-ink);border:1px solid #e2c47c;transition:border-color .18s,background .18s,transform .18s var(--ease)}
 .dk-star:hover{border-color:var(--amber-ink);background:#f3e1bc;transform:translateY(-1px)}
 .dk-head>div{min-width:0}
+.dk-head>div:first-child{flex:1 1 26rem}
 .dk-sub{font-size:15px;line-height:1.75;color:var(--muted);margin:10px 0 0;max-width:68ch}
 .dk-links{display:flex;gap:10px;flex-wrap:wrap}
 .dk-links .button{min-height:42px;padding:9px 18px}
