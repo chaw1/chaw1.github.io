@@ -149,7 +149,8 @@ async function exercise(page,origin,target,lang) {
       assert.match(await heading.locator(source).innerText(), /★\s*379/);
       const note = page.locator('.ticker-note');
       assert.match(await note.innerText(), /2026[-.]11[-.]28|Nov(?:ember)?\.? 28,? 2026/i);
-      assert(await note.locator(source).isVisible());
+      assert(await note.locator('a[href="https://github.com/chaw1/datakeel"]:visible').isVisible());
+      assert.match(await heading.locator(source).getAttribute('aria-label'), /restricted access/i);
       for (const section of ['.hero-actions', '#projects .dk-links']) {
         assert(await page.locator(section + ' a[href="/datakeel-benchmarks/"]').isVisible(), section);
       }
