@@ -133,6 +133,34 @@
   tab-size: 2;
 }
 .be-fold pre code { padding: 0; color: inherit; background: none; }
+.be-command-tools, .be-filters:not([hidden]) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .45rem;
+}
+.be-command-tools {
+  margin-top: 1rem;
+  padding: .45rem .7rem;
+  background: #33322c;
+  color: #f8f5eb;
+  font-size: .85rem;
+}
+.be-command-tools + pre { margin-top: 0; }
+.be-command-tools button, .be-filters button {
+  padding: .24rem .68rem;
+  border: 1px solid;
+  border-radius: .2rem;
+  cursor: pointer;
+  font: 600 .85rem/1.5 var(--sans);
+}
+.be-command-tools button { color: #f8f5eb; background: transparent; border-color: #aaa69a; }
+.be-command-tools button:hover { background: #45443e; }
+.be-command-tools button:focus-visible { outline-color: #f5b99a; }
+.be-filters { margin: .7rem 0 1rem; }
+.be-filters button { background: #fcfbf7; color: var(--ink); border-color: #797468; }
+.be-filters button:hover { background: #e6e2d6; }
+.be-filters button[aria-pressed="true"] { background: var(--night); color: #fff; border-color: var(--night); }
 .be-fold .be-sources { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: .5rem 0 0; }
 .be-sources a {
   color: #783919;

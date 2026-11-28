@@ -101,7 +101,39 @@
         "sqlite": 27.024709153920412,
         "postgres": 81.41741692088544
       }
-    ]
+    ],
+    "crash_recovery": {
+      "sqlite": {
+        "archive": "datakeel-capacity-20261111/B6-M-sqlite.json",
+        "commit": "3fafd6a90dd13277b740d6e27807d4aef14e6b5b",
+        "source_sha256": "88de0f45394d2eebce964f95b481885e35ded4dd39476cb5eb8544c3bdab7816",
+        "counts": {
+          "tasks": 10000,
+          "completed_tasks": 10000,
+          "workers": 8,
+          "retry_attempts": 1,
+          "lost_tasks": 0,
+          "duplicate_publications": 0
+        },
+        "killed_workers": 1,
+        "killed_exit_code": -9
+      },
+      "postgres": {
+        "archive": "datakeel-capacity-20261111/B6-M-postgres.json",
+        "commit": "6686646847d54471bb8f3880fcde0ecd8bbff118",
+        "source_sha256": "88de0f45394d2eebce964f95b481885e35ded4dd39476cb5eb8544c3bdab7816",
+        "counts": {
+          "tasks": 10000,
+          "completed_tasks": 10000,
+          "workers": 8,
+          "retry_attempts": 1,
+          "lost_tasks": 0,
+          "duplicate_publications": 0
+        },
+        "killed_workers": 1,
+        "killed_exit_code": -9
+      }
+    }
   },
   "team_contention": {
     "source_document": "https://github.com/chaw1/datakeel/blob/468b8caa349cc460ea6e9e5c7c119543d77bd94a/docs/CAPACITY.md",
@@ -614,5 +646,65 @@
         "turns": 1
       }
     ]
+  },
+  "repository": {
+    "github_review_snapshot": {
+      "date": "2026-11-28",
+      "repository": "chaw1/datakeel",
+      "stargazers": 379,
+      "forks": 7,
+      "source": "First acceptance review",
+      "url": "https://github.com/chaw1/datakeel/stargazers"
+    },
+    "github_followup_observation": {
+      "checked_at": "2026-11-28T14:08:29+08:00",
+      "url": "https://api.github.com/repos/chaw1/datakeel",
+      "stargazers": 380,
+      "forks": 7
+    },
+    "feature_snapshot": {
+      "date": "2026-11-28",
+      "local_main_commit": "16fcddb7e091f9cd423bf15235fef58cf4de8b3e",
+      "package_version": "0.27.1",
+      "status": "Development snapshot",
+      "recent_sources": [
+        {
+          "commit": "468e37bc89131bd1fbe5ef4de6f611456536ef1e",
+          "path": "CHANGELOG.md",
+          "sha256": "5b5994769f857adea1db0da14139d90c320b5fbe4a61a7d1f0e6f9331ab8052f"
+        },
+        {
+          "commit": "4688346d438047d096c7bc78f0d66b77c9a49427",
+          "path": "docs/DBT_COMPATIBILITY.md",
+          "sha256": "0575365b386921603cdc35e0412e75c4abfc47dfc57fd4e209591e95fb892cf5"
+        },
+        {
+          "commit": "4f5146f1d84615842015cd3ef193b21766eca8ae",
+          "path": "docs/PARQUET_AUDIT.md",
+          "sha256": "b7e87b3df54723b7b1828af3e806bec4ad5e549c4a387cdec061071dadf4cfc9"
+        },
+        {
+          "commit": "61f27a6125f9c1c664b95aca1315f722edd679bf",
+          "path": "docs/SUBDOCUMENT_AUDIT.md",
+          "sha256": "5adb7253997750bfcedfef8a00681e8506f8962fa728e2c9458a91a29bfd9e57"
+        },
+        {
+          "commit": "1c9713e82d942bf21149065a0537baac345dbc4e",
+          "path": "docs/TRACE_EXPORT_TREE.md",
+          "sha256": "ad429d3385efecf4990c9a0d8d6147502819feaeef8294200d7f8c99dfba6db0"
+        },
+        {
+          "commit": "d8d6bca5902824a1eeef58fbd6b348caec3de245",
+          "path": "docs/MCP_EVIDENCE_REFS.md",
+          "sha256": "115339aa43745ac4ead4c1e6d58eb26d457e7e35dca15d333b3fcf9f6899a762"
+        },
+        {
+          "commit": "16fcddb7e091f9cd423bf15235fef58cf4de8b3e",
+          "path": "docs/METRIC_VERIFICATION.md",
+          "sha256": "b3f893ef0c1b2bfdd650a3472a7139dbe8a2bbd6e1fa7f8586f3c6d05dd51847"
+        }
+      ],
+      "as_of": "2026-11-28T14:09+08:00"
+    }
   }
 }

@@ -38,9 +38,9 @@
   }
   </script>
   <link rel="icon" href="../assets/icons/stack.svg" type="image/svg+xml">
-  <script src="../assets/datakeel-lang.js?v=20261128"></script>
-  <link rel="stylesheet" href="../assets/datakeel.css?v=20261128">
-  <link rel="stylesheet" href="../assets/benchmarks.css?v=20261128">
+  <script src="../assets/datakeel-lang.js?v=20261128.2"></script>
+  <link rel="stylesheet" href="../assets/datakeel.css?v=20261128.2">
+  <link rel="stylesheet" href="../assets/benchmarks.css?v=20261128.2">
 </head>
 <body id="top">
 <a class="skip-link" href="#main"><span class="zh">跳到正文</span><span class="en" lang="en">Skip to content</span></a>
@@ -91,62 +91,71 @@
     <section id="features" class="release-section">
       <p class="section-label">v0.28.0 / Wave 1 + 2</p>
       <h2><span class="zh">从读数据到签批交付</span><span class="en" lang="en">From reading data to signing off</span></h2>
-      <p class="intro"><span class="zh">本地源码 <code>162da17b</code> 包含两批改动。首批建立了治理和评测流程，随后补上视觉取证、双语记忆、导航、跨分区比对和证据审查界面。核对时，包清单仍为 <code>0.27.1</code>，v0.28.0 尚未打标签。后面的容量与哈希数据各自标有测量日期和源码版本。</span><span class="en" lang="en">Local revision <code>162da17b</code> contains two waves of changes. The first established the governance and evaluation workflow. The second added image evidence, bilingual memory, focused navigation, cross-split matching and a revised review interface. At review time the package manifest still read <code>0.27.1</code> and v0.28.0 was untagged. The capacity and hashing runs below carry their own dates and revisions.</span></p>
+      <p class="intro"><span class="zh">11 月 28 日 14:09（上海）核对时，本地 main 的 <code>16fcddb7</code> 已包含 Wave 2 同步提交 <code>468e37bc</code> 及后续审计与取证工具。包清单仍为 <code>0.27.1</code>，本地尚无 v0.28.0 标签。下文每组实测单独标注运行时的版本与环境。</span><span class="en" lang="en">At 14:09 Shanghai time on 28 November, local main at <code>16fcddb7</code> included the Wave 2 integration at <code>468e37bc</code> and subsequent audit and evidence tools. The package manifest still read <code>0.27.1</code>, with no local v0.28.0 tag. Each benchmark below identifies its own revision and environment.</span></p>
+      <h3 class="wave-title"><span>Wave 1</span> <span class="zh">治理与评测</span><span class="en" lang="en">Governance and evaluation</span></h3>
       <div class="feature-grid">
         <article>
           <p class="source-id">MCP 2.0 · <code>60e00092</code></p>
-          <h3><span class="zh">给代理划定数据范围</span><span class="en" lang="en">Give agents a scoped view</span></h3>
+          <h4><span class="zh">给代理划定数据范围</span><span class="en" lang="en">Give agents a scoped view</span></h4>
           <p><span class="zh">网关新增回环 Streamable HTTP。五档访问配置可限定到单个数据集，提供六种只读资源、五个治理提示和四个计划与工作流查询工具。写操作仍由人在 Web 或 CLI 签批。</span><span class="en" lang="en">The gateway adds loopback Streamable HTTP. Five profiles can narrow access to one dataset. Six read-only resources, five governance prompts and four plan or workflow inspection tools expose evidence. People approve writes in the Web UI or CLI.</span></p>
         </article>
         <article>
           <p class="source-id">BYOD / CI · <code>c18ec0d0</code></p>
-          <h3><span class="zh">让质量检查进入 CI</span><span class="en" lang="en">Gate delivery on measured quality</span></h3>
+          <h4><span class="zh">让质量检查进入 CI</span><span class="en" lang="en">Gate delivery on measured quality</span></h4>
           <p><span class="zh"><code>datakeel audit</code> 为自带数据生成质量与跨划分泄漏报告，可按阈值让 CI 失败。自托管兼容模型走本机回环可免 API Key，默认推理计价为零，硬件和电费另计。</span><span class="en" lang="en"><code>datakeel audit</code> checks a supplied dataset for quality and cross-split leaks. Thresholds can fail CI. A compatible self-hosted model on loopback needs no API key. Its default inference tariff is zero, excluding hardware and electricity.</span></p>
         </article>
         <article>
           <p class="source-id">Harness 2.0 · <code>0841302c</code></p>
-          <h3><span class="zh">把会话变成回归用例</span><span class="en" lang="en">Turn a session into a regression case</span></h3>
+          <h4><span class="zh">把会话变成回归用例</span><span class="en" lang="en">Turn a session into a regression case</span></h4>
           <p><span class="zh">真实会话可脱敏导出为 Golden YAML 草稿，复核后按用例或标签重跑。覆盖模型配置后可对照两次评测的 Markdown 报告。另有 20 条双语用例专测一句话规划。</span><span class="en" lang="en">Export a redacted conversation as a draft Golden YAML case, review it and rerun by case or tag. Override the model and compare two saved runs in Markdown. A separate 20-case bilingual corpus exercises the intent planner.</span></p>
         </article>
         <article>
           <p class="source-id">Workflows · <code>d3b9cb7e</code></p>
-          <h3><span class="zh">并发取证，按门槛分支</span><span class="en" lang="en">Gather evidence in parallel</span></h3>
+          <h4><span class="zh">并发取证，按门槛分支</span><span class="en" lang="en">Gather evidence in parallel</span></h4>
           <p><span class="zh">用户可覆写专家与工作流声明并离线校验。<code>parallel_tools</code> 每步容纳 1–8 个只读调用，按声明顺序汇总。内置交付检查同时读取质量、报告和证据，以 80 分决定下一步。</span><span class="en" lang="en">Users can override specialist and workflow definitions and validate them offline. A <code>parallel_tools</code> step accepts 1–8 reads and returns them in declared order. The release-readiness workflow joins quality, report and evidence reads, then branches at 80 points.</span></p>
         </article>
         <article>
           <p class="source-id">Copilot · <code>6054bfdd</code></p>
-          <h3><span class="zh">让驳回理由进入下一轮规划</span><span class="en" lang="en">Replan from the reviewer’s reason</span></h3>
+          <h4><span class="zh">让驳回理由进入下一轮规划</span><span class="en" lang="en">Replan from the reviewer’s reason</span></h4>
           <p><span class="zh">规划器读取已保存的驳回理由和补充指导，重新提出方案。Copilot 随页面给出双语建议。稳定提示前缀可复用缓存，Anthropic 最多标记两处断点，OpenAI 使用确定性缓存键。</span><span class="en" lang="en">The planner reads the recorded rejection and reviewer guidance before proposing a new plan. Copilot suggestions follow the current page. Stable prompt material can use up to two Anthropic cache breakpoints or a deterministic OpenAI cache key.</span></p>
         </article>
         <article>
           <p class="source-id">Agent Ops · <code>d1729ed8</code></p>
-          <h3><span class="zh">把一次退步定位到用例</span><span class="en" lang="en">Trace a regression to one case</span></h3>
+          <h4><span class="zh">把一次退步定位到用例</span><span class="en" lang="en">Trace a regression to one case</span></h4>
           <p><span class="zh">看板汇总缓存、护栏和工具可靠性，评测历史按稳定用例 ID 比较通过、失败和增删。Planner 用 SSE 显示实时阶段，阶段事件仅在运行时显示，回放使用持久化结果。</span><span class="en" lang="en">The dashboard tracks cache usage, guardrails and tool reliability. Evaluation history compares outcomes by stable case ID, including added and removed cases. Planner stages stream live over SSE. Replay uses the persisted outcomes.</span></p>
         </article>
+      </div>
+      <h3 class="wave-title"><span class="zh">Wave 2 与后续进展</span><span class="en" lang="en">Wave 2 and subsequent changes</span></h3>
+      <div class="feature-grid">
         <article>
-          <p class="source-id">Wave 2 · Vision · <code>2e3c0e11</code></p>
-          <h3><span class="zh">把图像证据交给模型复核</span><span class="en" lang="en">Inspect image evidence with scoped access</span></h3>
-          <p><span class="zh"><code>inspect_image_samples</code> 每次接收同一数据集中的 1–4 个图片 ID。模型调用前会重新校验授权和文件指纹，日志只保存引用与元数据。离线演示用亮度和像素差标出待复核样本。</span><span class="en" lang="en"><code>inspect_image_samples</code> accepts 1–4 image IDs from one dataset. The agent rechecks permissions and fingerprints before each model attempt. Logs retain references and metadata. The offline demo flags brightness and pixel differences for review.</span></p>
+          <p class="source-id">Evidence · <code>2e3c0e11</code> / <code>162da17b</code> / <code>d8d6bca5</code></p>
+          <h4><span class="zh">从质量问题追到原图</span><span class="en" lang="en">Trace a finding back to its image</span></h4>
+          <p><span class="zh">审查员可从五个质量维度下钻，放大原图并切换标注叠层。模型每次可复核同一数据集内的 1–4 张图片。MCP 的证据链接固定到来源版本，每次读取都重新校验权限。</span><span class="en" lang="en">Reviewers can drill into five quality dimensions, zoom in and toggle annotations. A model can inspect 1–4 images from one dataset per call. MCP evidence links pin the source version and recheck access on every read.</span></p>
         </article>
         <article>
-          <p class="source-id">Wave 2 · Memory · <code>c2bc66ae</code></p>
-          <h3><span class="zh">用另一种语言找回笔记</span><span class="en" lang="en">Find a note in the other language</span></h3>
-          <p><span class="zh">有限的中英术语表将领域同义词归一，再由 BM25 排序。用户可把已完成的回复编辑成全局或数据集笔记，也可导入、导出脱敏记忆。</span><span class="en" lang="en">A bounded Chinese–English glossary normalizes domain terms before BM25 ranking. Users can edit a completed reply into a global or dataset note, and import or export redacted memories.</span></p>
+          <p class="source-id">Workspace · <code>c2bc66ae</code> / <code>0c83e326</code></p>
+          <h4><span class="zh">找到模块，也找回上次的笔记</span><span class="en" lang="en">Find a module or a note from the last review</span></h4>
+          <p><span class="zh">三组导航和命令面板可直达模块与对象。已完成的回复可编辑为全局或数据集笔记，再用中英术语表和 BM25 跨语言检索。脱敏笔记支持导入、导出。</span><span class="en" lang="en">Three navigation lanes and command search lead to modules and objects. Save a reviewed reply as a global or dataset note, retrieve it across languages with a bilingual glossary and BM25, or transfer it through redacted export and import.</span></p>
         </article>
         <article>
-          <p class="source-id">Wave 2 · Workspace · <code>0c83e326</code></p>
-          <h3><span class="zh">按手头的任务进入工作台</span><span class="en" lang="en">Navigate by the job at hand</span></h3>
-          <p><span class="zh">侧栏按数据质检与交付、指标与知识图谱、智能体与评测运维分组。默认聚焦 11 个核心模块，打开的高级模块保留入口；命令面板可查找模块与对象，已有深链接继续可用。</span><span class="en" lang="en">The sidebar groups data delivery and QA, metrics and knowledge, and agent operations. The focused view shows 11 core modules and keeps the active advanced module visible. Command search finds modules and objects. Existing deep links still work.</span></p>
+          <p class="source-id">Overlap · <code>7696e556</code> / <code>61f27a61</code></p>
+          <h4><span class="zh">查出跨分区样本和重复段落</span><span class="en" lang="en">Locate cross-split matches and repeated passages</span></h4>
+          <p><span class="zh">Rust 直接比对不同分区的图像 dHash 和文本 SimHash，保留 Python 回退。独立的子文档审计可从本地训练文件找出重复文本单元，在 JSONL 账本中记录原文位置供人工核实。</span><span class="en" lang="en">Rust compares image dHashes and text SimHashes across splits, with a Python fallback. A separate offline audit finds repeated text units in local training files and records their original locations in a JSONL ledger for review.</span></p>
         </article>
         <article>
-          <p class="source-id">Wave 2 · Rust · <code>7696e556</code></p>
-          <h3><span class="zh">跳过同一分区的候选对</span><span class="en" lang="en">Skip pairs within the same split</span></h3>
-          <p><span class="zh">训练泄漏报告用 <code>compare_cross</code> 直接比较不同分区的图像 dHash 和文本 SimHash，保留确定性的 Python 回退。开发者可用 <code>make check-fast</code> 运行分层快测，发布前仍运行完整门禁。</span><span class="en" lang="en">Training leakage reports use <code>compare_cross</code> to compare image dHashes and text SimHashes across distinct partitions, with a deterministic Python fallback. Developers can run a focused <code>make check-fast</code> suite between edits and the full gate before release.</span></p>
+          <p class="source-id">Metrics · <code>4688346d</code> / <code>16fcddb7</code></p>
+          <h4><span class="zh">诊断指标草稿，重放 SQL 反例</span><span class="en" lang="en">Diagnose draft metrics and replay SQL discrepancies</span></h4>
+          <p><span class="zh">dbt 导入器保留不兼容的指标草稿，并给出阻塞原因。<code>metric-verify</code> 在小表上比较生成的 SQL 与独立 Python 计算结果。发现差异即可保存反例供重放，搜索范围受实例预算限制。</span><span class="en" lang="en">The dbt importer retains unsupported metrics as drafts and reports what blocks conversion. On small tables, <code>metric-verify</code> compares generated SQL against an independent Python evaluator. Disagreements can be saved and replayed within the search budget.</span></p>
         </article>
         <article>
-          <p class="source-id">Wave 2 · Review · <code>162da17b</code></p>
-          <h3><span class="zh">从质量问题回到原图</span><span class="en" lang="en">Review the evidence behind a score</span></h3>
-          <p><span class="zh">审查时可在原图与标注叠层之间切换，放大检查细节。质量页按五个维度下钻问题，被排除的维度显示 N/A，实测零分仍显示为零。工作台队列提供待签批事项入口。</span><span class="en" lang="en">Reviewers can switch between an image and its annotation overlay, then zoom in. The quality view filters findings by dimension and distinguishes an excluded dimension (N/A) from a measured zero. The workbench queue links to pending approvals.</span></p>
+          <p class="source-id">Parquet · <code>4f5146f1</code></p>
+          <h4><span class="zh">只读所需的本地 Parquet 列</span><span class="en" lang="en">Read only the Parquet columns an audit needs</span></h4>
+          <p><span class="zh">本地分片按映射列分批读取，直接进入质量与跨分区泄漏检查。默认上限为 1 万行、64 MiB 映射列数据，超限即停止。该字节预算只计入选列的值，进程内存另计。</span><span class="en" lang="en">The audit reads mapped columns from local shards in batches for quality and cross-split leakage checks. It stops above the default limits of 10,000 rows or 64 MiB of mapped values. Process memory also includes other allocations.</span></p>
+        </article>
+        <article>
+          <p class="source-id">OTLP · <code>1c9713e8</code></p>
+          <h4><span class="zh">沿执行树定位失败的工具调用</span><span class="en" lang="en">Follow a failed call through the execution tree</span></h4>
+          <p><span class="zh">追踪导出器只读已记录的模型、工具和子代理调用，按委派关系组成 OTLP 执行树。日志标识经哈希处理，未完成的调用标为待定，重试导出可按稳定的 span ID 去重。</span><span class="en" lang="en">The exporter reads recorded model, tool and specialist calls and links them in an OTLP execution tree. Identifiers are hashed, unfinished calls are marked incomplete, and stable span IDs let consumers deduplicate repeated exports.</span></p>
         </article>
       </div>
     </section>
@@ -203,8 +212,13 @@ uv run python -m scripts.scale_bench B2 --size M --stack postgres --seed 23 --ou
 <div class="be-charts"><p class="be-charttitle"><span class="zh">10 个完整分钟的尾延迟</span><span class="en" lang="en">Tail latency across ten full minutes</span></p>
 <p class="be-description"><span class="zh">横轴为分钟，纵轴为 p95 毫秒，四图使用相同对数刻度。</span><span class="en" lang="en">Minutes run horizontally. The vertical axis shows p95 in milliseconds on the same logarithmic scale in all four charts.</span></p>
 <p class="be-legend"><span><i class="be-key-before" aria-hidden="true"></i><span class="zh">修复前</span><span class="en" lang="en">Before</span></span><span><i class="be-key-after" aria-hidden="true"></i><span class="zh">修复后</span><span class="en" lang="en">After</span></span></p>
-<div class="be-plots">
-<figure class="be-plot"><figcaption>SQLite · <span class="zh">保存</span><span class="en" lang="en">save</span></figcaption>
+<div class="be-filters" data-chart-controls hidden role="group" aria-label="按数据库查看曲线 / Filter charts by database">
+  <button type="button" data-chart-filter="all" aria-pressed="true" aria-controls="minute-plots minute-values"><span class="zh">全部</span><span class="en" lang="en">All</span></button>
+  <button type="button" data-chart-filter="sqlite" aria-pressed="false" aria-controls="minute-plots minute-values">SQLite</button>
+  <button type="button" data-chart-filter="postgres" aria-pressed="false" aria-controls="minute-plots minute-values">PostgreSQL</button>
+</div>
+<div class="be-plots" id="minute-plots">
+<figure class="be-plot" data-chart-db="sqlite"><figcaption>SQLite · <span class="zh">保存</span><span class="en" lang="en">save</span></figcaption>
 <svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
 <line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
 <line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
@@ -236,7 +250,7 @@ uv run python -m scripts.scale_bench B2 --size M --stack postgres --seed 23 --ou
 <circle class="be-marker-after" cx="348.3" cy="76.9" r="2.8"/>
 <circle class="be-marker-after" cx="386.0" cy="76.5" r="2.8"/>
 </svg></figure>
-<figure class="be-plot"><figcaption>SQLite · <span class="zh">领取</span><span class="en" lang="en">claim</span></figcaption>
+<figure class="be-plot" data-chart-db="sqlite"><figcaption>SQLite · <span class="zh">领取</span><span class="en" lang="en">claim</span></figcaption>
 <svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
 <line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
 <line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
@@ -268,7 +282,7 @@ uv run python -m scripts.scale_bench B2 --size M --stack postgres --seed 23 --ou
 <circle class="be-marker-after" cx="348.3" cy="127.8" r="2.8"/>
 <circle class="be-marker-after" cx="386.0" cy="108.7" r="2.8"/>
 </svg></figure>
-<figure class="be-plot"><figcaption>PostgreSQL · <span class="zh">保存</span><span class="en" lang="en">save</span></figcaption>
+<figure class="be-plot" data-chart-db="postgres"><figcaption>PostgreSQL · <span class="zh">保存</span><span class="en" lang="en">save</span></figcaption>
 <svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
 <line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
 <line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
@@ -300,7 +314,7 @@ uv run python -m scripts.scale_bench B2 --size M --stack postgres --seed 23 --ou
 <circle class="be-marker-after" cx="348.3" cy="101.1" r="2.8"/>
 <circle class="be-marker-after" cx="386.0" cy="101.7" r="2.8"/>
 </svg></figure>
-<figure class="be-plot"><figcaption>PostgreSQL · <span class="zh">领取</span><span class="en" lang="en">claim</span></figcaption>
+<figure class="be-plot" data-chart-db="postgres"><figcaption>PostgreSQL · <span class="zh">领取</span><span class="en" lang="en">claim</span></figcaption>
 <svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
 <line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
 <line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
@@ -335,8 +349,8 @@ uv run python -m scripts.scale_bench B2 --size M --stack postgres --seed 23 --ou
 </div></div>
 <p class="be-note"><span class="zh">修复后，两套库都出现 0 次重复领取和 0 次重复回收，各有 150 个弃置租约成功回收并再次领取。SQLite 最后一分钟的保存 p95 达到 247 ms，高于整场 188 ms。这里测的是动作准备和执行，未包含 HTTP。</span><span class="en" lang="en">After the fix, both databases recorded zero duplicate claims or releases. All 150 abandoned leases on each stack were reclaimed and claimed again. In SQLite’s final full minute, save p95 reached 247 ms despite a whole-run p95 of 188 ms. These timings cover action preparation and execution, excluding HTTP.</span></p>
 <details class="be-details"><summary><span class="zh">查看曲线原值（毫秒）</span><span class="en" lang="en">Read the chart values in milliseconds</span></summary>
-<div class="be-fold">
-<table class="be-table be-months">
+<div class="be-fold" id="minute-values">
+<table class="be-table be-months" data-chart-db="sqlite">
   <caption>SQLite · <span class="zh">修复前 → 修复后</span><span class="en" lang="en">before → after</span></caption>
   <thead><tr><th scope="col"><span class="zh">分钟</span><span class="en" lang="en">Minute</span></th><th scope="col"><span class="zh">保存 p95</span><span class="en" lang="en">Save p95</span></th><th scope="col"><span class="zh">领取 p95</span><span class="en" lang="en">Claim p95</span></th></tr></thead>
   <tbody>
@@ -352,7 +366,7 @@ uv run python -m scripts.scale_bench B2 --size M --stack postgres --seed 23 --ou
     <tr><th scope="row">10</th><td>3,684 → 247</td><td>763 → 51</td></tr>
   </tbody>
 </table>
-<table class="be-table be-months">
+<table class="be-table be-months" data-chart-db="postgres">
   <caption>PostgreSQL · <span class="zh">修复前 → 修复后</span><span class="en" lang="en">before → after</span></caption>
   <thead><tr><th scope="col"><span class="zh">分钟</span><span class="en" lang="en">Minute</span></th><th scope="col"><span class="zh">保存 p95</span><span class="en" lang="en">Save p95</span></th><th scope="col"><span class="zh">领取 p95</span><span class="en" lang="en">Claim p95</span></th></tr></thead>
   <tbody>
@@ -444,15 +458,21 @@ uv run datakeel eval-evidence --mode exact --json</code></pre>
 <p><span class="zh">2026-11-28 在 <code>9d5a7d8b</code> 独立源码快照上离线复跑（CPython 3.12.13）。每个用例在独立临时 SQLite 中生成夹具，模型为 <code>fake-script</code>。用例含改述、多步动作、歧义澄清、无权限写入及失败重规划。本次评测没有调用在线模型。</span><span class="en" lang="en">Replayed offline on 2026-11-28 from an isolated snapshot at <code>9d5a7d8b</code> with CPython 3.12.13. Each case used a fresh temporary SQLite store, generated fixtures and <code>fake-script</code> replies. The corpus includes paraphrases, ordered chains, clarification, unauthorized writes and failed-chain replanning. The run made no live model calls.</span></p>
 <p><span class="zh">运行方式记录于 <code>docs/EVALUATION.md</code>。<code>contracts/intents/benchmark.yaml</code> 的文件 SHA-256 前缀为 <code>7822d893d7fe</code>，评测选中用例的规范化摘要为 <code>98dc2ea5dbe3</code>。从包含该命令的源码检出运行。</span><span class="en" lang="en">The runner is documented in <code>docs/EVALUATION.md</code>. The file SHA-256 prefix for <code>contracts/intents/benchmark.yaml</code> is <code>7822d893d7fe</code>. The canonical digest prefix for the selected cases is <code>98dc2ea5dbe3</code>. Run the command from a checkout containing this harness.</span></p>
 <pre><code>uv run datakeel eval-intents --provider fake --json --markdown intent-report.md</code></pre>
-<p class="be-sources"><a href="https://datakeel.jiawis.com/"><span class="zh">Datakeel 文档</span><span class="en" lang="en">Datakeel documentation</span></a> <a href="https://github.com/chaw1/datakeel">GitHub · Datakeel</a> <a href="measurements.json"><span class="zh">实测数据 JSON</span><span class="en" lang="en">Measurements JSON</span></a></p>
+<p class="be-sources"><a class="zh" lang="zh-CN" href="https://datakeel.jiawis.com/zh/">Datakeel 文档</a> <a class="en" lang="en" href="https://datakeel.jiawis.com/">Datakeel documentation</a> <a href="https://github.com/chaw1/datakeel">GitHub · Datakeel</a> <a href="measurements.json"><span class="zh">实测数据 JSON</span><span class="en" lang="en">Measurements JSON</span></a></p>
 </div></details>
 </section>
   </div>
 </main>
+<template id="command-tools">
+  <div class="be-command-tools">
+    <button type="button" data-copy-command><span class="zh">复制命令</span><span class="en" lang="en">Copy</span></button>
+    <span role="status" aria-live="polite"></span>
+  </div>
+</template>
 <footer>
   <div class="sheet foot-row">
     <a href="../#projects" class="foot-home"><span aria-hidden="true">←</span> <span class="zh">返回作品集</span><span class="en" lang="en">Back to portfolio</span></a>
-    <div class="foot-links"><a href="https://datakeel.jiawis.com/"><span class="zh">上手与参考文档</span><span class="en" lang="en">Guides &amp; reference</span> ↗</a><a href="https://github.com/chaw1/datakeel"><span class="zh">GitHub 源码</span><span class="en" lang="en">Source on GitHub</span> ↗</a><a href="#top"><span class="zh">页首</span><span class="en" lang="en">Top</span> ↑</a></div>
+    <div class="foot-links"><a class="zh" lang="zh-CN" href="https://datakeel.jiawis.com/zh/">上手与参考文档 ↗</a><a class="en" lang="en" href="https://datakeel.jiawis.com/">Guides &amp; reference ↗</a><a href="https://github.com/chaw1/datakeel"><span class="zh">GitHub 源码</span><span class="en" lang="en">Source on GitHub</span> ↗</a><a href="#top"><span class="zh">页首</span><span class="en" lang="en">Top</span> ↑</a></div>
   </div>
 </footer>
 </body>
