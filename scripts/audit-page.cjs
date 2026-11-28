@@ -58,31 +58,46 @@ function inspectLayout() {
   const brokenImages=[...document.images].filter(i=>i.getClientRects().length && (!i.complete || !i.naturalWidth)).map(i=>i.getAttribute('src'));
   const badText=[];
   const overlap=[];
-  const roots=document.querySelectorAll('h1,h2,h3,h4,header nav a,button,summary,th,td,pre');
   const name=el=>el.id || el.className || el.tagName;
-  for(const el of roots) {
-    if (!el.checkVisibility({checkOpacity:true,checkVisibilityCSS:true}) || !el.innerText.trim()) continue;
-    // Wide data tables and the heatmap can legitimately scroll inside their own region.
-    const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node=walker.nextNode())) {
-      if(!node.textContent.trim()) continue;
-      const p=node.parentElement;
-      if(!p.checkVisibility({checkOpacity:true,checkVisibilityCSS:true})) continue;
-      const range=document.createRange(); range.selectNodeContents(node);
-      let left=0,right=viewport, top=-Infinity,bottom=Infinity;
-      for(let a=p;a && a!==document.documentElement;a=a.parentElement) {
-        const cs=getComputedStyle(a),b=a.getBoundingClientRect();
-        if(/auto|scroll/.test(cs.overflowX)) {left=-Infinity;right=Infinity;break;}
-        if(/hidden|clip/.test(cs.overflowX)) {left=Math.max(left,b.left);right=Math.min(right,b.right);}
-        if(/hidden|clip/.test(cs.overflowY)) {top=Math.max(top,b.top);bottom=Math.min(bottom,b.bottom);}
-      }
-      for(const b of range.getClientRects()) {
-        if(b.width>1 && b.height>1 && (b.left<left-2 || b.right>right+2 || b.top<top-3 || b.bottom>bottom+3)) {
-          badText.push({element:String(name(el)),text:node.textContent.trim().slice(0,64)}); break;
-        }
-      }
+  const content='h1,h2,h3,h4,h5,h6,p,li,figcaption,blockquote,a,button,summary,th,td,pre,code,dt,dd,main strong';
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  const boxes=new Map();
+  let checkedTextNodes=0;
+  function bounds(el) {
+    if(!boxes.has(el)) {
+      const css=getComputedStyle(el), rect=el.getBoundingClientRect();
+      boxes.set(el,{rect,x:css.overflowX,y:css.overflowY,
+        scrollX:el.scrollWidth>el.clientWidth,scrollY:el.scrollHeight>el.clientHeight});
     }
+    return boxes.get(el);
+  }
+  // Stop outer clipping checks only for the part that can actually scroll into view.
+  // An inner hidden ancestor still clips its content, even within a horizontally scrollable table.
+  for(let node=walker.nextNode();node;node=walker.nextNode()) {
+    const parent=node.parentElement, owner=parent.closest(content);
+    if(!owner || !node.textContent.trim() || parent.closest('svg,canvas,script,style,noscript,[aria-hidden="true"]') ||
+      !parent.checkVisibility({checkOpacity:true,checkVisibilityCSS:true})) continue;
+    if(parent.closest('.skip-link') && !parent.closest(':focus')) continue;
+    const range=document.createRange();
+    range.selectNodeContents(node);
+    const rects=[...range.getClientRects()].filter(r=>r.width>1 && r.height>1);
+    if(!rects.length) continue;
+    checkedTextNodes++;
+    let clippedBy=null;
+    for(const rect of rects) {
+      let left=rect.left,right=rect.right,top=rect.top,bottom=rect.bottom;
+      for(let ancestor=parent;ancestor && ancestor!==document.documentElement;ancestor=ancestor.parentElement) {
+        const box=bounds(ancestor), b=box.rect;
+        if(right>left && /^(hidden|clip)$/.test(box.x) && (left<b.left-2 || right>b.right+2)) clippedBy=ancestor;
+        if(bottom>top && /^(hidden|clip)$/.test(box.y) && (top<b.top-3 || bottom>b.bottom+3)) clippedBy=ancestor;
+        if(clippedBy) break;
+        if(box.scrollX && /^(auto|scroll)$/.test(box.x)) {left=Math.max(left,b.left);right=Math.min(right,b.right);}
+        if(box.scrollY && /^(auto|scroll)$/.test(box.y)) {top=Math.max(top,b.top);bottom=Math.min(bottom,b.bottom);}
+      }
+      if(!clippedBy && right>left && (left < -2 || right > viewport+2)) clippedBy=document.documentElement;
+      if(clippedBy) break;
+    }
+    if(clippedBy) badText.push({element:String(name(owner)),clippedBy:String(name(clippedBy)),text:node.textContent.trim().slice(0,64)});
   }
   // Examine adjacent controls sharing a parent; nested labels and their own icons are one control.
   for(const el of document.querySelectorAll('header a,header button, nav a, button, summary')) {
@@ -101,7 +116,7 @@ function inspectLayout() {
   if(brokenImages.length) failures.push('broken images '+brokenImages.join(', '));
   if(badText.length) failures.push('text clipping '+JSON.stringify(badText.slice(0,6)));
   if(overlap.length) failures.push('overlapping controls '+JSON.stringify(overlap.slice(0,6)));
-  return {clientWidth:viewport,scrollWidth:overflow,brokenImages,badText,overlap,failures};
+  return {clientWidth:viewport,scrollWidth:overflow,checkedTextNodes,brokenImages,badText,overlap,failures};
 }
 
 async function checkLinks(page,origin,targets) {
