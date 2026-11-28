@@ -37,13 +37,13 @@
       ['memory', 3.0, 'sys', '#97958d', '长期记忆', 'Long-term memory'],
       ['identity', 2.4, 'sys', '#bdbab1', '身份设定', 'Identity'],
       ['task', 2.3, 'sys', '#d2d0c6', '进行中任务', 'Task state'],
-      ['tool_result', 16.1, 'conv', '#4f7fae', '工具返回结果', 'Tool results'],
+      ['tool_result', 16.1, 'conv', '#426f9e', '工具返回结果', 'Tool results'],
       ['history', 8.8, 'conv', '#8db4dc', '对话历史 —— 大家一直在省的这部分', 'Chat history — the part everyone tries to save on'],
       ['其余 8 段', 5.9, 'other', '#e8e6dc', '其余 8 个段位合计', 'Eight smaller segments']
     ];
     const bar = anatomy.querySelector('.ax-bar');
     const tip = anatomy.querySelector('.ax-tip');
-    bar.innerHTML = SEG.map(([k, v, g, col], i) => `<button type="button" class="ax-seg" data-i="${i}" style="--w:${v}%;--c:${col};--d:${i * 55}ms" aria-label="${esc(k)} ${v}%"><span class="mono">${v >= 6 ? esc(k) : ''}</span><b class="mono">${v >= 4 ? v + '%' : ''}</b></button>`).join('');
+    bar.innerHTML = SEG.map(([k, v, g, col], i) => `<button type="button" class="ax-seg" data-i="${i}" style="--w:${v}%;--c:${col};--d:${i * 55}ms" aria-label="${esc(k)} ${v}%"><span class="mono">${v >= 6 ? esc(k) : ''}</span><b class="mono${v < 8 ? ' ax-compact-value' : ''}">${v}%</b></button>`).join('');
     const show = (i) => {
       const [k, v, g, col, zh, en] = SEG[i];
       const grp = G[g];

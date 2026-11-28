@@ -707,6 +707,9 @@ void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, 0., 
   function pause() { userPaused = true; setPlaying(false); }
   function seek(v) { t = clamp(v, 0, T - 0.01); render(); }
 
+  motionQuery?.addEventListener('change', () => {
+    if (reduced()) pause();
+  });
   playBtn.addEventListener('click', () => (playing ? pause() : play()));
   range.max = String(T * 10);
   range.addEventListener('input', () => seek(+range.value / 10));
@@ -718,16 +721,57 @@ void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, 0., 
 
   resize();
   const loadImg = (src) => new Promise((ok, no) => { const im = new Image(); im.decoding = 'async'; im.onload = () => ok(im); im.onerror = no; im.src = src; });
-  Promise.all([fetch(BASE + 'frames.json').then((r) => r.json()), loadImg(BASE + 'atlas.jpg'), loadImg(BASE + 'feature.jpg')]).then(([fr, atlas, feat]) => {
-    FR = fr; featImg = feat;
-    const a = buildAtlases(atlas);
-    tex(0, atlas); tex(1, a.blur); tex(2, a.box);
-    ready = true;
-    film.classList.add('is-ready');
-    if (reduced()) { userPaused = true; seek(35); } else seek(t);
-    if (visible && !userPaused) setPlaying(true);
-  }).catch((e) => { console.error(e); film.classList.add('no-webgl'); });
+  let pendingFrames = null;
+  async function loadFrames() {
+    if (ready || pendingFrames) return;
+    const request = new AbortController();
+    pendingFrames = request;
+    try {
+      const [frames, atlas, feature] = await Promise.all([
+        fetch(BASE + 'frames.json', { signal: request.signal }).then((response) => {
+          if (!response.ok) throw new Error('Frame data returned HTTP ' + response.status);
+          return response.json();
+        }),
+        loadImg(BASE + 'atlas.jpg'),
+        loadImg(BASE + 'feature.jpg')
+      ]);
+      if (request.signal.aborted) return;
+      FR = frames;
+      featImg = feature;
+      const layers = buildAtlases(atlas);
+      tex(0, atlas);
+      tex(1, layers.blur);
+      tex(2, layers.box);
+      ready = true;
+      film.classList.add('is-ready');
+      if (reduced()) { userPaused = true; seek(35); } else seek(t);
+      if (visible && !userPaused) setPlaying(true);
+    } catch (e) {
+      if (!request.signal.aborted) {
+        console.error(e);
+        film.classList.add('no-webgl');
+      }
+    } finally {
+      if (pendingFrames === request) pendingFrames = null;
+    }
+  }
+  let resumeFrameLoad = false;
+  window.addEventListener('pagehide', () => {
+    resumeFrameLoad = Boolean(pendingFrames);
+    pendingFrames?.abort();
+    pendingFrames = null;
+  });
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted && resumeFrameLoad) loadFrames();
+  });
   if ('IntersectionObserver' in window) {
+    // Prepare the film as the reader approaches the Agent section.
+    const preload = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      preload.disconnect();
+      loadFrames();
+    }, { rootMargin: '700px 0px' });
+    preload.observe(film);
     new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         visible = e.isIntersecting;
@@ -735,6 +779,9 @@ void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, 0., 
         else if (!userPaused && ready) setPlaying(true);
       });
     }, { threshold: 0.3 }).observe(film);
-  } else { visible = true; }
+  } else {
+    visible = true;
+    loadFrames();
+  }
   film.harness = { seek, pause, play };
 })();

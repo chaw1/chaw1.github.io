@@ -63,11 +63,11 @@
   onScroll();
 
   // Active section in the navigation.
-  const navLinks = $$('.site-nav a[data-nav]');
-  const sectionIds = navLinks.map((a) => a.getAttribute('href').slice(1)).filter((id) => id !== 'contact');
-  const sections = sectionIds.map((id) => document.getElementById(id)).filter(Boolean);
+  const navLinks = $$('a[data-nav]');
+  const navIds = new Set(navLinks.map((a) => a.hash.slice(1)));
+  const sections = $$('main [id]').filter((el) => navIds.has(el.id));
   function updateCurrent() {
-    const line = window.innerHeight * 0.35;
+    const line = (header ? header.offsetHeight : 0) + 16;
     let current = null;
     sections.forEach((s) => { if (s.getBoundingClientRect().top <= line) current = s.id; });
     if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) current = 'contact';
@@ -77,6 +77,8 @@
     });
   }
   window.addEventListener('scroll', updateCurrent, { passive: true });
+  window.addEventListener('resize', updateCurrent);
+  languageListeners.push(updateCurrent);
   updateCurrent();
 
   /* ---------------- reveal + count-up ---------------- */
@@ -183,8 +185,13 @@
       cell.classList.add('is-hot');
       if (readout) readout.textContent = describe(cell);
     };
-    grid.addEventListener('pointerover', (e) => { if (e.target.classList.contains('heat-cell') && !e.target.classList.contains('pad')) show(e.target); });
-    grid.addEventListener('pointerleave', () => show(null));
+    const focusedDay = () => grid.contains(document.activeElement) ? document.activeElement : null;
+    const hoverDay = (e) => {
+      if (e.target.matches('.heat-cell:not(.pad)')) show(e.target);
+    };
+    grid.addEventListener('pointerover', (e) => { if (!focusedDay()) hoverDay(e); });
+    grid.addEventListener('pointermove', (e) => { if (e.movementX || e.movementY) hoverDay(e); });
+    grid.addEventListener('pointerleave', () => show(focusedDay()));
     // Keyboard: one roving tab stop, arrow keys move by day / week.
     let focusIndex = counts.indexOf(Math.max(...counts));
     cells.forEach((c, i) => c.setAttribute('tabindex', i === focusIndex ? '0' : '-1'));
