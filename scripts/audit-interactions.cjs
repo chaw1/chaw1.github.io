@@ -136,8 +136,8 @@ async function exercise(page,origin,target,lang) {
 
   if(target.name==='home') {
     await attempt('githubSnapshotAndProjectEntry', async () => {
-      const stars = /370\+\s*★/;
-      const source = 'a[href="https://github.com/chaw1/datakeel/stargazers"]:visible';
+      const stars = /380\+\s*★/;
+      const source = 'a[href="https://github.com/chaw1/datakeel"]:visible';
       for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
         assert.match(await page.locator(selector).getAttribute('content'), stars, selector);
       }
@@ -146,11 +146,19 @@ async function exercise(page,origin,target,lang) {
       }
       const heading = page.locator('#projects .dk-head h3');
       assert.match(await heading.innerText(), /^Datakeel\s+v0\.28\.0/i);
-      assert.match(await heading.locator(source).innerText(), /★\s*379/);
+      const badge = heading.locator(source);
+      assert.equal(await badge.innerText(), '★ 380');
+      for (const attribute of ['aria-label', 'title']) {
+        const label = await badge.getAttribute(attribute);
+        assert.match(label, /★ 380/);
+        assert.match(label, /2026-11-28/);
+        assert.match(label, /仓库星标/);
+        assert.match(label, /repository stars/i);
+      }
       const note = page.locator('.ticker-note');
       assert.match(await note.innerText(), /2026[-.]11[-.]28|Nov(?:ember)?\.? 28,? 2026/i);
-      assert(await note.locator('a[href="https://github.com/chaw1/datakeel"]:visible').isVisible());
-      assert.match(await heading.locator(source).getAttribute('aria-label'), /restricted access/i);
+      const snapshotText = lang === 'zh' ? '380 个 GitHub 星标' : '380 GitHub stars';
+      assert.equal((await note.locator(source).innerText()).trim(), snapshotText);
       for (const section of ['.hero-actions', '#projects .dk-links']) {
         assert(await page.locator(section + ' a[href="/datakeel-benchmarks/"]').isVisible(), section);
       }
