@@ -143,7 +143,8 @@ function writeResults(runs, info, finished) {
     save(name,{completed:complete, ...info, budgets: name==='performance'?budgets:undefined, rows});
     const failed = rows.flatMap(row => (row.failures || []).map(f => [row.case,f]));
     issues[name] = failed.length;
-    const md = ['# '+name, '', 'Completed: '+complete+'. Failed assertions: '+failed.length+'.', ''];
+    const md = ['# '+name, '', 'Revision `'+info.siteRevision+'` ('+(info.siteDirty?'dirty':'clean')+').',
+      '', 'Completed: '+complete+'. Failed assertions: '+failed.length+'.', ''];
     if (name==='performance') {
       md.push('Cold local HTTP, no compression, normal motion. Navigation + Resource Timing transferSize includes headers. CLS uses the largest session window, observed through load and network idle. Home is compared with the baseline checkout on the same browser, language and viewport.', '',
         '| Case | DCL ms | Load ms | FCP ms | LCP ms | CLS | Requests | Bytes | Largest bytes | Baseline bytes |',
@@ -179,7 +180,10 @@ function evaluatePerf(metrics, baseline, external) {
 
 async function run() {
   const started = new Date().toISOString();
-  save('index',{completed:false,finished:false,started,caseFilter:process.env.AUDIT_CASE || null,issues:{},cases:[]});
+  const siteRevision = execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  const siteDirty = Boolean(execFileSync('git',['-C',root,'status','--porcelain'],{encoding:'utf8'}).trim());
+  const source = {started, siteRevision, siteDirty, caseFilter:process.env.AUDIT_CASE || null};
+  save('index',{completed:false,finished:false,...source,issues:{},cases:[]});
   const ref = execFileSync('git',['-C',root,'rev-parse','--verify',baselineRef+'^{commit}'],{encoding:'utf8'}).trim();
   const baselineDir = fs.mkdtempSync(path.join(output,'.audit-baseline-'));
   const running = [];
@@ -192,7 +196,7 @@ async function run() {
       (process.env.AUDIT_BROWSER === 'chromium' ? {} : {channel:'chrome'});
     browser = await chromium.launch({...launch,args:['--enable-unsafe-swiftshader',
       '--disable-background-networking','--disable-component-update','--no-pings']});
-    const info = {started, baseline:ref, caseFilter:process.env.AUDIT_CASE || null, browser:browser.version(), playwright:require('playwright/package.json').version,
+    const info = {...source, baseline:ref, browser:browser.version(), playwright:require('playwright/package.json').version,
       axe:require('axe-core/package.json').version};
     const runs=[];
     writeResults(runs,info,false);

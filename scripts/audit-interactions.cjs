@@ -1,6 +1,96 @@
 'use strict';
 
+const assert = require('node:assert/strict');
 const {inspectLayout, auditAxe}=require('./audit-page.cjs');
+
+async function checkDocumentDestinations(page, lang) {
+  const docs = 'https://datakeel.jiawis.com';
+  const expected = docs + (lang === 'zh' ? '/zh/' : '/');
+  for (const section of ['#planner', 'footer']) {
+    const links = page.locator(section + ' a[href^="' + docs + '/"]:visible');
+    assert.deepEqual(await links.evaluateAll(nodes => nodes.map(link => link.href)), [expected], section);
+  }
+  for (const [section, path] of [['#capacity', '/docs/capacity/'], ['#hashing', '/docs/rust-accel/']]) {
+    assert(await page.locator(section + ' a[href="' + docs + path + '"]').isVisible(), path);
+  }
+  return true;
+}
+
+async function openDisclosures(page) {
+  for (const details of await page.locator('details').all()) {
+    if (await details.getAttribute('open') === null) {
+      await details.locator(':scope > summary').click();
+    }
+  }
+}
+
+async function checkChartData(page, mode) {
+  for (const [db, label] of [['sqlite', 'SQLite'], ['postgres', 'PostgreSQL']]) {
+    const shown = mode === 'all' || mode === db;
+    const charts = page.locator('#contention figure[data-chart-db="' + db + '"]');
+    const table = page.locator('#contention table[data-chart-db="' + db + '"]');
+    assert.equal(await charts.count(), 2, db + ' save and claim charts');
+    for (const chart of await charts.all()) {
+      assert((await chart.locator('figcaption').textContent()).includes(label), db);
+      assert.equal(await chart.isVisible(), shown, db + ' chart visibility');
+    }
+    assert.equal(await table.count(), 1, db + ' minute table');
+    assert((await table.locator('caption').textContent()).includes(label), db);
+    assert.equal(await table.locator('tbody tr:visible').count(), shown ? 10 : 0, db + ' visible minute rows');
+  }
+}
+
+async function checkCopyCommands(page, lang, mode) {
+  const buttons = page.locator('button[data-copy-command]');
+  const blocks = page.locator('pre > code');
+  const count = await blocks.count();
+  assert(count >= 4, 'All four benchmark families need reproduction commands');
+  assert.equal(await buttons.count(), count);
+  const name = lang === 'zh' ? '复制命令' : 'Copy';
+  assert.equal(await page.getByRole('button', {name, exact: true}).count(), count);
+  const seen = new Set();
+  await page.evaluate(() => navigator.clipboard.writeText('clipboard audit'));
+  await page.evaluate(mode => {
+    if (mode !== 'clipboard') {
+      Object.defineProperty(navigator.clipboard, 'writeText', {
+        configurable: true,
+        value: async () => { throw new DOMException('Access denied', 'NotAllowedError'); }
+      });
+    }
+    if (mode !== 'fallback') {
+      Object.defineProperty(document, 'execCommand', {configurable: true, value: () => false});
+    }
+  }, mode);
+  try {
+    for (const button of await buttons.all()) {
+      const id = await button.getAttribute('aria-controls');
+      assert(id && !seen.has(id), 'Each button must target a different command block');
+      seen.add(id);
+      const code = page.locator('pre[id="' + id + '"] > code');
+      assert(await code.isVisible(), id);
+      const command = await code.textContent();
+      assert(command.trim(), id);
+      const status = button.locator('..').locator('[aria-live="polite"]');
+      await button.press('Enter');
+      const feedback = mode === 'manual'
+        ? (lang === 'zh' ? '手动复制' : 'manually')
+        : (lang === 'zh' ? '已复制' : 'Copied');
+      await status.filter({hasText: feedback}).waitFor({state: 'visible'});
+      assert((await status.innerText()).includes(feedback), id + ' localized status');
+      if (mode === 'manual') {
+        assert.equal(await page.evaluate(() => getSelection().toString()), command, id);
+      } else {
+        assert.equal(await page.evaluate(() => navigator.clipboard.readText()), command, id);
+      }
+    }
+  } finally {
+    await page.evaluate(() => {
+      delete navigator.clipboard.writeText;
+      delete document.execCommand;
+    });
+  }
+  return [...seen];
+}
 
 async function exercise(page,origin,target,lang) {
   const checks={}, evidence={};
@@ -45,6 +135,27 @@ async function exercise(page,origin,target,lang) {
   });
 
   if(target.name==='home') {
+    await attempt('githubSnapshotAndProjectEntry', async () => {
+      const stars = /370\+\s*★/;
+      const source = 'a[href="https://github.com/chaw1/datakeel/stargazers"]:visible';
+      for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+        assert.match(await page.locator(selector).getAttribute('content'), stars, selector);
+      }
+      for (const selector of ['.hero-copy .eyebrow', '.hero-lede', '.hero-ticker > div:nth-child(4) dd']) {
+        assert.match(await page.locator(selector).innerText(), stars, selector);
+      }
+      const heading = page.locator('#projects .dk-head h3');
+      assert.match(await heading.innerText(), /^Datakeel\s+v0\.28\.0/i);
+      assert.match(await heading.locator(source).innerText(), /★\s*379/);
+      const note = page.locator('.ticker-note');
+      assert.match(await note.innerText(), /2026[-.]11[-.]28|Nov(?:ember)?\.? 28,? 2026/i);
+      assert(await note.locator(source).isVisible());
+      for (const section of ['.hero-actions', '#projects .dk-links']) {
+        assert(await page.locator(section + ' a[href="/datakeel-benchmarks/"]').isVisible(), section);
+      }
+      evidence.projectMetrics = await page.locator('#projects .dk-metrics > li:visible').count();
+      return [5, 6].includes(evidence.projectMetrics);
+    });
     const menu=page.locator('#menu-toggle');
     if(await menu.isVisible()) await attempt('mobileMenuEscape',async()=>{
       await menu.click();
@@ -121,6 +232,21 @@ async function exercise(page,origin,target,lang) {
       return documentLanguage(lang);
     });
   } else {
+    await attempt('completeFeatureGrid', async () => {
+      const grids = await page.locator('#features .feature-grid').evaluateAll(nodes => nodes.map(grid => {
+        const rows = new Map();
+        for (const card of grid.querySelectorAll(':scope > article')) {
+          const top = Math.round(card.getBoundingClientRect().top);
+          rows.set(top, (rows.get(top) || 0) + 1);
+        }
+        return [...rows.values()];
+      }));
+      evidence.featureRows = grids;
+      const columns = grids[0]?.[0];
+      assert.equal(grids.length, 2, 'Wave 1 and Wave 2');
+      if (page.viewportSize().width === 1440) assert.equal(columns, 3, 'desktop columns');
+      return grids.every(rows => rows.reduce((a, b) => a + b, 0) === 6 && rows.every(n => n === columns));
+    });
     await attempt('benchmarkLinks',async()=>{
       const same=await page.locator('main a[href^="#"],header a[href^="#"],footer a[href^="#"]').all();
       const tested=new Set();
@@ -157,7 +283,32 @@ async function exercise(page,origin,target,lang) {
       }
       return parts.length>0 && !expanded.failures.length && !axe.failures.length;
     });
-    await attempt('controlCoverage',async()=>page.locator('button:not([data-set-lang]),input,select,textarea').count().then(n=>n===0));
+    await openDisclosures(page);
+    await attempt('languageDocumentDestinations', () => checkDocumentDestinations(page, lang));
+    await attempt('minuteChartFilters', async () => {
+      const filters = page.locator('#contention button[data-chart-filter]');
+      assert.equal(await filters.count(), 3);
+      const active = filters.and(page.locator('[aria-pressed="true"]'));
+      assert.equal(await active.getAttribute('data-chart-filter'), 'all');
+      await checkChartData(page, 'all');
+      for (const mode of ['sqlite', 'postgres', 'all']) {
+        const button = page.locator('#contention button[data-chart-filter="' + mode + '"]');
+        await button.press('Space');
+        assert.equal(await active.getAttribute('data-chart-filter'), mode);
+        await checkChartData(page, mode);
+      }
+      return true;
+    });
+    for (const [mode, name] of [['clipboard', 'copyCommands'], ['fallback', 'copyCommandsFallback'], ['manual', 'copyCommandsManualSelection']]) {
+      await attempt(name, async () => {
+        evidence[name] = await checkCopyCommands(page, lang, mode);
+        return true;
+      });
+    }
+    await attempt('controlCoverage', async () => {
+      const extra = page.locator('button:not([data-set-lang],[data-copy-command],[data-chart-filter]),input,select,textarea');
+      return await extra.count() === 0;
+    });
     await attempt('projectReturnSharesLanguage',async()=>{
       const link=page.locator('a[href="/#projects"],a[href="../#projects"]').first();
       await link.click();
@@ -179,7 +330,14 @@ async function withoutJS(browser,newContext,origin,target) {
     let bilingual=true;
     if(target.name!=='home') {
       const heading=page.locator('h1'); const chinese=await heading.innerText();
+      await openDisclosures(page);
+      assert.equal(await page.locator('[data-copy-command]:visible,[data-chart-controls]:visible').count(), 0);
+      assert.equal(await page.locator('pre > code:visible').count(), await page.locator('pre > code').count());
+      await checkChartData(page, 'all');
+      await checkDocumentDestinations(page, 'zh');
       await page.locator('#read-en').check();
+      await checkDocumentDestinations(page, 'en');
+      await checkChartData(page, 'all');
       bilingual=chinese!==await heading.innerText() && (await heading.innerText()).includes('Under load');
     }
     return bilingual && await page.locator('h1').isVisible() && core.every(word=>readable.includes(word)) && !network.external.length;
