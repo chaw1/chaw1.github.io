@@ -20,7 +20,7 @@
   <meta property="og:image:alt" content="Datakeel B8 · SQLite save p95 · 2,841 ms → 188 ms">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Datakeel v0.28.0 · Engineering notes &amp; benchmarks">
-  <meta name="twitter:description" content="How a shorter write lock changed SQLite save p95 for 50 annotators. Timings, reproducible workloads and the Wave 1 development snapshot.">
+  <meta name="twitter:description" content="How a shorter write lock changed SQLite save p95 for 50 annotators. Timings, reproducible workloads and the v0.28.0 development snapshot.">
   <meta name="twitter:image" content="https://hire.jiawis.com/assets/datakeel-benchmarks.png">
   <script type="application/ld+json">
   {
@@ -69,7 +69,7 @@
       <div class="cover-copy">
         <h1>Datakeel<span class="period">.</span><span class="sub zh">工程与实测</span><span class="sub en" lang="en">Under load</span></h1>
         <p class="dek"><span class="zh">我把数据集交付前的质量检查、泄漏核验和人工签批放进同一个工作台。这些实测记录了 Agent 能替人做到哪一步，也展示了并发标注时最先卡在哪里。</span><span class="en" lang="en">I built Datakeel to bring quality checks, leakage review and human sign-off into one dataset workbench. These notes trace what an agent can do on its own and where the system slows down under load.</span></p>
-        <p class="release"><strong>v0.28.0</strong> <span class="zh">开发快照 · 已合入 Wave 1</span><span class="en" lang="en">Development snapshot · Wave 1 merged locally</span></p>
+        <p class="release"><strong>v0.28.0</strong> <span class="zh">开发快照 · Wave 1 + 2</span><span class="en" lang="en">Development snapshot · Waves 1 + 2</span></p>
       </div>
       <figure class="cover-chart">
         <figcaption><span class="serial">B8 / SQLite</span><span class="zh">标注保存延迟 · p95</span><span class="en" lang="en">Annotation save latency · p95</span></figcaption>
@@ -89,9 +89,9 @@
       <a href="#planner"><span class="zh">规划评测</span><span class="en" lang="en">Planner</span></a>
     </nav>
     <section id="features" class="release-section">
-      <p class="section-label">v0.28.0 / Wave 1</p>
+      <p class="section-label">v0.28.0 / Wave 1 + 2</p>
       <h2><span class="zh">从读数据到签批交付</span><span class="en" lang="en">From reading data to signing off</span></h2>
-      <p class="intro"><span class="zh">本地源码 <code>9d5a7d8b</code> 已合入以下改动。核对时，包清单仍为 <code>0.27.1</code>，v0.28.0 尚未打标签。后面的容量与哈希数据各自标有测量日期和源码版本。</span><span class="en" lang="en">Local revision <code>9d5a7d8b</code> contains the changes below. At review time the package manifest still read <code>0.27.1</code> and v0.28.0 was untagged. The capacity and hashing runs below carry their own dates and revisions.</span></p>
+      <p class="intro"><span class="zh">本地源码 <code>0c83e326</code> 包含首批六项改动，以及随后合入的视觉取证、双语记忆和工作台导航。核对时，包清单仍为 <code>0.27.1</code>，v0.28.0 尚未打标签。后面的容量与哈希数据各自标有测量日期和源码版本。</span><span class="en" lang="en">Local revision <code>0c83e326</code> includes the first six changes and three later additions for image evidence, bilingual memory and navigation. At review time the package manifest still read <code>0.27.1</code> and v0.28.0 was untagged. The capacity and hashing runs below carry their own dates and revisions.</span></p>
       <div class="feature-grid">
         <article>
           <p class="source-id">MCP 2.0 · <code>60e00092</code></p>
@@ -122,6 +122,21 @@
           <p class="source-id">Agent Ops · <code>d1729ed8</code></p>
           <h3><span class="zh">把一次退步定位到用例</span><span class="en" lang="en">Trace a regression to one case</span></h3>
           <p><span class="zh">看板汇总缓存、护栏和工具可靠性，评测历史按稳定用例 ID 比较通过、失败和增删。Planner 用 SSE 显示实时阶段，阶段事件仅在运行时显示，回放使用持久化结果。</span><span class="en" lang="en">The dashboard tracks cache usage, guardrails and tool reliability. Evaluation history compares outcomes by stable case ID, including added and removed cases. Planner stages stream live over SSE. Replay uses the persisted outcomes.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Wave 2 · Vision · <code>2e3c0e11</code></p>
+          <h3><span class="zh">把图像证据交给模型复核</span><span class="en" lang="en">Inspect image evidence with scoped access</span></h3>
+          <p><span class="zh"><code>inspect_image_samples</code> 每次接收同一数据集中的 1–4 个图片 ID。模型调用前会重新校验授权和文件指纹，日志只保存引用与元数据。离线演示用亮度和像素差标出待复核样本。</span><span class="en" lang="en"><code>inspect_image_samples</code> accepts 1–4 image IDs from one dataset. The agent rechecks permissions and fingerprints before each model attempt. Logs retain references and metadata. The offline demo flags brightness and pixel differences for review.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Wave 2 · Memory · <code>c2bc66ae</code></p>
+          <h3><span class="zh">用另一种语言找回笔记</span><span class="en" lang="en">Find a note in the other language</span></h3>
+          <p><span class="zh">有限的中英术语表将领域同义词归一，再由 BM25 排序。用户可把已完成的回复编辑成全局或数据集笔记，也可导入、导出脱敏记忆。</span><span class="en" lang="en">A bounded Chinese–English glossary normalizes domain terms before BM25 ranking. Users can edit a completed reply into a global or dataset note, and import or export redacted memories.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Wave 2 · Workspace · <code>0c83e326</code></p>
+          <h3><span class="zh">按手头的任务进入工作台</span><span class="en" lang="en">Navigate by the job at hand</span></h3>
+          <p><span class="zh">侧栏按数据质检与交付、指标与知识图谱、智能体与评测运维分组。默认聚焦 11 个核心模块，打开的高级模块保留入口；命令面板可查找模块与对象，已有深链接继续可用。</span><span class="en" lang="en">The sidebar groups data delivery and QA, metrics and knowledge, and agent operations. The focused view shows 11 core modules and keeps the active advanced module visible. Command search finds modules and objects. Existing deep links still work.</span></p>
         </article>
       </div>
     </section>
