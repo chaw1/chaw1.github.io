@@ -91,7 +91,7 @@
     <section id="features" class="release-section">
       <p class="section-label">v0.28.0 / Wave 1 + 2</p>
       <h2><span class="zh">从读数据到签批交付</span><span class="en" lang="en">From reading data to signing off</span></h2>
-      <p class="intro"><span class="zh">本地源码 <code>0c83e326</code> 包含首批六项改动，以及随后合入的视觉取证、双语记忆和工作台导航。核对时，包清单仍为 <code>0.27.1</code>，v0.28.0 尚未打标签。后面的容量与哈希数据各自标有测量日期和源码版本。</span><span class="en" lang="en">Local revision <code>0c83e326</code> includes the first six changes and three later additions for image evidence, bilingual memory and navigation. At review time the package manifest still read <code>0.27.1</code> and v0.28.0 was untagged. The capacity and hashing runs below carry their own dates and revisions.</span></p>
+      <p class="intro"><span class="zh">本地源码 <code>162da17b</code> 包含两批改动。首批建立了治理和评测流程，随后补上视觉取证、双语记忆、导航、跨分区比对和证据审查界面。核对时，包清单仍为 <code>0.27.1</code>，v0.28.0 尚未打标签。后面的容量与哈希数据各自标有测量日期和源码版本。</span><span class="en" lang="en">Local revision <code>162da17b</code> contains two waves of changes. The first established the governance and evaluation workflow. The second added image evidence, bilingual memory, focused navigation, cross-split matching and a revised review interface. At review time the package manifest still read <code>0.27.1</code> and v0.28.0 was untagged. The capacity and hashing runs below carry their own dates and revisions.</span></p>
       <div class="feature-grid">
         <article>
           <p class="source-id">MCP 2.0 · <code>60e00092</code></p>
@@ -137,6 +137,16 @@
           <p class="source-id">Wave 2 · Workspace · <code>0c83e326</code></p>
           <h3><span class="zh">按手头的任务进入工作台</span><span class="en" lang="en">Navigate by the job at hand</span></h3>
           <p><span class="zh">侧栏按数据质检与交付、指标与知识图谱、智能体与评测运维分组。默认聚焦 11 个核心模块，打开的高级模块保留入口；命令面板可查找模块与对象，已有深链接继续可用。</span><span class="en" lang="en">The sidebar groups data delivery and QA, metrics and knowledge, and agent operations. The focused view shows 11 core modules and keeps the active advanced module visible. Command search finds modules and objects. Existing deep links still work.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Wave 2 · Rust · <code>7696e556</code></p>
+          <h3><span class="zh">跳过同一分区的候选对</span><span class="en" lang="en">Skip pairs within the same split</span></h3>
+          <p><span class="zh">训练泄漏报告用 <code>compare_cross</code> 直接比较不同分区的图像 dHash 和文本 SimHash，保留确定性的 Python 回退。开发者可用 <code>make check-fast</code> 运行分层快测，发布前仍运行完整门禁。</span><span class="en" lang="en">Training leakage reports use <code>compare_cross</code> to compare image dHashes and text SimHashes across distinct partitions, with a deterministic Python fallback. Developers can run a focused <code>make check-fast</code> suite between edits and the full gate before release.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Wave 2 · Review · <code>162da17b</code></p>
+          <h3><span class="zh">从质量问题回到原图</span><span class="en" lang="en">Review the evidence behind a score</span></h3>
+          <p><span class="zh">审查时可在原图与标注叠层之间切换，放大检查细节。质量页按五个维度下钻问题，被排除的维度显示 N/A，实测零分仍显示为零。工作台队列提供待签批事项入口。</span><span class="en" lang="en">Reviewers can switch between an image and its annotation overlay, then zoom in. The quality view filters findings by dimension and distinguishes an excluded dimension (N/A) from a measured zero. The workbench queue links to pending approvals.</span></p>
         </article>
       </div>
     </section>
