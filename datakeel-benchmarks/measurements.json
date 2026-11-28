@@ -1,0 +1,618 @@
+{
+  "capacity": {
+    "date": "2026-11-11",
+    "source_sha256": "88de0f45394d2eebce964f95b481885e35ded4dd39476cb5eb8544c3bdab7816",
+    "source_document": "https://github.com/chaw1/datakeel/blob/468b8caa349cc460ea6e9e5c7c119543d77bd94a/docs/CAPACITY.md",
+    "archives": "datakeel-capacity-20261111/{scenario}-{size}-{stack}.json",
+    "matrix": [
+      {
+        "scenario": "B1",
+        "size": "M",
+        "measure": "Import 100k files (s)",
+        "units": "s",
+        "sqlite": 32.195984499994665,
+        "postgres": 34.101692833937705
+      },
+      {
+        "scenario": "B1",
+        "size": "M",
+        "measure": "Version 10k selected files (s)",
+        "units": "s",
+        "sqlite": 20.008711791131645,
+        "postgres": 24.13361316593364
+      },
+      {
+        "scenario": "B1",
+        "size": "M",
+        "measure": "Compare versions (s)",
+        "units": "s",
+        "sqlite": 9.87522616609931,
+        "postgres": 13.098640499869362
+      },
+      {
+        "scenario": "B1",
+        "size": "L",
+        "measure": "Offline import of 1M metadata entries (s)",
+        "units": "s",
+        "sqlite": 7.527586249867454,
+        "postgres": 34.80204329104163
+      },
+      {
+        "scenario": "B2",
+        "size": "M",
+        "measure": "Process 100k files with 8 workers (files/s)",
+        "units": "files/s",
+        "sqlite": 6769.542291576777,
+        "postgres": 4476.479399373985
+      },
+      {
+        "scenario": "B3",
+        "size": "M",
+        "measure": "Catalog search p95 (ms)",
+        "units": "ms",
+        "sqlite": 42.403999948874116,
+        "postgres": 132.45595805346966
+      },
+      {
+        "scenario": "B4",
+        "size": "M",
+        "measure": "Ask workload (fact rows)",
+        "units": "rows",
+        "sqlite": 1000000,
+        "postgres": 10000000
+      },
+      {
+        "scenario": "B4",
+        "size": "M",
+        "measure": "Serial ask p95 (ms)",
+        "units": "ms",
+        "sqlite": 32.46295894496143,
+        "postgres": 161.16491588763893
+      },
+      {
+        "scenario": "B4",
+        "size": "M",
+        "measure": "20-client ask p95 (ms)",
+        "units": "ms",
+        "sqlite": 606.5497922245413,
+        "postgres": 800.1158749684691
+      },
+      {
+        "scenario": "B5",
+        "size": "M",
+        "measure": "Mixed requests, 50 users, p95 (ms)",
+        "units": "ms",
+        "sqlite": 17269.0,
+        "postgres": 2424.0
+      },
+      {
+        "scenario": "B6",
+        "size": "M",
+        "measure": "Drain 10k tasks (s)",
+        "units": "s",
+        "sqlite": 77.792807249818,
+        "postgres": 85.94780587498099
+      },
+      {
+        "scenario": "B7",
+        "size": "M",
+        "measure": "Depth-5 graph query over 1M edges, p95 (ms)",
+        "units": "ms",
+        "sqlite": 27.024709153920412,
+        "postgres": 81.41741692088544
+      }
+    ]
+  },
+  "team_contention": {
+    "source_document": "https://github.com/chaw1/datakeel/blob/468b8caa349cc460ea6e9e5c7c119543d77bd94a/docs/CAPACITY.md",
+    "minute_axis": "Ten full minutes, trailing partial bucket omitted",
+    "stacks": {
+      "sqlite": {
+        "before": {
+          "archive": "datakeel-capacity-20261111/B8-M-sqlite.json",
+          "commit": "3fafd6a90dd13277b740d6e27807d4aef14e6b5b",
+          "source_sha256": "88de0f45394d2eebce964f95b481885e35ded4dd39476cb5eb8544c3bdab7816",
+          "fixture_sha256": "dd11c5a5006cad36d20112ab8c13df030468c4857fcaf41f7bdb791ec6447d15",
+          "whole_run_p95_ms": {
+            "next": 547.7379998192191,
+            "save": 2841.4329590741545,
+            "submit": 2647.6082920562476
+          },
+          "ops_per_second": 37.31,
+          "counts": {
+            "virtual_users": 50,
+            "tasks": 10000,
+            "abandoned": 100,
+            "reaper_released": 92,
+            "expired_then_claimed_again": 91,
+            "reaper_duplicate_releases": 0,
+            "duplicate_claims": 0
+          },
+          "p95_ms_full_minutes_1_to_10": {
+            "save": [
+              2538,
+              2853,
+              2733,
+              2534,
+              2851,
+              2648,
+              2653,
+              3150,
+              2866,
+              3684
+            ],
+            "next": [
+              2652,
+              163,
+              195,
+              109,
+              221,
+              430,
+              500,
+              1006,
+              761,
+              763
+            ],
+            "submit": [
+              2551,
+              2444,
+              2555,
+              2251,
+              2538,
+              2456,
+              2461,
+              3373,
+              2893,
+              3597
+            ]
+          }
+        },
+        "after": {
+          "archive": "datakeel-capacity-20261112/B8-M-sqlite.json",
+          "commit": "8de3577187883005caa0511c80d955bfff20b9e2",
+          "source_sha256": "f2ae92db14d938ea7cc098ade1fd48c3bb55b479228fe41cb3e25af0fa69d67c",
+          "fixture_sha256": "dd11c5a5006cad36d20112ab8c13df030468c4857fcaf41f7bdb791ec6447d15",
+          "whole_run_p95_ms": {
+            "next": 32.85624994896352,
+            "save": 188.0501660052687,
+            "submit": 195.49275003373623
+          },
+          "ops_per_second": 58.34,
+          "counts": {
+            "virtual_users": 50,
+            "tasks": 10000,
+            "abandoned": 150,
+            "reaper_released": 150,
+            "expired_then_claimed_again": 150,
+            "reaper_duplicate_releases": 0,
+            "duplicate_claims": 0
+          },
+          "p95_ms_full_minutes_1_to_10": {
+            "save": [
+              149,
+              167,
+              160,
+              176,
+              186,
+              181,
+              232,
+              231,
+              242,
+              247
+            ],
+            "next": [
+              635,
+              21,
+              30,
+              18,
+              31,
+              31,
+              31,
+              32,
+              20,
+              51
+            ],
+            "submit": [
+              152,
+              162,
+              189,
+              187,
+              222,
+              193,
+              198,
+              238,
+              257,
+              299
+            ]
+          }
+        }
+      },
+      "postgres": {
+        "before": {
+          "archive": "datakeel-capacity-20261111/B8-M-postgres.json",
+          "commit": "6686646847d54471bb8f3880fcde0ecd8bbff118",
+          "source_sha256": "88de0f45394d2eebce964f95b481885e35ded4dd39476cb5eb8544c3bdab7816",
+          "fixture_sha256": "dd11c5a5006cad36d20112ab8c13df030468c4857fcaf41f7bdb791ec6447d15",
+          "whole_run_p95_ms": {
+            "next": 254.15412499569356,
+            "save": 113.22408309206367,
+            "submit": 172.30995814315975
+          },
+          "ops_per_second": 56.27,
+          "counts": {
+            "virtual_users": 50,
+            "tasks": 10000,
+            "abandoned": 150,
+            "reaper_released": 150,
+            "expired_then_claimed_again": 150,
+            "reaper_duplicate_releases": 0,
+            "duplicate_claims": 0
+          },
+          "p95_ms_full_minutes_1_to_10": {
+            "save": [
+              147,
+              144,
+              130,
+              129,
+              97,
+              94,
+              108,
+              99,
+              89,
+              97
+            ],
+            "next": [
+              1179,
+              293,
+              250,
+              251,
+              204,
+              171,
+              216,
+              176,
+              182,
+              178
+            ],
+            "submit": [
+              245,
+              219,
+              177,
+              197,
+              142,
+              141,
+              165,
+              138,
+              133,
+              152
+            ]
+          }
+        },
+        "after": {
+          "archive": "datakeel-capacity-20261112/B8-M-postgres.json",
+          "commit": "8de3577187883005caa0511c80d955bfff20b9e2",
+          "source_sha256": "f2ae92db14d938ea7cc098ade1fd48c3bb55b479228fe41cb3e25af0fa69d67c",
+          "fixture_sha256": "dd11c5a5006cad36d20112ab8c13df030468c4857fcaf41f7bdb791ec6447d15",
+          "whole_run_p95_ms": {
+            "next": 77.1351670846343,
+            "save": 72.84500007517636,
+            "submit": 109.5667090266943
+          },
+          "ops_per_second": 58.27,
+          "counts": {
+            "virtual_users": 50,
+            "tasks": 10000,
+            "abandoned": 150,
+            "reaper_released": 150,
+            "expired_then_claimed_again": 150,
+            "reaper_duplicate_releases": 0,
+            "duplicate_claims": 0
+          },
+          "p95_ms_full_minutes_1_to_10": {
+            "save": [
+              70,
+              72,
+              74,
+              75,
+              72,
+              72,
+              72,
+              74,
+              74,
+              72
+            ],
+            "next": [
+              281,
+              76,
+              75,
+              77,
+              71,
+              78,
+              76,
+              79,
+              74,
+              77
+            ],
+            "submit": [
+              100,
+              103,
+              104,
+              109,
+              108,
+              114,
+              116,
+              112,
+              123,
+              113
+            ]
+          }
+        }
+      }
+    }
+  },
+  "near_duplicates": {
+    "date": "2026-10-27",
+    "source_document": "https://github.com/chaw1/datakeel/blob/c3d33e2e954cefd8d6e49f947857a1d57602b277/docs/RUST_ACCEL.md",
+    "kernel_measurements": [
+      {
+        "hashes": 10000,
+        "backend": "Python",
+        "mode": "prefix",
+        "peak_rss_mib": 53.89,
+        "status": "completed",
+        "elapsed_s": 0.464507,
+        "planted_recall": 0.5
+      },
+      {
+        "hashes": 10000,
+        "backend": "Rust",
+        "mode": "prefix",
+        "peak_rss_mib": 53.88,
+        "status": "completed",
+        "elapsed_s": 0.002147,
+        "planted_recall": 0.5
+      },
+      {
+        "hashes": 10000,
+        "backend": "Python",
+        "mode": "exact",
+        "peak_rss_mib": 56.5,
+        "status": "completed",
+        "elapsed_s": 2.198159,
+        "planted_recall": 1.0
+      },
+      {
+        "hashes": 10000,
+        "backend": "Rust",
+        "mode": "exact",
+        "peak_rss_mib": 54.23,
+        "status": "completed",
+        "elapsed_s": 0.004599,
+        "planted_recall": 1.0
+      },
+      {
+        "hashes": 100000,
+        "backend": "Python",
+        "mode": "prefix",
+        "peak_rss_mib": 71.94,
+        "status": "completed",
+        "elapsed_s": 26.530354,
+        "planted_recall": 0.5
+      },
+      {
+        "hashes": 100000,
+        "backend": "Rust",
+        "mode": "prefix",
+        "peak_rss_mib": 60.8,
+        "status": "completed",
+        "elapsed_s": 0.076127,
+        "planted_recall": 0.5
+      },
+      {
+        "hashes": 100000,
+        "backend": "Python",
+        "mode": "exact",
+        "peak_rss_mib": 103.66,
+        "status": "completed",
+        "elapsed_s": 156.338769,
+        "planted_recall": 1.0
+      },
+      {
+        "hashes": 100000,
+        "backend": "Rust",
+        "mode": "exact",
+        "peak_rss_mib": 74.33,
+        "status": "completed",
+        "elapsed_s": 0.074468,
+        "planted_recall": 1.0
+      },
+      {
+        "hashes": 1000000,
+        "backend": "Python",
+        "mode": "prefix",
+        "peak_rss_mib": 236.38,
+        "status": "timeout",
+        "wall_s": 600.041,
+        "planted_recall": null
+      },
+      {
+        "hashes": 1000000,
+        "backend": "Rust",
+        "mode": "prefix",
+        "peak_rss_mib": 149.05,
+        "status": "completed",
+        "elapsed_s": 12.815007,
+        "planted_recall": 0.5
+      },
+      {
+        "hashes": 1000000,
+        "backend": "Python",
+        "mode": "exact",
+        "peak_rss_mib": 573.78,
+        "status": "timeout",
+        "wall_s": 600.076,
+        "planted_recall": null
+      },
+      {
+        "hashes": 1000000,
+        "backend": "Rust",
+        "mode": "exact",
+        "peak_rss_mib": 270.86,
+        "status": "completed",
+        "elapsed_s": 7.311197,
+        "planted_recall": 1.0
+      }
+    ],
+    "evidence_corpus_images": 1000,
+    "evidence": {
+      "prefix": {
+        "direct": [
+          48,
+          52
+        ],
+        "validation_to_training": [
+          47,
+          51
+        ],
+        "macro_precision": 1,
+        "macro_recall": 0.989542
+      },
+      "exact": {
+        "direct": [
+          52,
+          52
+        ],
+        "validation_to_training": [
+          51,
+          51
+        ],
+        "macro_precision": 1,
+        "macro_recall": 1
+      }
+    }
+  },
+  "offline_planner": {
+    "replayed_at": "2026-11-28T05:39:53.759369Z",
+    "source_commit": "9d5a7d8b",
+    "provider": "fake",
+    "model": "fake-script",
+    "corpus_path": "contracts/intents/benchmark.yaml",
+    "corpus_file_sha256": "7822d893d7fed74dadb29eccec88890bca28f59c4f6237aab445243c1c6baf5a",
+    "selected_suite_digest": "98dc2ea5dbe3358968caf2994b03eb636d0c9d56591893f985a0b0959f3821fd",
+    "passed": 20,
+    "total": 20,
+    "turns": 24,
+    "metrics": {
+      "plan_accuracy": 1.0,
+      "plan_total": 12,
+      "clarification_precision": 1.0,
+      "clarification_recall": 1.0,
+      "clarification_true_positives": 4,
+      "clarification_false_positives": 0,
+      "clarification_false_negatives": 0,
+      "boundary_safety_rate": 1.0,
+      "boundary_total": 6
+    },
+    "cases": [
+      {
+        "id": "labels-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "replan-en",
+        "passed": true,
+        "turns": 2
+      },
+      {
+        "id": "clarify-selection-en",
+        "passed": true,
+        "turns": 2
+      },
+      {
+        "id": "ambiguous-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "unsupported-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "unauthorized-create_label_set-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "unauthorized-split_packages-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "chain-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "read-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "repair-en",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "labels-zh",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "replan-zh",
+        "passed": true,
+        "turns": 2
+      },
+      {
+        "id": "clarify-selection-zh",
+        "passed": true,
+        "turns": 2
+      },
+      {
+        "id": "ambiguous-zh",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "unsupported-zh",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "unauthorized-create_label_set-zh",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "unauthorized-split_packages-zh",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "chain-zh",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "read-zh",
+        "passed": true,
+        "turns": 1
+      },
+      {
+        "id": "repair-zh",
+        "passed": true,
+        "turns": 1
+      }
+    ]
+  }
+}

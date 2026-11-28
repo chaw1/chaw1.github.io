@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#faf9f5">
+  <title>Datakeel v0.28.0 工程笔记与实测基准 | Jiawei Zhang</title>
+  <meta name="description" content="从并发标注的写锁到 Agent 的人工签批：Datakeel v0.28.0 开发快照、SQLite 与 PostgreSQL 容量实测、Rust 哈希内核与离线规划评测。">
+  <link rel="canonical" href="https://hire.jiawis.com/datakeel-benchmarks/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Jiawei Zhang">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:url" content="https://hire.jiawis.com/datakeel-benchmarks/">
+  <meta property="og:title" content="Datakeel v0.28.0 工程笔记与实测基准">
+  <meta property="og:description" content="50 人标注场景的 SQLite 保存 p95 从 2,841 ms 降至 188 ms。查看逐分钟记录、复现命令和 v0.28.0 开发进展。">
+  <meta property="og:image" content="https://hire.jiawis.com/assets/datakeel-benchmarks.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Datakeel B8 · SQLite save p95 · 2,841 ms → 188 ms">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Datakeel v0.28.0 · Engineering notes &amp; benchmarks">
+  <meta name="twitter:description" content="How a shorter write lock changed SQLite save p95 for 50 annotators. Timings, reproducible workloads and the Wave 1 development snapshot.">
+  <meta name="twitter:image" content="https://hire.jiawis.com/assets/datakeel-benchmarks.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Datakeel v0.28.0 工程笔记与实测基准",
+    "alternativeHeadline": "Datakeel engineering notes and measured benchmarks",
+    "description": "Development snapshot, database capacity, annotation latency, near-duplicate hashing and deterministic planner evaluation.",
+    "inLanguage": ["zh-CN", "en"],
+    "datePublished": "2026-11-28",
+    "dateModified": "2026-11-28",
+    "url": "https://hire.jiawis.com/datakeel-benchmarks/",
+    "image": "https://hire.jiawis.com/assets/datakeel-benchmarks.png",
+    "author": {"@type": "Person", "name": "Jiawei Zhang", "url": "https://hire.jiawis.com/"}
+  }
+  </script>
+  <link rel="icon" href="../assets/icons/stack.svg" type="image/svg+xml">
+  <script src="../assets/datakeel-lang.js?v=20261128"></script>
+  <link rel="stylesheet" href="../assets/datakeel.css?v=20261128">
+  <link rel="stylesheet" href="../assets/benchmarks.css?v=20261128">
+</head>
+<body id="top">
+<a class="skip-link" href="#main"><span class="zh">跳到正文</span><span class="en" lang="en">Skip to content</span></a>
+<header class="masthead">
+  <div class="sheet mast-row">
+    <a href="../#projects" class="wordmark" aria-label="Jiawei Zhang · 作品集 / Portfolio">jiawei zhang<span>.</span></a>
+    <div class="mast-tools">
+      <a class="portfolio-link" href="../#projects"><span aria-hidden="true">←</span> <span class="zh">作品集</span><span class="en" lang="en">Portfolio</span></a>
+      <div class="switch" role="group" aria-label="语言 / Language">
+        <button type="button" data-set-lang="zh" aria-pressed="true" aria-label="中文">中</button>
+        <button type="button" data-set-lang="en" aria-pressed="false" aria-label="English">EN</button>
+      </div>
+      <noscript>
+        <fieldset class="fallback-lang"><legend>语言 / Language</legend>
+          <label><input type="radio" name="language" checked>中文</label>
+          <label><input type="radio" name="language" id="read-en">English</label>
+        </fieldset>
+      </noscript>
+    </div>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+  <div class="sheet">
+    <div class="folio"><span><span class="dot" aria-hidden="true"></span><span class="zh">开源工程笔记</span><span class="en" lang="en">Open-source engineering notes</span></span><time datetime="2026-11-28">2026.11.28</time></div>
+    <div class="cover">
+      <div class="cover-copy">
+        <h1>Datakeel<span class="period">.</span><span class="sub zh">工程与实测</span><span class="sub en" lang="en">Under load</span></h1>
+        <p class="dek"><span class="zh">我把数据集交付前的质量检查、泄漏核验和人工签批放进同一个工作台。这些实测记录了 Agent 能替人做到哪一步，也展示了并发标注时最先卡在哪里。</span><span class="en" lang="en">I built Datakeel to bring quality checks, leakage review and human sign-off into one dataset workbench. These notes trace what an agent can do on its own and where the system slows down under load.</span></p>
+        <p class="release"><strong>v0.28.0</strong> <span class="zh">开发快照 · 已合入 Wave 1</span><span class="en" lang="en">Development snapshot · Wave 1 merged locally</span></p>
+      </div>
+      <figure class="cover-chart">
+        <figcaption><span class="serial">B8 / SQLite</span><span class="zh">标注保存延迟 · p95</span><span class="en" lang="en">Annotation save latency · p95</span></figcaption>
+        <div class="hero-stat">188 <small>ms</small></div>
+        <div class="bar-label"><span class="zh">修复前</span><span class="en" lang="en">Before</span><b>2,841 ms</b></div>
+        <div class="bar-track" aria-hidden="true"><i class="before-bar"></i></div>
+        <div class="bar-label"><span class="zh">修复后</span><span class="en" lang="en">After</span><b>188 ms</b></div>
+        <div class="bar-track" aria-hidden="true"><i class="after-bar"></i></div>
+        <a href="#contention"><span class="zh">50 人 · 10 分钟 · 查看逐分钟记录</span><span class="en" lang="en">50 annotators · 10 min · See the minute trace</span><span aria-hidden="true">↘</span></a>
+      </figure>
+    </div>
+    <nav aria-label="本页目录 / Contents" class="contents">
+      <a href="#features"><span class="zh">版本进展</span><span class="en" lang="en">Release notes</span></a>
+      <a href="#capacity"><span class="zh">双库容量</span><span class="en" lang="en">Capacity</span></a>
+      <a href="#contention"><span class="zh">并发标注</span><span class="en" lang="en">Contention</span></a>
+      <a href="#hashing"><span class="zh">哈希加速</span><span class="en" lang="en">Hashing</span></a>
+      <a href="#planner"><span class="zh">规划评测</span><span class="en" lang="en">Planner</span></a>
+    </nav>
+    <section id="features" class="release-section">
+      <p class="section-label">v0.28.0 / Wave 1</p>
+      <h2><span class="zh">从读数据到签批交付</span><span class="en" lang="en">From reading data to signing off</span></h2>
+      <p class="intro"><span class="zh">本地源码 <code>9d5a7d8b</code> 已合入以下改动。核对时，包清单仍为 <code>0.27.1</code>，v0.28.0 尚未打标签。后面的容量与哈希数据各自标有测量日期和源码版本。</span><span class="en" lang="en">Local revision <code>9d5a7d8b</code> contains the changes below. At review time the package manifest still read <code>0.27.1</code> and v0.28.0 was untagged. The capacity and hashing runs below carry their own dates and revisions.</span></p>
+      <div class="feature-grid">
+        <article>
+          <p class="source-id">MCP 2.0 · <code>60e00092</code></p>
+          <h3><span class="zh">给代理划定数据范围</span><span class="en" lang="en">Give agents a scoped view</span></h3>
+          <p><span class="zh">网关新增回环 Streamable HTTP。五档访问配置可限定到单个数据集，提供六种只读资源、五个治理提示和四个计划与工作流查询工具。写操作仍由人在 Web 或 CLI 签批。</span><span class="en" lang="en">The gateway adds loopback Streamable HTTP. Five profiles can narrow access to one dataset. Six read-only resources, five governance prompts and four plan or workflow inspection tools expose evidence. People approve writes in the Web UI or CLI.</span></p>
+        </article>
+        <article>
+          <p class="source-id">BYOD / CI · <code>c18ec0d0</code></p>
+          <h3><span class="zh">让质量检查进入 CI</span><span class="en" lang="en">Gate delivery on measured quality</span></h3>
+          <p><span class="zh"><code>datakeel audit</code> 为自带数据生成质量与跨划分泄漏报告，可按阈值让 CI 失败。自托管兼容模型走本机回环可免 API Key，默认推理计价为零，硬件和电费另计。</span><span class="en" lang="en"><code>datakeel audit</code> checks a supplied dataset for quality and cross-split leaks. Thresholds can fail CI. A compatible self-hosted model on loopback needs no API key. Its default inference tariff is zero, excluding hardware and electricity.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Harness 2.0 · <code>0841302c</code></p>
+          <h3><span class="zh">把会话变成回归用例</span><span class="en" lang="en">Turn a session into a regression case</span></h3>
+          <p><span class="zh">真实会话可脱敏导出为 Golden YAML 草稿，复核后按用例或标签重跑。覆盖模型配置后可对照两次评测的 Markdown 报告。另有 20 条双语用例专测一句话规划。</span><span class="en" lang="en">Export a redacted conversation as a draft Golden YAML case, review it and rerun by case or tag. Override the model and compare two saved runs in Markdown. A separate 20-case bilingual corpus exercises the intent planner.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Workflows · <code>d3b9cb7e</code></p>
+          <h3><span class="zh">并发取证，按门槛分支</span><span class="en" lang="en">Gather evidence in parallel</span></h3>
+          <p><span class="zh">用户可覆写专家与工作流声明并离线校验。<code>parallel_tools</code> 每步容纳 1–8 个只读调用，按声明顺序汇总。内置交付检查同时读取质量、报告和证据，以 80 分决定下一步。</span><span class="en" lang="en">Users can override specialist and workflow definitions and validate them offline. A <code>parallel_tools</code> step accepts 1–8 reads and returns them in declared order. The release-readiness workflow joins quality, report and evidence reads, then branches at 80 points.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Copilot · <code>6054bfdd</code></p>
+          <h3><span class="zh">让驳回理由进入下一轮规划</span><span class="en" lang="en">Replan from the reviewer’s reason</span></h3>
+          <p><span class="zh">规划器读取已保存的驳回理由和补充指导，重新提出方案。Copilot 随页面给出双语建议。稳定提示前缀可复用缓存，Anthropic 最多标记两处断点，OpenAI 使用确定性缓存键。</span><span class="en" lang="en">The planner reads the recorded rejection and reviewer guidance before proposing a new plan. Copilot suggestions follow the current page. Stable prompt material can use up to two Anthropic cache breakpoints or a deterministic OpenAI cache key.</span></p>
+        </article>
+        <article>
+          <p class="source-id">Agent Ops · <code>d1729ed8</code></p>
+          <h3><span class="zh">把一次退步定位到用例</span><span class="en" lang="en">Trace a regression to one case</span></h3>
+          <p><span class="zh">看板汇总缓存、护栏和工具可靠性，评测历史按稳定用例 ID 比较通过、失败和增删。Planner 用 SSE 显示实时阶段，阶段事件仅在运行时显示，回放使用持久化结果。</span><span class="en" lang="en">The dashboard tracks cache usage, guardrails and tool reliability. Evaluation history compares outcomes by stable case ID, including added and removed cases. Planner stages stream live over SSE. Replay uses the persisted outcomes.</span></p>
+        </article>
+      </div>
+    </section>
+<section class="be-section" id="capacity" aria-labelledby="capacity-title">
+<p class="be-stamp">B1–B7 · 2026-11-11</p>
+<h2 id="capacity-title"><span class="zh">两套数据库能处理多大负载？</span><span class="en" lang="en">How far did each database scale?</span></h2>
+<p class="be-lead"><span class="zh">同一台工作站上，分别用 SQLite 和 PostgreSQL 跑导入、流水线、问数和故障恢复。B2 在 8 个进程下每秒处理数千份文件。换成 B5 的 50 个交互用户，两套库都错过了 1 秒的 p95 目标。p95 表示 95% 的请求能在该时长内完成。</span><span class="en" lang="en">On the same workstation, eight workers processed thousands of files per second in B2. When the workload switched to 50 interactive users in B5, both databases missed the one-second p95 target. A p95 of one second means 95% of requests finish within a second.</span></p>
+<figure class="be-figure"><figcaption><span class="zh">B2 流水线吞吐量 · 文件/秒</span><span class="en" lang="en">B2 pipeline throughput · files per second</span></figcaption>
+<div class="be-bar"><div><span>SQLite</span><strong>6,769.5</strong></div><div class="be-track" aria-hidden="true"><i class="be-fill" style="width:100.000%"></i></div></div>
+<div class="be-bar"><div><span>PostgreSQL</span><strong>4,476.5</strong></div><div class="be-track" aria-hidden="true"><i class="be-fill-alt" style="width:66.127%"></i></div></div>
+</figure>
+<table class="be-table ">
+  <caption><span class="zh">容量矩阵 · 同一行使用同一单位</span><span class="en" lang="en">Capacity matrix · units are given in each row</span></caption>
+  <thead><tr><th scope="col"><span class="zh">场景与指标</span><span class="en" lang="en">Workload and measure</span></th><th scope="col">SQLite</th><th scope="col">PostgreSQL</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><b>B1 · M</b> <span class="zh">10 万文件导入（s）</span><span class="en" lang="en">Import 100k files (s)</span></th><td>32.20</td><td>34.10</td></tr>
+    <tr><th scope="row"><b>B1 · M</b> <span class="zh">选取 1 万文件建版本（s）</span><span class="en" lang="en">Version 10k selected files (s)</span></th><td>20.01</td><td>24.13</td></tr>
+    <tr><th scope="row"><b>B1 · M</b> <span class="zh">版本对比（s）</span><span class="en" lang="en">Compare versions (s)</span></th><td>9.88</td><td>13.10</td></tr>
+    <tr><th scope="row"><b>B1 · L</b> <span class="zh">100 万条元数据离线导入（s）</span><span class="en" lang="en">Offline import of 1M metadata entries (s)</span></th><td>7.53</td><td>34.80</td></tr>
+    <tr><th scope="row"><b>B2 · M</b> <span class="zh">8 个进程处理 10 万文件（文件/秒）</span><span class="en" lang="en">Process 100k files with 8 workers (files/s)</span></th><td>6,769.5</td><td>4,476.5</td></tr>
+    <tr><th scope="row"><b>B3 · M</b> <span class="zh">目录搜索 p95（ms）</span><span class="en" lang="en">Catalog search p95 (ms)</span></th><td>42.4</td><td>132.5</td></tr>
+    <tr><th scope="row"><b>B4 · M</b> <span class="zh">问数样本量（事实行）</span><span class="en" lang="en">Ask workload (fact rows)</span></th><td>1,000,000</td><td>10,000,000</td></tr>
+    <tr><th scope="row"><b>B4 · M</b> <span class="zh">单用户问数 p95（ms）</span><span class="en" lang="en">Serial ask p95 (ms)</span></th><td>32.5</td><td>161.2</td></tr>
+    <tr><th scope="row"><b>B4 · M</b> <span class="zh">20 客户端问数 p95（ms）</span><span class="en" lang="en">20-client ask p95 (ms)</span></th><td>606.5</td><td>800.1</td></tr>
+    <tr><th scope="row"><b>B5 · M</b> <span class="zh">50 用户混合请求 p95（ms）</span><span class="en" lang="en">Mixed requests, 50 users, p95 (ms)</span></th><td>17,269</td><td>2,424</td></tr>
+    <tr><th scope="row"><b>B6 · M</b> <span class="zh">1 万任务排空（秒）</span><span class="en" lang="en">Drain 10k tasks (s)</span></th><td>77.79</td><td>85.95</td></tr>
+    <tr><th scope="row"><b>B7 · M</b> <span class="zh">100 万边、深度 5 的图查询 p95（ms）</span><span class="en" lang="en">Depth-5 graph query over 1M edges, p95 (ms)</span></th><td>27.0</td><td>81.4</td></tr>
+  </tbody>
+</table>
+<p class="be-note"><span class="zh">B3 的目录有 1 万张表、20 万列。B4 两套数据库的样本行数相差十倍。B5 持续 300 秒，SQLite 完成 1,685 次请求，PostgreSQL 完成 18,938 次，均为零错误。尾延迟仍不足以支持 50 用户交互 SLA。B6 在输出发布前强制终止一个进程，两栈各重试 1 次，0 任务丢失、0 重复发布。</span><span class="en" lang="en">B3 indexed 10,000 tables and 200,000 columns. B4 used ten times more fact rows on PostgreSQL. During 300 seconds in B5, SQLite handled 1,685 requests and PostgreSQL handled 18,938 with zero errors. Their tail latencies rule out a 50-user interactive SLA on this workload. Killing one worker before publication in B6 triggered one retry on each stack, with zero lost tasks or duplicate publications.</span></p>
+<details class="be-details"><summary><span class="zh">测量环境、来源与复现</span><span class="en" lang="en">Environment, sources and reproduction</span></summary>
+<div class="be-fold">
+<p><span class="zh">2026-11-11 的 18 次顺序压测使用合成数据、seed 23，关闭性能采样。记录的主机配置为 Apple M5 Pro、15 核、48 GiB，macOS 26.3.2 arm64、Python 3.12.13、SQLite 3.53.1、本地容器 PostgreSQL 17.11。B5 包含 ASGI 路由和序列化，排除网络套接字与代理。B1 L 仅测离线元数据。</span><span class="en" lang="en">The 18 sequential runs on 2026-11-11 used synthetic fixtures, seed 23 and no profiler. The reported 15-core Apple M5 Pro had 48 GiB of memory and ran macOS 26.3.2 arm64, Python 3.12.13, SQLite 3.53.1 and PostgreSQL 17.11 in a local container. B5 included ASGI routing and serialization and excluded sockets and proxies. B1 L measured offline metadata.</span></p>
+<p><span class="zh">测量版本 0.24.1，提交 <code>3fafd6a</code>、<code>6686646</code>。两者的 Python 源码 SHA-256 前缀均为 <code>88de0f45394d</code>。在锁定的开发环境中选 B1–B7 逐个运行，B1 L 使用 <code>--size L</code>。PostgreSQL 需通过 <code>DATAKEEL_TEST_DATABASE_URL</code> 指向本机一次性数据库。</span><span class="en" lang="en">Version 0.24.1 at <code>3fafd6a</code> and <code>6686646</code> shared the Python source SHA-256 prefix <code>88de0f45394d</code>. In the locked development environment, select B1–B7 individually and use <code>--size L</code> for B1 L. For PostgreSQL, set <code>DATAKEEL_TEST_DATABASE_URL</code> to a disposable loopback database.</span></p>
+<pre><code>uv sync --locked
+uv run python -m scripts.scale_bench B2 --size M --stack sqlite --seed 23 --output b2-sqlite.json
+uv run python -m scripts.scale_bench B2 --size M --stack postgres --seed 23 --output b2-postgres.json</code></pre>
+<p class="be-sources"><a href="https://datakeel.jiawis.com/docs/capacity/"><span class="zh">容量手册</span><span class="en" lang="en">Capacity guide</span></a> <a href="https://github.com/chaw1/datakeel/blob/468b8caa349cc460ea6e9e5c7c119543d77bd94a/docs/CAPACITY.md">GitHub · CAPACITY.md</a> <a href="measurements.json"><span class="zh">实测数据 JSON</span><span class="en" lang="en">Measurements JSON</span></a></p>
+</div></details>
+</section>
+<section class="be-section" id="contention" aria-labelledby="contention-title">
+<p class="be-stamp">B8 · 2026-11-11 → 2026-11-12</p>
+<h2 id="contention-title"><span class="zh">缩短写锁时间后，保存快了多少？</span><span class="en" lang="en">What changed when the write lock got shorter?</span></h2>
+<p class="be-lead"><span class="zh">50 位模拟标注员反复领取、保存、提交任务。原先每次领取都要在写锁内把候选任务取出，用 Python 排序。把显示顺序存入数据库后，SQLite 的整场保存 p95 从 2,841 ms 降到 188 ms，约为原来的十五分之一。</span><span class="en" lang="en">Fifty simulated annotators repeatedly claimed, saved and submitted tasks. Each claim used to fetch and sort all eligible tasks in Python while holding the write lock. Persisting their display order reduced SQLite’s whole-run save p95 from 2,841 ms to 188 ms, about a fifteenfold reduction.</span></p>
+<table class="be-table ">
+  <caption><span class="zh">整场对比 · 修复前 → 修复后</span><span class="en" lang="en">Whole-run comparison · before → after</span></caption>
+  <thead><tr><th scope="col"><span class="zh">指标</span><span class="en" lang="en">Measure</span></th><th scope="col">SQLite</th><th scope="col">PostgreSQL</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><span class="zh">保存 p95（ms）</span><span class="en" lang="en">Save p95 (ms)</span></th><td>2,841 → 188</td><td>113 → 73</td></tr>
+    <tr><th scope="row"><span class="zh">领取 p95（ms）</span><span class="en" lang="en">Claim p95 (ms)</span></th><td>548 → 33</td><td>254 → 77</td></tr>
+    <tr><th scope="row"><span class="zh">吞吐量（操作/秒）</span><span class="en" lang="en">Throughput (ops/s)</span></th><td>37.3 → 58.3</td><td>56.3 → 58.3</td></tr>
+  </tbody>
+</table>
+<div class="be-charts"><p class="be-charttitle"><span class="zh">10 个完整分钟的尾延迟</span><span class="en" lang="en">Tail latency across ten full minutes</span></p>
+<p class="be-description"><span class="zh">横轴为分钟，纵轴为 p95 毫秒，四图使用相同对数刻度。</span><span class="en" lang="en">Minutes run horizontally. The vertical axis shows p95 in milliseconds on the same logarithmic scale in all four charts.</span></p>
+<p class="be-legend"><span><i class="be-key-before" aria-hidden="true"></i><span class="zh">修复前</span><span class="en" lang="en">Before</span></span><span><i class="be-key-after" aria-hidden="true"></i><span class="zh">修复后</span><span class="en" lang="en">After</span></span></p>
+<div class="be-plots">
+<figure class="be-plot"><figcaption>SQLite · <span class="zh">保存</span><span class="en" lang="en">save</span></figcaption>
+<svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
+<line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
+<line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
+<line class="be-gridline" x1="47" x2="386" y1="47.9" y2="47.9"/><text x="40" y="51.9" text-anchor="end">1k</text>
+<line class="be-gridline" x1="47" x2="386" y1="15.0" y2="15.0"/><text x="40" y="19.0" text-anchor="end">5k</text>
+<text x="47.0" y="166" text-anchor="middle">1</text>
+<text x="197.7" y="166" text-anchor="middle">5</text>
+<text x="386.0" y="166" text-anchor="middle">10</text>
+<polyline class="be-before" points="47.0,28.9 84.7,26.5 122.3,27.3 160.0,28.9 197.7,26.5 235.3,28.0 273.0,28.0 310.7,24.4 348.3,26.4 386.0,21.2"/>
+<circle class="be-marker-before" cx="47.0" cy="28.9" r="2.8"/>
+<circle class="be-marker-before" cx="84.7" cy="26.5" r="2.8"/>
+<circle class="be-marker-before" cx="122.3" cy="27.3" r="2.8"/>
+<circle class="be-marker-before" cx="160.0" cy="28.9" r="2.8"/>
+<circle class="be-marker-before" cx="197.7" cy="26.5" r="2.8"/>
+<circle class="be-marker-before" cx="235.3" cy="28.0" r="2.8"/>
+<circle class="be-marker-before" cx="273.0" cy="28.0" r="2.8"/>
+<circle class="be-marker-before" cx="310.7" cy="24.4" r="2.8"/>
+<circle class="be-marker-before" cx="348.3" cy="26.4" r="2.8"/>
+<circle class="be-marker-before" cx="386.0" cy="21.2" r="2.8"/>
+<polyline class="be-after" points="47.0,86.8 84.7,84.5 122.3,85.3 160.0,83.4 197.7,82.3 235.3,82.8 273.0,77.7 310.7,77.8 348.3,76.9 386.0,76.5"/>
+<circle class="be-marker-after" cx="47.0" cy="86.8" r="2.8"/>
+<circle class="be-marker-after" cx="84.7" cy="84.5" r="2.8"/>
+<circle class="be-marker-after" cx="122.3" cy="85.3" r="2.8"/>
+<circle class="be-marker-after" cx="160.0" cy="83.4" r="2.8"/>
+<circle class="be-marker-after" cx="197.7" cy="82.3" r="2.8"/>
+<circle class="be-marker-after" cx="235.3" cy="82.8" r="2.8"/>
+<circle class="be-marker-after" cx="273.0" cy="77.7" r="2.8"/>
+<circle class="be-marker-after" cx="310.7" cy="77.8" r="2.8"/>
+<circle class="be-marker-after" cx="348.3" cy="76.9" r="2.8"/>
+<circle class="be-marker-after" cx="386.0" cy="76.5" r="2.8"/>
+</svg></figure>
+<figure class="be-plot"><figcaption>SQLite · <span class="zh">领取</span><span class="en" lang="en">claim</span></figcaption>
+<svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
+<line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
+<line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
+<line class="be-gridline" x1="47" x2="386" y1="47.9" y2="47.9"/><text x="40" y="51.9" text-anchor="end">1k</text>
+<line class="be-gridline" x1="47" x2="386" y1="15.0" y2="15.0"/><text x="40" y="19.0" text-anchor="end">5k</text>
+<text x="47.0" y="166" text-anchor="middle">1</text>
+<text x="197.7" y="166" text-anchor="middle">5</text>
+<text x="386.0" y="166" text-anchor="middle">10</text>
+<polyline class="be-before" points="47.0,28.0 84.7,85.0 122.3,81.3 160.0,93.2 197.7,78.7 235.3,65.1 273.0,62.1 310.7,47.8 348.3,53.5 386.0,53.4"/>
+<circle class="be-marker-before" cx="47.0" cy="28.0" r="2.8"/>
+<circle class="be-marker-before" cx="84.7" cy="85.0" r="2.8"/>
+<circle class="be-marker-before" cx="122.3" cy="81.3" r="2.8"/>
+<circle class="be-marker-before" cx="160.0" cy="93.2" r="2.8"/>
+<circle class="be-marker-before" cx="197.7" cy="78.7" r="2.8"/>
+<circle class="be-marker-before" cx="235.3" cy="65.1" r="2.8"/>
+<circle class="be-marker-before" cx="273.0" cy="62.1" r="2.8"/>
+<circle class="be-marker-before" cx="310.7" cy="47.8" r="2.8"/>
+<circle class="be-marker-before" cx="348.3" cy="53.5" r="2.8"/>
+<circle class="be-marker-before" cx="386.0" cy="53.4" r="2.8"/>
+<polyline class="be-after" points="47.0,57.2 84.7,126.8 122.3,119.5 160.0,130.0 197.7,118.9 235.3,118.9 273.0,118.9 310.7,118.2 348.3,127.8 386.0,108.7"/>
+<circle class="be-marker-after" cx="47.0" cy="57.2" r="2.8"/>
+<circle class="be-marker-after" cx="84.7" cy="126.8" r="2.8"/>
+<circle class="be-marker-after" cx="122.3" cy="119.5" r="2.8"/>
+<circle class="be-marker-after" cx="160.0" cy="130.0" r="2.8"/>
+<circle class="be-marker-after" cx="197.7" cy="118.9" r="2.8"/>
+<circle class="be-marker-after" cx="235.3" cy="118.9" r="2.8"/>
+<circle class="be-marker-after" cx="273.0" cy="118.9" r="2.8"/>
+<circle class="be-marker-after" cx="310.7" cy="118.2" r="2.8"/>
+<circle class="be-marker-after" cx="348.3" cy="127.8" r="2.8"/>
+<circle class="be-marker-after" cx="386.0" cy="108.7" r="2.8"/>
+</svg></figure>
+<figure class="be-plot"><figcaption>PostgreSQL · <span class="zh">保存</span><span class="en" lang="en">save</span></figcaption>
+<svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
+<line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
+<line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
+<line class="be-gridline" x1="47" x2="386" y1="47.9" y2="47.9"/><text x="40" y="51.9" text-anchor="end">1k</text>
+<line class="be-gridline" x1="47" x2="386" y1="15.0" y2="15.0"/><text x="40" y="19.0" text-anchor="end">5k</text>
+<text x="47.0" y="166" text-anchor="middle">1</text>
+<text x="197.7" y="166" text-anchor="middle">5</text>
+<text x="386.0" y="166" text-anchor="middle">10</text>
+<polyline class="be-before" points="47.0,87.1 84.7,87.5 122.3,89.6 160.0,89.7 197.7,95.6 235.3,96.2 273.0,93.4 310.7,95.2 348.3,97.3 386.0,95.6"/>
+<circle class="be-marker-before" cx="47.0" cy="87.1" r="2.8"/>
+<circle class="be-marker-before" cx="84.7" cy="87.5" r="2.8"/>
+<circle class="be-marker-before" cx="122.3" cy="89.6" r="2.8"/>
+<circle class="be-marker-before" cx="160.0" cy="89.7" r="2.8"/>
+<circle class="be-marker-before" cx="197.7" cy="95.6" r="2.8"/>
+<circle class="be-marker-before" cx="235.3" cy="96.2" r="2.8"/>
+<circle class="be-marker-before" cx="273.0" cy="93.4" r="2.8"/>
+<circle class="be-marker-before" cx="310.7" cy="95.2" r="2.8"/>
+<circle class="be-marker-before" cx="348.3" cy="97.3" r="2.8"/>
+<circle class="be-marker-before" cx="386.0" cy="95.6" r="2.8"/>
+<polyline class="be-after" points="47.0,102.2 84.7,101.7 122.3,101.1 160.0,100.8 197.7,101.7 235.3,101.7 273.0,101.7 310.7,101.1 348.3,101.1 386.0,101.7"/>
+<circle class="be-marker-after" cx="47.0" cy="102.2" r="2.8"/>
+<circle class="be-marker-after" cx="84.7" cy="101.7" r="2.8"/>
+<circle class="be-marker-after" cx="122.3" cy="101.1" r="2.8"/>
+<circle class="be-marker-after" cx="160.0" cy="100.8" r="2.8"/>
+<circle class="be-marker-after" cx="197.7" cy="101.7" r="2.8"/>
+<circle class="be-marker-after" cx="235.3" cy="101.7" r="2.8"/>
+<circle class="be-marker-after" cx="273.0" cy="101.7" r="2.8"/>
+<circle class="be-marker-after" cx="310.7" cy="101.1" r="2.8"/>
+<circle class="be-marker-after" cx="348.3" cy="101.1" r="2.8"/>
+<circle class="be-marker-after" cx="386.0" cy="101.7" r="2.8"/>
+</svg></figure>
+<figure class="be-plot"><figcaption>PostgreSQL · <span class="zh">领取</span><span class="en" lang="en">claim</span></figcaption>
+<svg viewBox="0 0 402 174" aria-hidden="true" focusable="false">
+<line class="be-gridline" x1="47" x2="386" y1="142.0" y2="142.0"/><text x="40" y="146.0" text-anchor="end">10</text>
+<line class="be-gridline" x1="47" x2="386" y1="94.9" y2="94.9"/><text x="40" y="98.9" text-anchor="end">100</text>
+<line class="be-gridline" x1="47" x2="386" y1="47.9" y2="47.9"/><text x="40" y="51.9" text-anchor="end">1k</text>
+<line class="be-gridline" x1="47" x2="386" y1="15.0" y2="15.0"/><text x="40" y="19.0" text-anchor="end">5k</text>
+<text x="47.0" y="166" text-anchor="middle">1</text>
+<text x="197.7" y="166" text-anchor="middle">5</text>
+<text x="386.0" y="166" text-anchor="middle">10</text>
+<polyline class="be-before" points="47.0,44.5 84.7,73.0 122.3,76.2 160.0,76.1 197.7,80.4 235.3,84.0 273.0,79.2 310.7,83.4 348.3,82.7 386.0,83.2"/>
+<circle class="be-marker-before" cx="47.0" cy="44.5" r="2.8"/>
+<circle class="be-marker-before" cx="84.7" cy="73.0" r="2.8"/>
+<circle class="be-marker-before" cx="122.3" cy="76.2" r="2.8"/>
+<circle class="be-marker-before" cx="160.0" cy="76.1" r="2.8"/>
+<circle class="be-marker-before" cx="197.7" cy="80.4" r="2.8"/>
+<circle class="be-marker-before" cx="235.3" cy="84.0" r="2.8"/>
+<circle class="be-marker-before" cx="273.0" cy="79.2" r="2.8"/>
+<circle class="be-marker-before" cx="310.7" cy="83.4" r="2.8"/>
+<circle class="be-marker-before" cx="348.3" cy="82.7" r="2.8"/>
+<circle class="be-marker-before" cx="386.0" cy="83.2" r="2.8"/>
+<polyline class="be-after" points="47.0,73.8 84.7,100.6 122.3,100.8 160.0,100.3 197.7,101.9 235.3,100.0 273.0,100.6 310.7,99.8 348.3,101.1 386.0,100.3"/>
+<circle class="be-marker-after" cx="47.0" cy="73.8" r="2.8"/>
+<circle class="be-marker-after" cx="84.7" cy="100.6" r="2.8"/>
+<circle class="be-marker-after" cx="122.3" cy="100.8" r="2.8"/>
+<circle class="be-marker-after" cx="160.0" cy="100.3" r="2.8"/>
+<circle class="be-marker-after" cx="197.7" cy="101.9" r="2.8"/>
+<circle class="be-marker-after" cx="235.3" cy="100.0" r="2.8"/>
+<circle class="be-marker-after" cx="273.0" cy="100.6" r="2.8"/>
+<circle class="be-marker-after" cx="310.7" cy="99.8" r="2.8"/>
+<circle class="be-marker-after" cx="348.3" cy="101.1" r="2.8"/>
+<circle class="be-marker-after" cx="386.0" cy="100.3" r="2.8"/>
+</svg></figure>
+</div></div>
+<p class="be-note"><span class="zh">修复后，两套库都出现 0 次重复领取和 0 次重复回收，各有 150 个弃置租约成功回收并再次领取。SQLite 最后一分钟的保存 p95 达到 247 ms，高于整场 188 ms。这里测的是动作准备和执行，未包含 HTTP。</span><span class="en" lang="en">After the fix, both databases recorded zero duplicate claims or releases. All 150 abandoned leases on each stack were reclaimed and claimed again. In SQLite’s final full minute, save p95 reached 247 ms despite a whole-run p95 of 188 ms. These timings cover action preparation and execution, excluding HTTP.</span></p>
+<details class="be-details"><summary><span class="zh">查看曲线原值（毫秒）</span><span class="en" lang="en">Read the chart values in milliseconds</span></summary>
+<div class="be-fold">
+<table class="be-table be-months">
+  <caption>SQLite · <span class="zh">修复前 → 修复后</span><span class="en" lang="en">before → after</span></caption>
+  <thead><tr><th scope="col"><span class="zh">分钟</span><span class="en" lang="en">Minute</span></th><th scope="col"><span class="zh">保存 p95</span><span class="en" lang="en">Save p95</span></th><th scope="col"><span class="zh">领取 p95</span><span class="en" lang="en">Claim p95</span></th></tr></thead>
+  <tbody>
+    <tr><th scope="row">1</th><td>2,538 → 149</td><td>2,652 → 635</td></tr>
+    <tr><th scope="row">2</th><td>2,853 → 167</td><td>163 → 21</td></tr>
+    <tr><th scope="row">3</th><td>2,733 → 160</td><td>195 → 30</td></tr>
+    <tr><th scope="row">4</th><td>2,534 → 176</td><td>109 → 18</td></tr>
+    <tr><th scope="row">5</th><td>2,851 → 186</td><td>221 → 31</td></tr>
+    <tr><th scope="row">6</th><td>2,648 → 181</td><td>430 → 31</td></tr>
+    <tr><th scope="row">7</th><td>2,653 → 232</td><td>500 → 31</td></tr>
+    <tr><th scope="row">8</th><td>3,150 → 231</td><td>1,006 → 32</td></tr>
+    <tr><th scope="row">9</th><td>2,866 → 242</td><td>761 → 20</td></tr>
+    <tr><th scope="row">10</th><td>3,684 → 247</td><td>763 → 51</td></tr>
+  </tbody>
+</table>
+<table class="be-table be-months">
+  <caption>PostgreSQL · <span class="zh">修复前 → 修复后</span><span class="en" lang="en">before → after</span></caption>
+  <thead><tr><th scope="col"><span class="zh">分钟</span><span class="en" lang="en">Minute</span></th><th scope="col"><span class="zh">保存 p95</span><span class="en" lang="en">Save p95</span></th><th scope="col"><span class="zh">领取 p95</span><span class="en" lang="en">Claim p95</span></th></tr></thead>
+  <tbody>
+    <tr><th scope="row">1</th><td>147 → 70</td><td>1,179 → 281</td></tr>
+    <tr><th scope="row">2</th><td>144 → 72</td><td>293 → 76</td></tr>
+    <tr><th scope="row">3</th><td>130 → 74</td><td>250 → 75</td></tr>
+    <tr><th scope="row">4</th><td>129 → 75</td><td>251 → 77</td></tr>
+    <tr><th scope="row">5</th><td>97 → 72</td><td>204 → 71</td></tr>
+    <tr><th scope="row">6</th><td>94 → 72</td><td>171 → 78</td></tr>
+    <tr><th scope="row">7</th><td>108 → 72</td><td>216 → 76</td></tr>
+    <tr><th scope="row">8</th><td>99 → 74</td><td>176 → 79</td></tr>
+    <tr><th scope="row">9</th><td>89 → 74</td><td>182 → 74</td></tr>
+    <tr><th scope="row">10</th><td>97 → 72</td><td>178 → 77</td></tr>
+  </tbody>
+</table>
+</div></details>
+<details class="be-details"><summary><span class="zh">负载、提交与复现</span><span class="en" lang="en">Workload, revisions and reproduction</span></summary>
+<div class="be-fold">
+<p><span class="zh">沿用上节 M5 Pro / 48 GiB 与两套库版本。1 万任务，50 人，10 进程，600 秒。每次领取后保存 3 次再提交，操作间等待 0.5–1.5 秒。每 40 次领取弃置 1 个任务，租约为 1 分钟。每套配置顺序运行一次，曲线舍去末尾不足一分钟的桶。</span><span class="en" lang="en">Same M5 Pro, 48 GiB and database versions as B1–B7. Ten processes hosted 50 users over 10,000 tasks for 600 seconds. Each claim led to three saves and a submit, with 0.5–1.5 s pauses. Every 40th claim was abandoned on a one-minute lease. Each configuration ran once, sequentially. Charts omit the trailing partial minute.</span></p>
+<p><span class="zh">11 月 11 日和 12 日的源码 SHA-256 前缀依次是 <code>88de0f45394d</code> 和 <code>f2ae92db14d9</code>。在基线 <code>3fafd6a</code>/<code>6686646</code> 与修复 <code>8de3577</code> 的检出目录分别运行下列命令，再将 <code>--stack</code> 改为 <code>postgres</code> 重跑。</span><span class="en" lang="en">The 11 and 12 November source SHA-256 prefixes are <code>88de0f45394d</code> and <code>f2ae92db14d9</code>. Run this in separate baseline (<code>3fafd6a</code>/<code>6686646</code>) and fixed (<code>8de3577</code>) checkouts. Repeat with <code>--stack postgres</code> on a disposable local database.</span></p>
+<pre><code>uv run python -m scripts.scale_bench B8 --size M --stack sqlite --workers 10 --think-ms 1000 --seed 23 --output b8-sqlite.json</code></pre>
+<p class="be-sources"><a href="https://datakeel.jiawis.com/docs/capacity/"><span class="zh">容量手册</span><span class="en" lang="en">Capacity guide</span></a> <a href="https://github.com/chaw1/datakeel/blob/468b8caa349cc460ea6e9e5c7c119543d77bd94a/docs/CAPACITY.md">GitHub · CAPACITY.md</a> <a href="measurements.json"><span class="zh">实测数据 JSON</span><span class="en" lang="en">Measurements JSON</span></a></p>
+</div></details>
+</section>
+<section class="be-section" id="hashing" aria-labelledby="hashing-title">
+<p class="be-stamp">PyO3 · 2026-10-27</p>
+<h2 id="hashing-title"><span class="zh">近重复哈希，速度和召回如何取舍？</span><span class="en" lang="en">How fast can the hash kernel find near-duplicates?</span></h2>
+<p class="be-lead"><span class="zh">prefix 只比较前 4 位相同的哈希，容易漏掉跨桶的样本对。exact 先用多个分段找候选，再核对完整汉明距离。10 万哈希时，Rust 的 exact 用了 0.074 秒，并找全了植入的近重复对。</span><span class="en" lang="en">Prefix matching only compares hashes in the same four-bit bucket and can miss pairs across buckets. Exact matching indexes multiple segments, then verifies Hamming distance. On 100,000 hashes the Rust exact kernel took 0.074 seconds and found every planted pair.</span></p>
+<figure class="be-figure"><figcaption><span class="zh">10 万哈希 · Python 耗时 ÷ Rust 耗时</span><span class="en" lang="en">100,000 hashes · Python time ÷ Rust time</span></figcaption>
+<div class="be-bar"><div><span>prefix</span><strong>348.5×</strong></div><div class="be-track" aria-hidden="true"><i class="be-fill-alt" style="width:16.600%"></i></div></div>
+<div class="be-bar"><div><span>exact</span><strong>≈ 2,099×</strong></div><div class="be-track" aria-hidden="true"><i class="be-fill" style="width:100.000%"></i></div></div>
+</figure>
+<table class="be-table ">
+  <caption><span class="zh">比较内核耗时（秒）· 每行一次调用</span><span class="en" lang="en">Comparison time in seconds · one invocation per row</span></caption>
+  <thead><tr><th scope="col"><span class="zh">哈希数与模式</span><span class="en" lang="en">Hash count and mode</span></th><th scope="col">Python</th><th scope="col">Rust</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><b>10,000</b> prefix</th><td>0.465</td><td>0.0021</td></tr>
+    <tr><th scope="row"><b>10,000</b> exact</th><td>2.198</td><td>0.0046</td></tr>
+    <tr><th scope="row"><b>100,000</b> prefix</th><td>26.530</td><td>0.076</td></tr>
+    <tr><th scope="row"><b>100,000</b> exact</th><td>156.339</td><td>0.074</td></tr>
+    <tr><th scope="row"><b>1,000,000</b> prefix</th><td><span class="zh">超时</span><span class="en" lang="en">Timeout</span></td><td>12.815</td></tr>
+    <tr><th scope="row"><b>1,000,000</b> exact</th><td><span class="zh">超时</span><span class="en" lang="en">Timeout</span></td><td>7.311</td></tr>
+  </tbody>
+</table>
+<p class="be-note"><span class="zh">100 万哈希时，Python 两种模式都在 600 秒时限内超时，召回率未知。Rust exact 用了 7.311 秒，峰值 RSS 270.86 MiB，植入召回率 1.0。该计时只包含哈希比较，图片解码和数据生成在计时范围外。</span><span class="en" lang="en">Both Python modes hit the 600-second process limit at one million hashes, leaving recall unmeasured. Rust exact finished in 7.311 seconds with peak RSS of 270.86 MiB and planted recall of 1.0. Timings cover hash comparison and exclude image decoding and fixture generation.</span></p>
+<table class="be-table ">
+  <caption><span class="zh">端到端证据评测 · 1,000 张生成图片</span><span class="en" lang="en">End-to-end evidence evaluation · 1,000 generated images</span></caption>
+  <thead><tr><th scope="col"><span class="zh">指标</span><span class="en" lang="en">Measure</span></th><th scope="col">prefix</th><th scope="col">exact</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><span class="zh">直接样本对</span><span class="en" lang="en">Direct pairs</span></th><td>48 / 52</td><td>52 / 52</td></tr>
+    <tr><th scope="row"><span class="zh">验证集到训练集的样本对</span><span class="en" lang="en">Validation-to-training pairs</span></th><td>47 / 51</td><td>51 / 51</td></tr>
+    <tr><th scope="row"><span class="zh">宏平均精确率</span><span class="en" lang="en">Macro precision</span></th><td>1.0</td><td>1.0</td></tr>
+    <tr><th scope="row"><span class="zh">宏平均召回率</span><span class="en" lang="en">Macro recall</span></th><td>0.989542</td><td>1.0</td></tr>
+  </tbody>
+</table>
+<details class="be-details"><summary><span class="zh">环境、数据分布与复现</span><span class="en" lang="en">Environment, input distribution and reproduction</span></summary>
+<div class="be-fold">
+<p><span class="zh">Apple M5 Pro（15 个逻辑 CPU，48 GiB），macOS 26.3.2 arm64、CPython 3.12.13、Rust 1.96.0，release 扩展 0.1.0、Python 内核 1.0，Rayon 默认线程池。每档使用 seed 20261027 生成 64 位哈希，植入 N/100 对，半数跨前缀。共享主机上每行仅测一次，表中的倍数适用于该分布与比较内核。</span><span class="en" lang="en">Apple M5 Pro, 15 logical CPUs, 48 GiB, macOS 26.3.2 arm64, CPython 3.12.13, Rust 1.96.0, release extension 0.1.0, Python kernel 1.0 and the default Rayon pool. Seed 20261027 generated 64-bit hashes with N/100 planted pairs, half across prefix buckets. Each row is one sample on a shared host. Speedups apply to this distribution and comparison kernel.</span></p>
+<p><span class="zh">图片评测运行真实抽取流程，并与独立生成的标准答案比对。人工植入样本的召回率不能外推到任意真实图片集。可在含实测记录的提交 <code>c3d33e2e</code> 中构建扩展后执行。</span><span class="en" lang="en">The image evaluation ran the extraction pipeline against independently generated ground truth. Planted recall measures this artificial distribution. Build the extension in the benchmark report revision <code>c3d33e2e</code> to reproduce.</span></p>
+<pre><code>uv sync --locked
+make check-rust
+uv run python -m scripts.near_duplicate_benchmark --output benchmark.json
+uv run datakeel eval-evidence --mode prefix --json
+uv run datakeel eval-evidence --mode exact --json</code></pre>
+<p class="be-sources"><a href="https://datakeel.jiawis.com/docs/rust-accel/"><span class="zh">加速手册</span><span class="en" lang="en">Acceleration guide</span></a> <a href="https://github.com/chaw1/datakeel/blob/c3d33e2e954cefd8d6e49f947857a1d57602b277/docs/RUST_ACCEL.md">GitHub · RUST_ACCEL.md</a> <a href="measurements.json"><span class="zh">实测数据 JSON</span><span class="en" lang="en">Measurements JSON</span></a></p>
+</div></details>
+</section>
+<section class="be-section" id="planner" aria-labelledby="planner-title">
+<p class="be-stamp">Harness 2.0 · 2026-11-28</p>
+<h2 id="planner-title"><span class="zh">20 条双语规划用例，验证了什么？</span><span class="en" lang="en">What did the 20 bilingual planning cases verify?</span></h2>
+<p class="be-lead"><span class="zh">同一套规划器实际执行参数校验、作用域和审批检查。离线评测用固定的模型回复驱动它，逐轮核对动作的顺序、参数，以及何时应追问或拒绝。每个用例的所有轮次都通过才计一分。</span><span class="en" lang="en">The actual planner applied its schema, scope and approval checks. Scripted model replies drove each turn, with expectations for ordered actions, parameters, clarifying questions and refusals. A case passed only when every turn matched.</span></p>
+<figure class="be-figure be-corpus"><figcaption><span class="zh">按语言统计 · 每格代表一个通过的用例</span><span class="en" lang="en">Cases by language · each square is one passing case</span></figcaption>
+<div class="be-dot-row"><span><span class="zh">中文</span><span class="en" lang="en">Chinese</span></span><span class="be-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><strong>10 / 10</strong></div>
+<div class="be-dot-row"><span><span class="zh">英文</span><span class="en" lang="en">English</span></span><span class="be-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><strong>10 / 10</strong></div>
+</figure>
+<table class="be-table be-score">
+  <caption><span class="zh">固定用例集结果 · 20 个用例、24 轮</span><span class="en" lang="en">Fixed-corpus results · 20 cases and 24 turns</span></caption>
+  <thead><tr><th scope="col"><span class="zh">核对项</span><span class="en" lang="en">Check</span></th><th scope="col"><span class="zh">结果</span><span class="en" lang="en">Result</span></th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><span class="zh">所有轮次均通过的用例</span><span class="en" lang="en">Cases passing every turn</span></th><td>20 / 20</td></tr>
+    <tr><th scope="row"><span class="zh">规划轮次的动作、参数与审批</span><span class="en" lang="en">Plan turns matching actions, parameters and approvals</span></th><td>12 / 12</td></tr>
+    <tr><th scope="row"><span class="zh">澄清问题的精确率 / 召回率</span><span class="en" lang="en">Clarification precision / recall</span></th><td>1.0 / 1.0</td></tr>
+    <tr><th scope="row"><span class="zh">正确阻止越界或不受支持的请求</span><span class="en" lang="en">Boundary turns safely handled</span></th><td>6 / 6</td></tr>
+  </tbody>
+</table>
+<p class="be-note"><span class="zh">fake 模式复现的是确定性的集成边界。语义理解、真实模型在新说法上的准确率和在线延迟仍需单独测量。</span><span class="en" lang="en">Fake mode exercises deterministic integration behavior. Semantic understanding, accuracy on unseen phrasing and live provider latency require separate measurements.</span></p>
+<details class="be-details"><summary><span class="zh">语料指纹、运行方式与复现</span><span class="en" lang="en">Corpus fingerprint, runner and reproduction</span></summary>
+<div class="be-fold">
+<p><span class="zh">2026-11-28 在 <code>9d5a7d8b</code> 独立源码快照上离线复跑（CPython 3.12.13）。每个用例在独立临时 SQLite 中生成夹具，模型为 <code>fake-script</code>。用例含改述、多步动作、歧义澄清、无权限写入及失败重规划。本次评测没有调用在线模型。</span><span class="en" lang="en">Replayed offline on 2026-11-28 from an isolated snapshot at <code>9d5a7d8b</code> with CPython 3.12.13. Each case used a fresh temporary SQLite store, generated fixtures and <code>fake-script</code> replies. The corpus includes paraphrases, ordered chains, clarification, unauthorized writes and failed-chain replanning. The run made no live model calls.</span></p>
+<p><span class="zh">运行方式记录于 <code>docs/EVALUATION.md</code>。<code>contracts/intents/benchmark.yaml</code> 的文件 SHA-256 前缀为 <code>7822d893d7fe</code>，评测选中用例的规范化摘要为 <code>98dc2ea5dbe3</code>。从包含该命令的源码检出运行。</span><span class="en" lang="en">The runner is documented in <code>docs/EVALUATION.md</code>. The file SHA-256 prefix for <code>contracts/intents/benchmark.yaml</code> is <code>7822d893d7fe</code>. The canonical digest prefix for the selected cases is <code>98dc2ea5dbe3</code>. Run the command from a checkout containing this harness.</span></p>
+<pre><code>uv run datakeel eval-intents --provider fake --json --markdown intent-report.md</code></pre>
+<p class="be-sources"><a href="https://datakeel.jiawis.com/"><span class="zh">Datakeel 文档</span><span class="en" lang="en">Datakeel documentation</span></a> <a href="https://github.com/chaw1/datakeel">GitHub · Datakeel</a> <a href="measurements.json"><span class="zh">实测数据 JSON</span><span class="en" lang="en">Measurements JSON</span></a></p>
+</div></details>
+</section>
+  </div>
+</main>
+<footer>
+  <div class="sheet foot-row">
+    <a href="../#projects" class="foot-home"><span aria-hidden="true">←</span> <span class="zh">返回作品集</span><span class="en" lang="en">Back to portfolio</span></a>
+    <div class="foot-links"><a href="https://datakeel.jiawis.com/"><span class="zh">上手与参考文档</span><span class="en" lang="en">Guides &amp; reference</span> ↗</a><a href="https://github.com/chaw1/datakeel"><span class="zh">GitHub 源码</span><span class="en" lang="en">Source on GitHub</span> ↗</a><a href="#top"><span class="zh">页首</span><span class="en" lang="en">Top</span> ↑</a></div>
+  </div>
+</footer>
+</body>
+</html>

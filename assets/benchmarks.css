@@ -1,0 +1,188 @@
+.be-section {
+  padding-block: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  overflow-wrap: break-word;
+  scroll-margin-top: 6rem;
+}
+.be-section > * { min-width: 0; }
+.be-section .be-stamp {
+  margin: 0 0 .7rem;
+  color: #844625;
+  font: 600 .82rem/1.5 var(--mono);
+  letter-spacing: .055em;
+}
+.be-section h2 {
+  margin: 0;
+  max-width: 25ch;
+  font-size: clamp(1.65rem, 3.1vw, 2.8rem);
+  line-height: 1.18;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.be-lead, .be-note, .be-fold > p {
+  max-width: 81ch;
+  line-height: 1.7;
+}
+.be-section .be-lead {
+  margin: 1rem 0 1.9rem;
+  font-size: clamp(1rem, 1.25vw, 1.13rem);
+}
+.be-section .be-note {
+  margin: 1.5rem 0;
+  padding-inline-start: 1rem;
+  border-inline-start: 3px solid #a65332;
+  color: #49463f;
+}
+.be-figure, .be-charts {
+  margin: 1.6rem 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid #d6d2c8;
+  background: #f1efe7;
+}
+.be-figure figcaption, .be-charttitle {
+  display: block;
+  margin: 0 0 1rem;
+  color: var(--ink);
+  font-weight: 680;
+  font-size: 1.05rem;
+}
+.be-bar { max-width: 52rem; }
+.be-bar + .be-bar { margin-top: .75rem; }
+.be-bar > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .25rem;
+  color: #33312c;
+  font: 500 .875rem/1.5 var(--mono);
+}
+.be-bar strong, .be-dot-row strong { font-variant-numeric: tabular-nums; }
+.be-track { height: .7rem; background: #dfdcd1; }
+.be-track i { display: block; height: 100%; }
+.be-fill { background: #934725; }
+.be-fill-alt { background: #526558; }
+.be-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: .94rem;
+  line-height: 1.5;
+}
+.be-table caption {
+  padding: .25rem 0 .65rem;
+  color: var(--ink);
+  text-align: start;
+  font-weight: 680;
+}
+.be-table th, .be-table td { padding: .62rem .7rem; vertical-align: middle; }
+.be-table thead th {
+  color: #4c4942;
+  background: #f1efe7;
+  border-block: 1px solid #b6b1a4;
+  font-size: .85rem;
+  font-weight: 650;
+}
+.be-table tbody :is(th, td) { border-bottom: 1px solid var(--line); }
+.be-table th:first-child { width: 52%; text-align: start; }
+.be-table tbody th { font-weight: 450; }
+.be-table tbody th b { font-weight: 650; white-space: nowrap; }
+.be-table td, .be-table thead th:not(:first-child) { text-align: end; }
+.be-table td {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.be-table.be-score th:first-child { width: 72%; }
+.be-table.be-months th:first-child { width: 18%; }
+.be-table + .be-table, .be-note + .be-table { margin-top: 1.5rem; }
+.be-details {
+  margin: 1rem 0 0;
+  border: 1px solid #c6c1b5;
+  background: #fcfbf7;
+}
+.be-details + .be-details { margin-top: .55rem; }
+.be-details > summary {
+  padding: .75rem 1rem;
+  color: #77391e;
+  font-size: .95rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.be-details > summary:hover { background: #f4ede2; }
+.be-details > summary:focus-visible, .be-sources a:focus-visible {
+  outline: 3px solid #783919;
+  outline-offset: 2px;
+}
+.be-details[open] > summary { border-bottom: 1px solid var(--line); }
+.be-fold { padding: .9rem clamp(.65rem, 2vw, 1.25rem) 1rem; }
+.be-fold > p { margin: 0 0 .7rem; }
+.be-fold :is(code, pre) {
+  font-family: var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.be-fold code { font-size: .86em; }
+.be-fold pre {
+  margin: .8rem 0;
+  padding: .9rem 1rem;
+  background: #282722;
+  color: #f8f5eb;
+  text-align: start;
+  line-height: 1.65;
+  tab-size: 2;
+}
+.be-fold pre code { padding: 0; color: inherit; background: none; }
+.be-fold .be-sources { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: .5rem 0 0; }
+.be-sources a {
+  color: #783919;
+  font-size: .92rem;
+  text-decoration: underline;
+  text-underline-offset: .17em;
+}
+.be-description, .be-legend { color: #514d42; font-size: .9rem; }
+.be-charts .be-charttitle { margin-bottom: .3rem; }
+.be-charts .be-description { margin: 0; }
+.be-legend { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: .7rem 0; }
+.be-legend > span { display: inline-flex; align-items: center; gap: .4rem; }
+.be-legend i { width: 1.5rem; border-top: 3px solid #984928; }
+.be-legend .be-key-before { border-top: 3px dashed #465b50; }
+.be-plots { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .75rem; }
+.be-plot {
+  margin: 0;
+  padding: .65rem .5rem .35rem;
+  background: #fcfbf7;
+  border: 1px solid #d8d4c9;
+  min-width: 0;
+}
+.be-plot figcaption { margin: 0 .4rem .15rem; font-size: .9rem; font-weight: 650; }
+.be-plot svg { display: block; width: 100%; height: auto; }
+.be-plot text { font: 15px var(--mono); fill: #4b483f; }
+.be-gridline { stroke: #d6d1c4; stroke-width: 1; }
+.be-plot polyline { fill: none; stroke-linejoin: round; stroke-width: 2.3; }
+.be-before { stroke: #465b50; stroke-dasharray: 5 4; }
+.be-after { stroke: #984928; }
+.be-marker-before { fill: #465b50; }
+.be-marker-after { fill: #984928; }
+.be-dot-row { display: grid; grid-template-columns: max-content minmax(4rem,22rem) max-content; align-items: center; gap: 1rem; }
+.be-dot-row + .be-dot-row { margin-top: .5rem; }
+.be-dot-row > span:first-child { min-width: 4rem; }
+.be-corpus strong { font-family: var(--mono); font-size: .88rem; }
+.be-dots { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+.be-dots i { height: 1rem; background: #526558; }
+@media (max-width: 600px) {
+  .be-section { scroll-margin-top: 5rem; }
+  .be-figure, .be-charts { padding: .9rem .65rem; }
+  .be-plots { grid-template-columns: 1fr; }
+  .be-plot text { font-size: 20px; }
+  .be-table { font-size: .82rem; }
+  .be-table thead th { font-size: .75rem; }
+  .be-table th, .be-table td { padding: .53rem .28rem; }
+  .be-table th:first-child { width: 42%; }
+  .be-table tbody th b { display: block; font-size: .78rem; }
+  .be-details > summary { padding-inline: .75rem; }
+  .be-dot-row { gap: .45rem; font-size: .86rem; }
+  .be-dot-row > span:first-child { min-width: 3.5rem; }
+  .be-dots { gap: 2px; }
+  .be-corpus strong { font-size: .8rem; }
+}
